@@ -27,7 +27,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String showLoginPage(){
-        return "/login";
+        return "AuthController/login";
     }
 
     @PostMapping("/login")
@@ -40,15 +40,16 @@ public class AuthController {
         }
         else {
             model.addAttribute("error", "Hov! E-mailen eller kodeordet er forkert.");
-            return "/login";
+            return "AuthController/login";
         }
     }
 
     @GetMapping("/registerUser")
     public String showRegisterFormel(Model model){
         model.addAttribute("user",new User());
-        return "/register";
+        return "AuthController/register";
     }
+
     @PostMapping("/register")
     public String handleRegistration(@ModelAttribute User newUser, Model model){
 
@@ -56,7 +57,7 @@ public class AuthController {
 
         if (result.hasErrors()) {
             model.addAttribute("errors", result.getErrors());
-            return "register";
+            return "AuthController/register";
         }
         return "redirect:/login";
     }
