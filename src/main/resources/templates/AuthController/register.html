@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1 style="text-align: center; color: rebeccapurple; font-size: 30px; margin-top: 10px;">Opret ny profil</h1>
+
+
+<div th:if="${errors != null}">
+    <ul>
+        <li th:each="error : ${errors}" th:text="${error}" style="color: red"></li>
+    </ul>
+</div>
+
+<div class="form-container">
+    <form action="/register" method="post">
+        <label>Navn:</label><br>
+        <input type="text" name="username"><br><br>
+
+        <label>E-mail:</label><br>
+        <input type="text" name="email"><br><br>
+
+        <label>Adgangskode:</label><br>
+        <input type="password" name="password"><br><br>
+
+        <label>Beskrivelse:</label><br>
+        <textarea name="memberDescription" rows="3"></textarea><br><br>
+
+        <button type="submit">Opret</button>
+    </form>
+    <button onclick="window.location.href='/login'" class="back-button" style="margin-top: 10px;">Gå til Login</button>
+</div>
+
+
+
+</body>
+</html>

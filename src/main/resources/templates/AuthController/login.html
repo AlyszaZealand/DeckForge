@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div th:if="${error != null}">
+    <p th:text="${error}" style="color: red; text-align: center"></p>
+</div>
+
+<div class="form-container">
+    <form action="/login" method="post">
+        <label>E-mail:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Adgangskode:</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <button type="submit">Log ind</button>
+    </form>
+
+    <button onclick="window.location.href='/register'" class="back-button" style="margin-top: 10px;">Opret ny bruger</button>
+
+</div>
+</body>
+</html>
