@@ -58,7 +58,7 @@ public class MySqlCollectionRepository implements ICollectionRepository {
 
                     // Læg kortet i samlingen med det rigtige antal
                     collection.addCard(card, rs.getInt("quantity"));
-                }, collectionId);
+                }, collectionID);
 
                 return Optional.of(collection);
 
@@ -67,10 +67,10 @@ public class MySqlCollectionRepository implements ICollectionRepository {
             }
     }
 
-    public void addCardToCollection(int collectionId, int cardId, int quantity){
+    public void addCardToCollection(int collectionID, int cardID, int quantity){
         String sql = "INSERT INTO collection_items (collection_id, card_id, quantity) VALUES (?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
-        jdbcTemplate.update(sql, collectionId, cardId, quantity);
+        jdbcTemplate.update(sql, collectionID, cardID, quantity);
     }
 
 

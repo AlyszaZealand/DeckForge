@@ -25,10 +25,10 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
         try {
             // TRIN 1: Find WishCollection ID baseret på User ID
             String sql = "SELECT wish_collection_id FROM wishcollections WHERE user_id = ?";
-            Integer wishCollectionId = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+            Integer wishCollectionID = jdbcTemplate.queryForObject(sql, Integer.class, userID);
 
             WishCollection wc = new WishCollection();
-            wc.setWishCollectionId(wishCollectionId);
+            wc.setWishCollectionId(wishCollectionID);
 
             User user = new User();
             user.setUserID(userID);
@@ -53,7 +53,7 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
                 card.setDescription(rs.getString("description"));
 
                 wc.addCard(card);
-            }, wishCollectionId);
+            }, wishCollectionID);
 
             return Optional.of(wc);
 

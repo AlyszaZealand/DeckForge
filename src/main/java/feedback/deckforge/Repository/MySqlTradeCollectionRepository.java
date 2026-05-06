@@ -24,10 +24,10 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
     public Optional<TradeCollection> findTradeCollectionByUserId(int userID){
         try {
             String sql = "SELECT trade_collection_id FROM tradecollections WHERE user_id = ?";
-            Integer tradeCollectionId = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+            Integer tradeCollectionID = jdbcTemplate.queryForObject(sql, Integer.class, userID);
 
             TradeCollection tc = new TradeCollection();
-            tc.setTradeCollectionId(tradeCollectionId);
+            tc.setTradeCollectionId(tradeCollectionID);
 
             User user = new User();
             user.setUserID(userID);
@@ -52,7 +52,7 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
                 card.setDescription(rs.getString("description"));
 
                 tc.addCard(card, rs.getInt("quantity"));
-            }, tradeCollectionId);
+            }, tradeCollectionID);
 
             return Optional.of(tc);
 
