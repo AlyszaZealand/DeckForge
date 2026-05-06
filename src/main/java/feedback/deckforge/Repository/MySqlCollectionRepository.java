@@ -2,6 +2,8 @@ package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.Card;
 import feedback.deckforge.Model.Collection;
+import feedback.deckforge.Model.Enum.CardRarity;
+import feedback.deckforge.Model.Enum.CardType;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -42,8 +44,8 @@ public class MySqlCollectionRepository implements ICollectionRepository {
                     Card card = new Card();
                     card.setCardId(rs.getInt("card_id"));
                     card.setCardName(rs.getString("card_name"));
-                    card.setCardRarity(rs.getString("card_rarity"));
-                    card.setCardType(rs.getString("card_type"));
+                    card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
+                    card.setCardType(CardType.valueOf(rs.getString("card_type")));
                     card.setCardSet(rs.getString("card_set"));
                     card.setManaCost(rs.getString("mana_cost"));
                     card.setColorIdentity(rs.getString("color_identity"));
@@ -53,11 +55,10 @@ public class MySqlCollectionRepository implements ICollectionRepository {
 
 
 
-                    // (Tilføj evt. card_set, rarity osv. her, hvis I skal bruge dem på frontend)
 
                     // Læg kortet i samlingen med det rigtige antal
                     collection.addCard(card, rs.getInt("quantity"));
-                }, collectionID);
+                }, collectionId);
 
                 return Optional.of(collection);
 

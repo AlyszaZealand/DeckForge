@@ -1,6 +1,8 @@
 package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.Enum.CardRarity;
+import feedback.deckforge.Model.Enum.CardType;
 import feedback.deckforge.Model.TradeCollection;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
@@ -40,6 +42,14 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
                 Card card = new Card();
                 card.setCardId(rs.getInt("card_id"));
                 card.setCardName(rs.getString("card_name"));
+                card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
+                card.setCardType(CardType.valueOf(rs.getString("card_type")));
+                card.setCardSet(rs.getString("card_set"));
+                card.setManaCost(rs.getString("mana_cost"));
+                card.setColorIdentity(rs.getString("color_identity"));
+                card.setPower(rs.getInt("power"));
+                card.setHealth(rs.getInt("health"));
+                card.setDescription(rs.getString("description"));
 
                 tc.addCard(card, rs.getInt("quantity"));
             }, tradeCollectionId);

@@ -1,6 +1,8 @@
 package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.Enum.CardRarity;
+import feedback.deckforge.Model.Enum.CardType;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Model.WishCollection;
 import feedback.deckforge.Service.RepoInterfaces.IWishCollectionRepository;
@@ -26,7 +28,7 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
             Integer wishCollectionId = jdbcTemplate.queryForObject(sql, Integer.class, userID);
 
             WishCollection wc = new WishCollection();
-            wc.setWishCollectionId(wishCollectionID);
+            wc.setWishCollectionId(wishCollectionId);
 
             User user = new User();
             user.setUserID(userID);
@@ -41,8 +43,15 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
                 Card card = new Card();
                 card.setCardId(rs.getInt("card_id"));
                 card.setCardName(rs.getString("card_name"));
+                card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
+                card.setCardType(CardType.valueOf(rs.getString("card_type")));
+                card.setCardSet(rs.getString("card_set"));
+                card.setManaCost(rs.getString("mana_cost"));
+                card.setColorIdentity(rs.getString("color_identity"));
+                card.setPower(rs.getInt("power"));
+                card.setHealth(rs.getInt("health"));
+                card.setDescription(rs.getString("description"));
 
-                // Vi kalder addCard uden quantity, da WishCollection ikke bruger det
                 wc.addCard(card);
             }, wishCollectionId);
 

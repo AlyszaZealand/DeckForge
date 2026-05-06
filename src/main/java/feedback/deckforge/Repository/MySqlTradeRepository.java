@@ -1,6 +1,8 @@
 package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.Enum.CardRarity;
+import feedback.deckforge.Model.Enum.CardType;
 import feedback.deckforge.Model.Enum.TradeStatus;
 import feedback.deckforge.Model.Trade;
 import feedback.deckforge.Model.User;
@@ -149,7 +151,14 @@ public class MySqlTradeRepository implements ITradeRepository {
             Card card = new Card();
             card.setCardId(rs.getInt("card_id"));
             card.setCardName(rs.getString("card_name"));
-            // (Du kan sætte flere card-felter her, hvis du har brug for dem)
+            card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
+            card.setCardType(CardType.valueOf(rs.getString("card_type")));
+            card.setCardSet(rs.getString("card_set"));
+            card.setManaCost(rs.getString("mana_cost"));
+            card.setColorIdentity(rs.getString("color_identity"));
+            card.setPower(rs.getInt("power"));
+            card.setHealth(rs.getInt("health"));
+            card.setDescription(rs.getString("description"));
 
             // Trafiklyset! Er det tilbudt eller anmodet?
             boolean isOffered = rs.getBoolean("is_offered_by_initiator");
