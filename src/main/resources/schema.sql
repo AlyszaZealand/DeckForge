@@ -20,13 +20,27 @@ CREATE TABLE cards (
                        card_type ENUM('ARTIFACT', 'CREATURE', 'ENCHANTMENT', 'LAND', 'INSTANT', 'SORCERY', 'PLANESWALKER'),
                        card_rarity ENUM('COMMON', 'UNCOMMON', 'RARE', 'MYTHICRARE'),
                        mana_cost VARCHAR(50),
+                       color_identity VARCHAR(20),
                        power INT,
                        health INT,
                        description TEXT
 );
 
 -- ==========================================
--- 2. SAMLINGER & LISTER
+-- 2. FORMATER & REGLER (NY!)
+-- ==========================================
+CREATE TABLE formats (
+                         format_id INT AUTO_INCREMENT PRIMARY KEY,
+                         format_name VARCHAR(50) NOT NULL,
+                         min_deck_size INT NOT NULL,
+                         max_deck_size INT NOT NULL,
+                         max_copies_of_card INT NOT NULL,
+                         requires_commander BOOLEAN NOT NULL DEFAULT FALSE,
+                         allowed_rarities VARCHAR(100) NOT NULL DEFAULT 'ALL'
+);
+
+-- ==========================================
+-- 3. SAMLINGER & LISTER
 -- ==========================================
 
 CREATE TABLE collections (
@@ -44,30 +58,48 @@ CREATE TABLE collection_items (
                         FOREIGN KEY (card_id) REFERENCES cards(card_id)
 );
 
-CREATE TABLE wishlists (
-                        wishlist_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE wishcollections (
+                        wishcollection_id INT AUTO_INCREMENT PRIMARY KEY,
                         user_id INT NOT NULL UNIQUE,
                         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE wishlist_items (
+CREATE TABLE wishcollection_items (
                         item_id INT AUTO_INCREMENT PRIMARY KEY,
-                        wishlist_id INT NOT NULL,
+                        wishcollection_id INT NOT NULL,
                         card_id INT NOT NULL,
-                        FOREIGN KEY (wishlist_id) REFERENCES wishlists(wishlist_id) ON DELETE CASCADE,
+                        FOREIGN KEY (wishcollection_id) REFERENCES wishcollections(wishcollection_id) ON DELETE CASCADE,
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+);
+
+CREATE TABLE tradecollections (
+                        tradecollection_id INT AUTO_INCREMENT PRIMARY KEY,
+                        user_id INT NOT NULL UNIQUE, -- UNIQUE sikrer 1-til-1 relationen mellem User og Collection
+                        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE tradecollection_items (
+                        item_id INT AUTO_INCREMENT PRIMARY KEY,
+                        tradecollection_id INT NOT NULL,
+                        card_id INT NOT NULL,
+                        quantity INT DEFAULT 1,
+                        FOREIGN KEY (tradecollection_id) REFERENCES tradecollections(tradecollection_id) ON DELETE CASCADE,
                         FOREIGN KEY (card_id) REFERENCES cards(card_id)
 );
 
 -- ==========================================
--- 3. DECKBUILDING
+-- 4. DECKBUILDING
 -- ==========================================
 
 CREATE TABLE decks (
                        deck_id INT AUTO_INCREMENT PRIMARY KEY,
                        user_id INT NOT NULL,
+                       format_id INT NOT NULL,
                        deck_name VARCHAR(100) NOT NULL,
+                       deck_format VARCHAR(50) NOT NULL,
                        commander_card_id INT NULL, -- Kun relevant hvis format = COMMANDER
                        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+                       FOREIGN KEY (format_id) REFERENCES formats(format_id),
                        FOREIGN KEY (commander_card_id) REFERENCES cards(card_id)
 );
 
@@ -81,11 +113,12 @@ CREATE TABLE deck_items (
 );
 
 -- ==========================================
--- 4. EVENTS & TRADING
+-- 5. EVENTS & TRADING
 -- ==========================================
 
 CREATE TABLE events (
                         event_id INT AUTO_INCREMENT PRIMARY KEY,
+                        event_name VARCHAR(100),
                         event_format VARCHAR(100),
                         event_status ENUM('PLANNED', 'ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
                         event_size INT NOT NULL,

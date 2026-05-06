@@ -28,7 +28,7 @@ public class MySqlUserRepository implements IUserRepository {
                 rs.getString("username"),
                 rs.getString("email"),
                 UserRole.valueOf(rs.getString("user_role")), // Converts DB String to Java Enum
-                rs.getString("password")
+                rs.getString("password_hash")
         );
     };
 
@@ -51,7 +51,7 @@ public class MySqlUserRepository implements IUserRepository {
     }
 
     public void updateUserInformation(User user){
-        String sql = "Update users set username = ?, email = ? where id = ?";
+        String sql = "Update users set username = ?, email = ? where user_id = ?";
 
         jdbcTemplate.update(sql,
                 user.getUsername(),
@@ -61,13 +61,13 @@ public class MySqlUserRepository implements IUserRepository {
     }
 
     public List<User> findAllUsers(){
-        String sql = "Select username,email from users";
+        String sql = "Select * from users";
 
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
     public Optional<User> findUserByEmail(String email){
-        String sql = "Select username,email from users where email = ?";
+        String sql = "Select * from users where email = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, userRowMapper, email);
@@ -78,7 +78,7 @@ public class MySqlUserRepository implements IUserRepository {
     }
 
     public Optional<User> findUserByID(int userID){
-        String sql = "Select username, email from users where id = ?";
+        String sql = "Select * from users where user_id = ?";
 
         try {
             User user = jdbcTemplate.queryForObject(sql, userRowMapper, userID);

@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title th:text="${event.eventName}">Event Details</title>
 </head>
 <body>
-$END$
+
+<h1 th:text="${event.eventName}">Event Name</h1>
+<p><strong>Format:</strong> <span th:text="${event.eventFormat}">Format</span></p>
+<p><strong>Date:</strong> <span th:text="${event.eventDate}">Date</span></p>
+<p><strong>Description:</strong> <span th:text="${event.eventDescription}">Description</span></p>
+
+<hr>
+
+<div>
+  <form th:if="${!isAttending}" th:action="@{/events/{id}/signup(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
+    <button type="submit">Sign Up for Event</button>
+  </form>
+
+  <form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
+    <button type="submit">Leave Event</button>
+    <p><em>You are signed up for this event!</em></p>
+  </form>
+</div>
+
+<hr>
+
+<h2>Attending Users (<span th:text="${attendingUsers.size()}">0</span>/<span th:text="${event.eventSize}">0</span>)</h2>
+
+<ul th:if="${!attendingUsers.isEmpty()}">
+  <li th:each="user : ${attendingUsers}" th:text="${user.username}">Username</li>
+</ul>
+
+<p th:if="${attendingUsers.isEmpty()}">No one has signed up yet. Be the first!</p>
+
 </body>
 </html>

@@ -4,9 +4,11 @@ import feedback.deckforge.Model.Enum.EventStatus;
 
 import java.time.LocalDateTime;
 
+
 public class Event {
 
-    private int eventId;
+    private int eventID;
+    private String eventName;
     private String eventFormat;
     private EventStatus eventStatus;
     private int eventSize;
@@ -15,17 +17,18 @@ public class Event {
 
     public Event() {}
 
-    public Event(String eventFormat, EventStatus eventStatus, int eventSize, LocalDateTime eventDate, String eventDescription) {
+    public Event(String eventFormat, EventStatus eventStatus, int eventSize, LocalDateTime eventDate, String eventDescription, String eventName) {
         this.eventFormat = eventFormat;
         this.eventStatus = eventStatus;
         this.eventSize = eventSize;
         this.eventDate = eventDate;
         this.eventDescription = eventDescription;
+        this.eventName = eventName;
     }
 
     // Getters og Setters
-    public int getEventId() { return eventId; }
-    public void setEventId(int eventId) { this.eventId = eventId; }
+    public int getEventId() { return eventID; }
+    public void setEventId(int eventId) { this.eventID = eventId; }
 
     public String getEventFormat() { return eventFormat; }
     public void setEventFormat(String eventFormat) { this.eventFormat = eventFormat; }
@@ -41,5 +44,12 @@ public class Event {
 
     public String getEventDescription() { return eventDescription; }
     public void setEventDescription(String eventDescription) { this.eventDescription = eventDescription; }
+
+    public String getEventName(){
+        return this.eventName;
+    }
+    public void setEventName(String eventName){
+        this.eventName = eventName;
+    }
 }
 

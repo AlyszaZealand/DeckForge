@@ -36,7 +36,7 @@ public class AuthController {
 
         if (userOptional.isPresent()) {
             httpSession.setAttribute("loggedInUser", userOptional.get());
-            return "redirect:/myProfile";
+            return "redirect:/";
         }
         else {
             model.addAttribute("error", "Hov! E-mailen eller kodeordet er forkert.");

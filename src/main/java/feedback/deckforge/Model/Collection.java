@@ -1,21 +1,32 @@
 package feedback.deckforge.Model;
 
-public class Collection {
+import java.util.ArrayList;
+import java.util.List;
 
-    private int collectionId;
+public class Collection {
+    private int collectionID;
     private User user;
+    private List<CollectionItem> items = new ArrayList<>();
 
     public Collection() {}
 
-    public Collection(User user) {
-        this.user = user;
+    // Hjælpemetode til at håndtere mængder logisk
+    public void addCard(Card card, int quantity) {
+        for (CollectionItem item : items) {
+            if (item.getCard().getCardId() == card.getCardId()) {
+                item.setQuantity(item.getQuantity() + quantity);
+                return;
+            }
+        }
+        this.items.add(new CollectionItem(card, quantity));
     }
 
-    // Getters og Setters
-    public int getCollectionId() { return collectionId; }
-    public void setCollectionId(int collectionId) { this.collectionId = collectionId; }
+    public int getCollectionId() { return collectionID; }
+    public void setCollectionId(int collectionId) { this.collectionID = collectionId; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-}
 
+    public List<CollectionItem> getCollectionItems() { return items; }
+    public void setCollectionItems(List<CollectionItem> items) { this.items = items; }
+}

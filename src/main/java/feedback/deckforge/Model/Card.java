@@ -5,7 +5,7 @@ import feedback.deckforge.Model.Enum.CardType;
 
 public class Card {
 
-    private int cardId;
+    private int cardID;
     private String cardName;
     private String cardSet;
     private CardType cardType;
@@ -14,11 +14,12 @@ public class Card {
     private int power;
     private int health;
     private String description;
+    private String colorIdentity;
 
     public Card() {}
 
-    public Card(int cardId, String cardName, String cardSet, CardType cardType, CardRarity cardRarity, String manaCost, int power, int health, String description) {
-        this.cardId = cardId;
+    public Card(int cardId, String cardName, String cardSet, CardType cardType, CardRarity cardRarity, String manaCost, int power, int health, String description, String colorIdentity) {
+        this.cardID = cardId;
         this.cardName = cardName;
         this.cardSet = cardSet;
         this.cardType = cardType;
@@ -27,11 +28,12 @@ public class Card {
         this.power = power;
         this.health = health;
         this.description = description;
+        this.colorIdentity = colorIdentity;
     }
 
     // Getters og Setters
-    public int getCardId() { return cardId; }
-    public void setCardId(int cardId) { this.cardId = cardId; }
+    public int getCardId() { return cardID; }
+    public void setCardId(int cardId) { this.cardID = cardId; }
 
     public String getCardName() { return cardName; }
     public void setCardName(String cardName) { this.cardName = cardName; }
@@ -56,5 +58,12 @@ public class Card {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getColorIdentity(){
+        return this.colorIdentity;
+    }
+    public void setColorIdentity(String colorIdentity){
+        this.colorIdentity = colorIdentity;
+    }
 }
 

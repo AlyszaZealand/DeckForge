@@ -1,0 +1,69 @@
+package feedback.deckforge.Repository;
+
+import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.User;
+import feedback.deckforge.Model.WishCollection;
+import feedback.deckforge.Service.RepoInterfaces.IWishCollectionRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public class MySqlWishCollectionRepository implements IWishCollectionRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public MySqlWishCollectionRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Optional<WishCollection> findWishCollectionByUserId(int userID){
+        try {
+            // TRIN 1: Find WishCollection ID baseret på User ID
+            String sql = "SELECT wish_collection_id FROM wishcollections WHERE user_id = ?";
+            Integer wishCollectionId = jdbcTemplate.queryForObject(sql, Integer.class, userID);
+
+            WishCollection wc = new WishCollection();
+            wc.setWishCollectionId(wishCollectionID);
+
+            User user = new User();
+            user.setUserID(userID);
+            wc.setUser(user);
+
+            // TRIN 2: Hent kortene via JOIN (Ingen quantity kolonne her!)
+            String itemsSql = "SELECT c.* FROM wishcollection_items wci " +
+                    "JOIN cards c ON wci.card_id = c.card_id " +
+                    "WHERE wci.wish_collection_id = ?";
+
+            jdbcTemplate.query(itemsSql, rs -> {
+                Card card = new Card();
+                card.setCardId(rs.getInt("card_id"));
+                card.setCardName(rs.getString("card_name"));
+
+                // Vi kalder addCard uden quantity, da WishCollection ikke bruger det
+                wc.addCard(card);
+            }, wishCollectionId);
+
+            return Optional.of(wc);
+
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+
+    }
+
+    public void addCardToWishCollection(int wishCollectionID, int cardID){
+        String sql = "insert into wishcollection_items (wishcollection_id, card_id) values (?,?)";
+        jdbcTemplate.update(sql,wishCollectionID,cardID);
+    }
+
+    public void removeCardFromWishCollection(int wishCollectionID, int cardID){
+        String sql = "DELETE FROM wishcollection_items WHERE wishcollection_id = ? AND card_id = ?";
+        jdbcTemplate.update(sql, wishCollectionID, cardID);
+
+    }
+
+
+}

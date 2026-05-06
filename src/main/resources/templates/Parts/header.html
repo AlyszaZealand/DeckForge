@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Insert fragment header at the top of every html page -->
+<!-- <section th:insert="parts/header.html :: header"></section> -->
+
+<body>
+    <section th:fragment="header">
+        <header class="website-header"> <!-- Naming for css styling -->
+            <div class="container"> <!-- Container for header content, for css styling -->
+                <h1>Deck Forge</h1>
+
+                <!-- POSSIBLE <nav class="website-navigation"> -->
+                <nav>
+                    <a href="/">Forside</a>
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                    <a href="/profil">Profil</a>
+                    <a href="/registerEvent">Event</a>
+                </nav>
+            </div>
+        </header>
+    </section>
+</body>
+</html>
