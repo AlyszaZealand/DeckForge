@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="description" content="Login">
+    <meta name="keywords" content="HTML, CSS, Login">
+    <meta name="author" content="Bug Busters">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
 
+<body>
 <div th:if="${error != null}">
     <p th:text="${error}" style="color: red; text-align: center"></p>
 </div>
+<main>
+    <section th:insert="parts/header.html :: header"></section>
+        <div class="form-container">
+            <form action="/login" method="post">
+                <label>E-mail:</label><br>
+                <input type="email" name="email" required><br><br>
 
-<div class="form-container">
-    <form action="/login" method="post">
-        <label>E-mail:</label><br>
-        <input type="email" name="email" required><br><br>
+                <label>Adgangskode:</label><br>
+                <input type="password" name="password" required><br><br>
 
-        <label>Adgangskode:</label><br>
-        <input type="password" name="password" required><br><br>
-
-        <button type="submit">Log ind</button>
-    </form>
-
-    <button onclick="window.location.href='/registerUser'" class="back-button" style="margin-top: 10px;">Opret ny bruger</button>
-
-</div>
+                <button type="submit">Log ind</button>
+            </form>
+        <button onclick="window.location.href='/registerUser'" class="back-button" style="margin-top: 10px;">Opret ny bruger</button>
+        </div>
+    <section th:insert="parts/footer.html :: footer"></section>
+</main>
 </body>
+
 </html>

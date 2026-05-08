@@ -4,6 +4,8 @@ import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Model.TradeCollection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
+import feedback.deckforge.Service.Validation.TradeCollectionValidation;
+import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,34 +15,36 @@ public class TradeCollectionService {
 
     private ITradeCollectionRepository tradeCollectionRepository;
     private final ICollectionRepository collectionRepository;
+    private final TradeCollectionValidation tradeCollectionValidation;
 
-    public TradeCollectionService(ITradeCollectionRepository tradeCollectionRepository, ICollectionRepository collectionRepository) {
+    public TradeCollectionService(ITradeCollectionRepository tradeCollectionRepository, ICollectionRepository collectionRepository, TradeCollectionValidation tradeCollectionValidation) {
         this.tradeCollectionRepository = tradeCollectionRepository;
         this.collectionRepository = collectionRepository;
+        this.tradeCollectionValidation = tradeCollectionValidation;
     }
 
     public Optional<TradeCollection> getTradeCollectionByUserID(int userID){
         return tradeCollectionRepository.findTradeCollectionByUserId(userID);
     }
 
-    public boolean addCardToTradeCollection(int userID, int tradeCollectionID, int cardID, int quantity) {
-        Optional<Collection> userCol = collectionRepository.findCollectionByUserId(userID);
+    public ValidationResult addCardToTradeCollection(int userID, int tradeCollectionID, int cardID, int quantity) {
+        Collection privateCol = collectionRepository.findCollectionByUserId(userID).orElse(null);
 
-        if (userCol.isPresent()) {
-            boolean ownsEnough = userCol.get().getCollectionItems().stream()
-                    .anyMatch(item -> item.getCard().getCardId() == cardID && item.getQuantity() >= quantity);
+        ValidationResult result = tradeCollectionValidation.validateAddCardToTradeCollection(cardID,quantity, privateCol);
 
-            if (ownsEnough) {
-                tradeCollectionRepository.addCardToTradeCollection(tradeCollectionID, cardID, quantity);
-                return true;
-            }
+        if (!result.hasErrors()) {
+            tradeCollectionRepository.addCardToTradeCollection(tradeCollectionID, cardID, quantity);
         }
 
-        return false;
+        return result;
     }
 
     public void removeCardFromTradeCollection(int tradeCollectionID, int cardID){
         tradeCollectionRepository.removeCardFromTradeCollection(tradeCollectionID, cardID);
+    }
+
+    public void setCardQuantity(int tradeCollectionID, int cardID, int newQuantity){
+        tradeCollectionRepository.setCardQuantity(tradeCollectionID, cardID, newQuantity);
     }
 
 

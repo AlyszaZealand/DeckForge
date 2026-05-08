@@ -33,7 +33,7 @@ public class MySqlEventRepository implements IEventRepository {
         );
     };
 
-
+    @Override
     public void createEvent(Event event){
         String sql = "Insert into events (event_format, event_status, event_size, event_date, event_description, event_name) values (?,?,?,?,?,?)";
 
@@ -46,6 +46,8 @@ public class MySqlEventRepository implements IEventRepository {
                 event.getEventName()
         );
     }
+
+    @Override
     public void updateEvent(Event event){
         String sql = "update events set event_format = ?, event_status = ?, event_size = ?, event_date = ?, event_description = ? where event_id = ?";
 
@@ -58,11 +60,15 @@ public class MySqlEventRepository implements IEventRepository {
                 event.getEventId()
                 );
     }
+
+    @Override
     public void deleteEvent(int eventID){
         String sql = "delete from events where event_id = ?";
 
         jdbcTemplate.update(sql, eventID);
     }
+
+    @Override
     public Optional<Event> findEventByID(int eventID){
         String sql = "select * from events where event_id = ?";
 
@@ -73,21 +79,29 @@ public class MySqlEventRepository implements IEventRepository {
             return Optional.empty();
         }
     }
+
+    @Override
     public List<Event> findAllEvents(){
         String sql = "select * from events";
 
         return jdbcTemplate.query(sql, eventRowMapper);
     }
+
+    @Override
     public List<Integer> findSignedUpUsersByEventID(int eventID){
         String sql = "select user_id from event_registrations where event_id = ?";
 
         return jdbcTemplate.queryForList(sql, Integer.class, eventID);
     }
+
+    @Override
     public void singUp(int eventID, int userID){
         String sql = "insert into event_registrations (event_id, user_id) values (?,?)";
 
         jdbcTemplate.update(sql, eventID, userID);
     }
+
+    @Override
     public void removeSignUp(int eventID, int userID){
         String sql = "delete from event_registrations where event_id = ? and user_id = ?";
 

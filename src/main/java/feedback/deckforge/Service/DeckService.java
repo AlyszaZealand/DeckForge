@@ -1,8 +1,11 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Model.Card;
 import feedback.deckforge.Model.Deck;
+import feedback.deckforge.Model.Format;
 import feedback.deckforge.Service.RepoInterfaces.IDeckRepository;
 import feedback.deckforge.Service.Validation.DeckValidation;
+import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +23,7 @@ public class DeckService {
     }
 
     public void saveDeck(Deck deck){
+        deckValidation.validateDeck(deck);
         deckRepository.saveDeck(deck);
     }
 
@@ -28,6 +32,20 @@ public class DeckService {
     }
     public void updateDeck(Deck deck) {
         deckRepository.updateDeck(deck);
+    }
+
+    public ValidationResult addCardToDeck(Deck currentDeck, Card newCard, int quantity) {
+
+
+        ValidationResult result = deckValidation.validateAddCard(currentDeck, newCard, quantity);
+
+        if (!result.hasErrors()) {
+            deckRepository.addCardToDeck(currentDeck.getDeckId(), newCard.getCardId(), quantity);
+
+            currentDeck.addCard(newCard, quantity);
+        }
+
+        return result;
     }
     public Optional<Deck> findDeckById(int deckID) {
         return deckRepository.findDeckById(deckID);

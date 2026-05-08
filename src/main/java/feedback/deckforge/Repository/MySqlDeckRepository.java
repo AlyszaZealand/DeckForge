@@ -84,8 +84,21 @@ public class MySqlDeckRepository implements IDeckRepository {
 
     @Override
     public void deleteDeck(int deckID) {
-        String sql = "DELETE FROM decks WHERE deck_iD = ?";
+        String sql = "DELETE FROM decks WHERE deck_ID = ?";
         jdbcTemplate.update(sql, deckID);
+    }
+
+    @Override
+    public void addCardToDeck(int deckID, int cardID, int quantity) {
+        String sql = "INSERT INTO deck_items (deck_id, card_id, quantity) VALUES (?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
+        jdbcTemplate.update(sql, deckID, cardID, quantity);
+    }
+
+    @Override
+    public void removeCardFromDeck(int deckID, int cardID) {
+        String sql = "DELETE FROM deck_items WHERE deck_id = ? AND card_id = ?";
+        jdbcTemplate.update(sql, deckID, cardID);
     }
 
     @Override

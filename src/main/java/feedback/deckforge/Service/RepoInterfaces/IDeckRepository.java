@@ -9,6 +9,8 @@ public interface IDeckRepository {
     void saveDeck(Deck deck);
     void deleteDeck(int deckID);
     void updateDeck(Deck deck);
+    void addCardToDeck(int deckID, int cardID, int quantity);
+    void removeCardFromDeck(int deckID, int cardID);
     Optional<Deck> findDeckById(int deckID);
     List<Deck> findAllDecksByUserId(int userID);
 

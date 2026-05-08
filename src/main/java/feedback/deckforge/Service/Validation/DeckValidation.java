@@ -1,48 +1,88 @@
 package feedback.deckforge.Service.Validation;
 
+import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.DeckItem;
 import feedback.deckforge.Model.Format;
 import feedback.deckforge.Model.Deck;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.Deck;
+import feedback.deckforge.Model.DeckItem;
+import feedback.deckforge.Model.Enum.CardType;
+import feedback.deckforge.Model.Format;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeckValidation {
 
-    private ValidationResult validationResult;
-
-    public DeckValidation(ValidationResult validationResult){
-        this.validationResult = validationResult;
-    }
-
-    public ValidationResult validateDeck(Deck deck, Format format){
+    public ValidationResult validateAddCard(Deck currentDeck, Card newCard, int quantityToAdd) {
         ValidationResult result = new ValidationResult();
+        Format format = currentDeck.getFormat();
 
-        if (deck.getDeckName() == null || deck.getDeckName().trim().isEmpty()){
-            result.addError("Deck'et skal have et navn.");
+        if (format == null) {
+            result.addError("Decket mangler et format.");
+            return result;
         }
 
-        if (format == null){
-            result.addError("Du skal vælge et format til deck'et");
+        // 1. Tjek: Er kortets rarity tilladt i dette format?
+        String allowed = format.getAllowedRarities();
+        if (allowed != null && !allowed.equalsIgnoreCase("ALL")) {
+            if (!allowed.contains(newCard.getCardRarity().name())) {
+                result.addError("Kortet '" + newCard.getCardName() + "' har en rarity, der ikke er tilladt i " + format.getFormatName() + ".");
+                return result;
+            }
         }
 
-        // 2. Calculate total cards
-        int totalCards = 0;
-        if (deckItems != null) {
-            for (DeckItem item : deckItems) {
-                totalCards += item.getQuantity();
 
-                // 3. Max Copies Validation
-                boolean isBasicLand = isBasicLand(item.getCard().getCardName());
-                if (!isBasicLand && item.getQuantity() > format.getMaxCopiesOfCard()) {
-                    result.addError("Du må højst have " + format.getMaxCopiesOfCard() +
-                            " kopier af kortet: " + item.getCard().getCardName());
+        if (format.isRequiresCommander() && currentDeck.getCommander() != null) {
+            String commanderColors = currentDeck.getCommander().getColorIdentity();
+            String cardColors = newCard.getColorIdentity();
+
+            // Hvis kortet IKKE er farveløst ("C") og det faktisk har en farve registreret
+            if (cardColors != null && !cardColors.trim().isEmpty() && !cardColors.equalsIgnoreCase("C")) {
+
+                // Hvis Commanderen er farveløs, må der slet ikke tilføjes farvede kort eller farvede lande
+                if (commanderColors == null || commanderColors.trim().isEmpty() || commanderColors.equalsIgnoreCase("C")) {
+                    result.addError("Din Commander er farveløs. Du kan ikke tilføje kort, der bruger farvet mana.");
+                } else {
+                    // Tjek om ALLE kortets farver findes i Commanderens farver
+                    for (char color : cardColors.toCharArray()) {
+                        if (commanderColors.indexOf(color) == -1) {
+                            result.addError("Sikkerhedsfejl: Kortet '" + newCard.getCardName() + "' (" + cardColors + ") bryder reglen om Color Identity. Det matcher ikke din Commander (" + commanderColors + ").");
+                            break;
+                        }
+                    }
                 }
             }
         }
 
+
+        int totalDeckQty = 0;
+        int currentCardQty = 0;
+
+        for (DeckItem item : currentDeck.getDeckItems()) {
+            totalDeckQty += item.getQuantity();
+            if (item.getCard().getCardId() == newCard.getCardId()) {
+                currentCardQty = item.getQuantity();
+            }
+        }
+
+
+        boolean isLand = newCard.getCardType() == CardType.LAND;
+
+
+        if (!isLand && (currentCardQty + quantityToAdd > format.getMaxCopiesOfCard())) {
+            result.addError("Regelbrud: Du må maksimalt have " + format.getMaxCopiesOfCard() + " kopier af '" + newCard.getCardName() + "' (Lande er undtaget).");
+        }
+
+        if (totalDeckQty + quantityToAdd > format.getMaxDeckSize()) {
+            result.addError("Decket er fyldt. Maksimum for dette format er " + format.getMaxDeckSize() + " kort.");
+        }
+
         return result;
     }
-
-
-
-
 }

@@ -3,6 +3,7 @@ package feedback.deckforge.Service;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.Validation.CollectionValidation;
+import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,10 +24,12 @@ public class CollectionService {
         return collectionRepository.findCollectionByUserId(userID);
     }
 
-    public void addCardToCollection(int collectionID, int cardID, int quantity) {
-        if (quantity > 0) {
+    public ValidationResult addCardToCollection(int collectionID, int cardID, int quantity) {
+        ValidationResult result = collectionValidation.validateAddCard(cardID, quantity);
+        if (!result.hasErrors()) {
             collectionRepository.addCardToCollection(collectionID, cardID, quantity);
         }
+        return result;
     }
 
     public void removeCardFromCollection(int collectionID, int cardID) {

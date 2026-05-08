@@ -12,7 +12,7 @@ public class Deck {
 
     // Kortene i decket
     private Card commander;     // Vil være null, hvis format.requiresCommander er false
-    private List<Card> cards = new ArrayList<>();
+    private List<DeckItem> deckItems = new ArrayList<>();
 
     public Deck() {}
 
@@ -38,10 +38,16 @@ public class Deck {
     public Card getCommander() { return commander; }
     public void setCommander(Card commander) { this.commander = commander; }
 
-    public List<Card> getCards() { return cards; }
-    public void setCards(List<Card> cards) { this.cards = cards; }
+    public List<DeckItem> getDeckItems() { return deckItems; }
+    public void setDeckItems(List<DeckItem> deckItems) { this.deckItems = deckItems; }
 
-    public void addCard(Card card) {
-        this.cards.add(card);
+    public void addCard(Card card, int quantity) {
+        for (DeckItem item : deckItems) {
+            if (item.getCard().getCardId() == card.getCardId()) {
+                item.setQuantity(item.getQuantity() + quantity);
+                return;
+            }
+        }
+        this.deckItems.add(new DeckItem(card, quantity));
     }
 }

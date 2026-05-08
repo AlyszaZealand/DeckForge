@@ -21,6 +21,7 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Optional<WishCollection> findWishCollectionByUserId(int userID){
         try {
             // TRIN 1: Find WishCollection ID baseret på User ID
@@ -63,11 +64,13 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
 
     }
 
+    @Override
     public void addCardToWishCollection(int wishCollectionID, int cardID){
         String sql = "insert into wishcollection_items (wishcollection_id, card_id) values (?,?)";
         jdbcTemplate.update(sql,wishCollectionID,cardID);
     }
 
+    @Override
     public void removeCardFromWishCollection(int wishCollectionID, int cardID){
         String sql = "DELETE FROM wishcollection_items WHERE wishcollection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, wishCollectionID, cardID);

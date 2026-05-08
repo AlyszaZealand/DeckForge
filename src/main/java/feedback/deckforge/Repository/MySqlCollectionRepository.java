@@ -21,6 +21,7 @@ public class MySqlCollectionRepository implements ICollectionRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public Optional<Collection> findCollectionByUserId(int userId){
             try {
                 // TRIN 1: Find ID'et på den samling, der tilhører brugeren
@@ -67,13 +68,14 @@ public class MySqlCollectionRepository implements ICollectionRepository {
             }
     }
 
+    @Override
     public void addCardToCollection(int collectionID, int cardID, int quantity){
         String sql = "INSERT INTO collection_items (collection_id, card_id, quantity) VALUES (?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
         jdbcTemplate.update(sql, collectionID, cardID, quantity);
     }
 
-
+    @Override
     public void removeCardFromCollection(int collectionId, int cardId){
         String sql = "DELETE FROM collection_items WHERE collection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, collectionId, cardId);
@@ -81,6 +83,7 @@ public class MySqlCollectionRepository implements ICollectionRepository {
 
 
     //hvis man har 4 kopier, men fjerner en fra sin collection
+    @Override
     public void updateCardQuantity(int collectionId, int cardId, int newQuantity){
         String sql = "UPDATE collection_items SET quantity = ? WHERE collection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, newQuantity, collectionId, cardId);

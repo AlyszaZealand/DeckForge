@@ -32,7 +32,7 @@ public class MySqlUserRepository implements IUserRepository {
         );
     };
 
-
+    @Override
     public void saveUser(User user){
         String sql = "Insert into users (username,email,password_hash) values (?,?,?)";
 
@@ -43,12 +43,14 @@ public class MySqlUserRepository implements IUserRepository {
         );
     }
 
+    @Override
     public void deleteUser(int userID){
         String sql = "Delete from users where id=?";
 
         jdbcTemplate.update(sql, userID);
     }
 
+    @Override
     public void updateUserInformation(User user){
         String sql = "Update users set username = ?, email = ? where user_id = ?";
 
@@ -59,12 +61,14 @@ public class MySqlUserRepository implements IUserRepository {
         );
     }
 
+    @Override
     public List<User> findAllUsers(){
         String sql = "Select * from users";
 
         return jdbcTemplate.query(sql, userRowMapper);
     }
 
+    @Override
     public Optional<User> findUserByEmail(String email){
         String sql = "Select * from users where email = ?";
 
@@ -76,6 +80,7 @@ public class MySqlUserRepository implements IUserRepository {
         }
     }
 
+    @Override
     public Optional<User> findUserByID(int userID){
         String sql = "Select * from users where user_id = ?";
 
