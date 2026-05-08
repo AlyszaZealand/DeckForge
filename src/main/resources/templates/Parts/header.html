@@ -17,6 +17,14 @@
                     <a href="/register">Register</a>
                     <a href="/profil">Profil</a>
                     <a href="/registerEvent">Event</a>
+
+                    <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
+                        <a href="/addCard">Tilføj Kort</a>
+                        <a href="/addFormat">Tilføj Format</a>
+                    </th:block>
+                    <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}">
+                        <a href="/createEvent">Tilføj Event</a>
+                    </th:block>
                 </nav>
             </div>
         </header>

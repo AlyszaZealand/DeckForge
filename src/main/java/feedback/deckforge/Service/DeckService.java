@@ -22,9 +22,9 @@ public class DeckService {
         this.deckValidation = deckValidation;
     }
 
-    public void saveDeck(Deck deck){
-        deckValidation.validateDeck(deck);
-        deckRepository.saveDeck(deck);
+    public void saveDeck(Deck currentDeck, Card newCard, int quantityToAdd){
+        deckValidation.validateAddCard(currentDeck, newCard, quantityToAdd);
+        deckRepository.saveDeck(currentDeck);
     }
 
     public void deleteDeck(int deckID) {

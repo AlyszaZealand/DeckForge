@@ -31,7 +31,7 @@ public class FormatValidation {
             result.addError("Du må ikke lave en format hvor der må være mere end 100 kopier af det samme kort");
         }
 
-
+        return result;
     }
 
 

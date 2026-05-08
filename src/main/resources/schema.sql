@@ -14,7 +14,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE cards (
-                       card_id INT PRIMARY KEY,
+                       card_id INT AUTO_INCREMENT PRIMARY KEY,
                        card_name VARCHAR(255) NOT NULL,
                        card_set VARCHAR(100),
                        card_type ENUM('ARTIFACT', 'CREATURE', 'ENCHANTMENT', 'LAND', 'INSTANT', 'SORCERY', 'PLANESWALKER'),
@@ -109,7 +109,8 @@ CREATE TABLE deck_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (deck_id) REFERENCES decks(deck_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        UNIQUE(deck_id, card_id)
 );
 
 -- ==========================================
