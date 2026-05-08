@@ -34,13 +34,12 @@ public class MySqlUserRepository implements IUserRepository {
 
 
     public void saveUser(User user){
-        String sql = "Insert into users (username,email,password,userrole) values (?,?,?,?)";
+        String sql = "Insert into users (username,email,password_hash) values (?,?,?)";
 
         jdbcTemplate.update(sql,
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword(),
-                user.getUserRole()
+                user.getPassword()
         );
     }
 

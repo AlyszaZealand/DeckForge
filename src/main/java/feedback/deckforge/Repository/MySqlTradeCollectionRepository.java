@@ -63,20 +63,20 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
 
     @Override
     public void addCardToTradeCollection(int tradeCollectionID, int cardID, int quantity) {
-        String sql = "INSERT INTO tradelist_items (tradelist_id, card_id, quantity) VALUES (?, ?, ?) " +
+        String sql = "INSERT INTO tradecollection_items (tradecollection_id, card_id, quantity) VALUES (?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)";
         jdbcTemplate.update(sql, tradeCollectionID, cardID, quantity);
     }
 
     @Override
     public void removeCardFromTradeCollection(int tradeCollectionID, int cardID) {
-        String sql = "DELETE FROM tradelist_items WHERE tradelist_id = ? AND card_id = ?";
+        String sql = "DELETE FROM tradecollection_items WHERE tradecollection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, tradeCollectionID, cardID);
     }
 
     @Override
     public void setCardQuantity(int tradeCollectionID, int cardID, int newQuantity) {
-        String sql = "UPDATE tradelist_items SET quantity = ? WHERE tradelist_id = ? AND card_id = ?";
+        String sql = "UPDATE tradecollection_items SET quantity = ? WHERE tradecollection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, newQuantity, tradeCollectionID, cardID);
     }
 

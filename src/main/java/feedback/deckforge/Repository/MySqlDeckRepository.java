@@ -56,15 +56,15 @@ public class MySqlDeckRepository implements IDeckRepository {
 
     @Override
     public void saveDeck(Deck deck){
-        String sql = "INSERT INTO decks (user_id, format_id, deck_name, commander_card_id) VALUES (?, ?, ? ?)";
+        String sql = "INSERT INTO decks (user_id, format_id, deck_name, commander_card_id) VALUES (?, ?, ?, ?)";
 
         Integer commanderID = (deck.getCommander() != null) ? deck.getCommander().getCardId() : null;
 
         jdbcTemplate.update(sql,
-                deck.getDeckName(),
+                deck.getUser().getUserID(),
                 deck.getFormat().getFormatId(),
-                commanderID,
-                deck.getDeckId()
+                deck.getDeckName(),
+                commanderID
         );
     }
 

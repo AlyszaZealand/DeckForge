@@ -37,7 +37,7 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
             // TRIN 2: Hent kortene via JOIN (Ingen quantity kolonne her!)
             String itemsSql = "SELECT c.* FROM wishcollection_items wci " +
                     "JOIN cards c ON wci.card_id = c.card_id " +
-                    "WHERE wci.wish_collection_id = ?";
+                    "WHERE wci.wishcollection_id = ?";
 
             jdbcTemplate.query(itemsSql, rs -> {
                 Card card = new Card();
