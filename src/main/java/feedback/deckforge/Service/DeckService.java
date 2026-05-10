@@ -21,9 +21,8 @@ public class DeckService {
         this.deckValidation = deckValidation;
     }
 
-    public void saveDeck(Deck currentDeck, Card newCard, int quantityToAdd){
-        deckValidation.validateAddCard(currentDeck, newCard, quantityToAdd);
-        deckRepository.saveDeck(currentDeck);
+    public void saveDeck(Deck newDeck){
+        deckRepository.saveDeck(newDeck);
     }
 
     public void deleteDeck(int deckID) {
@@ -34,7 +33,6 @@ public class DeckService {
     }
 
     public ValidationResult addCardToDeck(Deck currentDeck, Card newCard, int quantity) {
-
 
         ValidationResult result = deckValidation.validateAddCard(currentDeck, newCard, quantity);
 
