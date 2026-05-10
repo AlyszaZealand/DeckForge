@@ -1,7 +1,6 @@
 package feedback.deckforge.Service.RepoInterfaces;
 
 import feedback.deckforge.Model.TradeCollection;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Optional;
 
@@ -15,5 +14,7 @@ public interface ITradeCollectionRepository {
     void removeCardFromTradeCollection(int tradeCollectionID, int cardID);
 
     void setCardQuantity(int tradeCollectionID, int cardID, int newQuantity);
+
+    int getCardQuantity(int collectionID, int cardID);
 }
 

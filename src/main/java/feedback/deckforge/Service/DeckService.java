@@ -2,7 +2,6 @@ package feedback.deckforge.Service;
 
 import feedback.deckforge.Model.Card;
 import feedback.deckforge.Model.Deck;
-import feedback.deckforge.Model.Format;
 import feedback.deckforge.Service.RepoInterfaces.IDeckRepository;
 import feedback.deckforge.Service.Validation.DeckValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
@@ -40,7 +39,7 @@ public class DeckService {
         ValidationResult result = deckValidation.validateAddCard(currentDeck, newCard, quantity);
 
         if (!result.hasErrors()) {
-            deckRepository.addCardToDeck(currentDeck.getDeckId(), newCard.getCardId(), quantity);
+            deckRepository.addCardToDeck(currentDeck.getDeckId(), newCard.getCardID(), quantity);
 
             currentDeck.addCard(newCard, quantity);
         }

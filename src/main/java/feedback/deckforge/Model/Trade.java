@@ -11,6 +11,8 @@ public class Trade {
     private User initiator;
     private User receiver;
     private TradeStatus tradeStatus;
+    private boolean initiatorConfirmed = false;
+    private boolean receiverConfirmed = false;
     private LocalDateTime tradeDate;
     private LocalDateTime completedDate;
 
@@ -38,6 +40,12 @@ public class Trade {
 
     public TradeStatus getTradeStatus() { return tradeStatus; }
     public void setTradeStatus(TradeStatus tradeStatus) { this.tradeStatus = tradeStatus; }
+
+    public boolean isInitiatorConfirmed() { return initiatorConfirmed; }
+    public void setInitiatorConfirmed(boolean initiatorConfirmed) { this.initiatorConfirmed = initiatorConfirmed; }
+
+    public boolean isReceiverConfirmed() { return receiverConfirmed; }
+    public void setReceiverConfirmed(boolean receiverConfirmed) { this.receiverConfirmed = receiverConfirmed; }
 
     public LocalDateTime getTradeDate() { return tradeDate; }
     public void setTradeDate(LocalDateTime tradeDate) { this.tradeDate = tradeDate; }

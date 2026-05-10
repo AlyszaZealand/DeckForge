@@ -6,15 +6,7 @@ import feedback.deckforge.Model.Format;
 import feedback.deckforge.Model.Deck;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import feedback.deckforge.Model.Card;
-import feedback.deckforge.Model.Deck;
-import feedback.deckforge.Model.DeckItem;
 import feedback.deckforge.Model.Enum.CardType;
-import feedback.deckforge.Model.Format;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DeckValidation {
@@ -66,7 +58,7 @@ public class DeckValidation {
 
         for (DeckItem item : currentDeck.getDeckItems()) {
             totalDeckQty += item.getQuantity();
-            if (item.getCard().getCardId() == newCard.getCardId()) {
+            if (item.getCard().getCardID() == newCard.getCardID()) {
                 currentCardQty = item.getQuantity();
             }
         }

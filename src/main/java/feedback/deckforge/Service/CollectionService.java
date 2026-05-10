@@ -44,4 +44,26 @@ public class CollectionService {
             collectionRepository.updateCardQuantity(collectionID, cardID, newQuantity);
         }
     }
+
+    public void addOne(int userID, int cardID) {
+        int collectionId = collectionRepository.findCollectionByUserId(userID).orElseThrow().getCollectionId();
+        int qty = collectionRepository.getCardQuantity(collectionId, cardID);
+
+        if (qty > 0) {
+            collectionRepository.updateCardQuantity(collectionId, cardID, qty + 1);
+        } else {
+            collectionRepository.addCardToCollection(collectionId, cardID, 1);
+        }
+    }
+
+    public void removeOne(int userID, int cardID) {
+        int collectionId = collectionRepository.findCollectionByUserId(userID).orElseThrow().getCollectionId();
+        int qty = collectionRepository.getCardQuantity(collectionId, cardID);
+
+        if (qty > 1) {
+            collectionRepository.updateCardQuantity(collectionId, cardID, qty - 1);
+        } else {
+            collectionRepository.removeCardFromCollection(collectionId, cardID);
+        }
+    }
 }

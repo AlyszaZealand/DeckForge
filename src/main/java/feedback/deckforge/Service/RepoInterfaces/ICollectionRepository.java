@@ -6,13 +6,15 @@ import java.util.Optional;
 
 public interface ICollectionRepository {
 
-    Optional<Collection> findCollectionByUserId(int userId);
+    Optional<Collection> findCollectionByUserId(int userID);
 
-    void addCardToCollection(int collectionId, int cardId, int quantity);
+    void addCardToCollection(int collectionID, int cardID, int quantity);
 
-    void removeCardFromCollection(int collectionId, int cardId);
+    void removeCardFromCollection(int collectionID, int cardID);
 
     //hvis man har 4 kopier, men fjerner en fra sin collection
-    void updateCardQuantity(int collectionId, int cardId, int newQuantity);
+    void updateCardQuantity(int collectionID, int cardID, int newQuantity);
+
+    int getCardQuantity(int collectionID, int cardID);
 }
 
