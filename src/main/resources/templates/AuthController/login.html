@@ -11,9 +11,11 @@
 </head>
 
 <body>
+
 <div th:if="${error != null}">
     <p th:text="${error}" style="color: red; text-align: center"></p>
 </div>
+
 <main>
     <section th:insert="parts/header.html :: header"></section>
         <div class="form-container">

@@ -33,14 +33,19 @@ public class MySqlUserRepository implements IUserRepository {
     };
 
     @Override
-    public void saveUser(User user){
-        String sql = "Insert into users (username,email,password_hash) values (?,?,?)";
+    public int saveUser(User user) {
+        String sql = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)";
+        org.springframework.jdbc.support.KeyHolder keyHolder = new org.springframework.jdbc.support.GeneratedKeyHolder();
 
-        jdbcTemplate.update(sql,
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword()
-        );
+        jdbcTemplate.update(connection -> {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword()); // Dette er det hashede password fra servicen
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     @Override

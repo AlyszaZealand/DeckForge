@@ -14,8 +14,8 @@
                 <nav>
                     <a href="/">Forside</a>
                     <a href="/login">Login</a>
-                    <a href="/register">Register</a>
-                    <a href="/profil">Profil</a>
+                    <a href="/registerUser">Register</a>
+                    <a href="/profile">Profil</a>
                     <a href="/registerEvent">Event</a>
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">

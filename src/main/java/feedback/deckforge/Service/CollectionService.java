@@ -1,5 +1,6 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Exceptions.CollectionNotFoundException;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.Validation.CollectionValidation;
@@ -46,7 +47,9 @@ public class CollectionService {
     }
 
     public void addOne(int userID, int cardID) {
-        int collectionId = collectionRepository.findCollectionByUserId(userID).orElseThrow().getCollectionId();
+        int collectionId = collectionRepository.findCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
+                .getCollectionId();
         int qty = collectionRepository.getCardQuantity(collectionId, cardID);
 
         if (qty > 0) {
@@ -57,7 +60,9 @@ public class CollectionService {
     }
 
     public void removeOne(int userID, int cardID) {
-        int collectionId = collectionRepository.findCollectionByUserId(userID).orElseThrow().getCollectionId();
+        int collectionId = collectionRepository.findCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
+                .getCollectionId();
         int qty = collectionRepository.getCardQuantity(collectionId, cardID);
 
         if (qty > 1) {

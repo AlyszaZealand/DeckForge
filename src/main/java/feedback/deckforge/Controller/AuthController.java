@@ -50,7 +50,7 @@ public class AuthController {
         return "AuthController/register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registerUser")
     public String handleRegistration(@ModelAttribute User newUser, Model model){
 
         ValidationResult result = userService.registerNewUser(newUser);

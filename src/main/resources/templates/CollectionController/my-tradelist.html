@@ -1,10 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- TEMPLATE -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="description" content="Login">
+  <meta name="keywords" content="HTML, CSS">
+  <meta name="author" content="Bug Busters">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
-$END$
+
+<div th:if="${error != null}">
+  <p th:text="${error}" style="color: red; text-align: center"></p>
+</div>
+
+<main>
+  <section th:insert="parts/header.html :: header"></section>
+
+  <div th:if="${tradeCollection != null and not #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
+    <ul>
+      <li th:each="item : ${tradeCollection.tradeCollectionItems}">
+        <strong th:text="${item.card.cardName}">Card Name</strong>
+        (x<span th:text="${item.quantity}">Quantity</span>)
+
+        <form th:action="@{/removeCardFromTradeList}" method="post" style="display:inline;">
+          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+          <button type="submit">Fjern fra bytte</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+
+  <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
+    <p>Din bytteliste er tom!</p>
+  </div>
+  <!-- FIT WITH CONTROLLER -->
+
+
+  <section th:insert="parts/footer.html :: footer"></section>
+</main>
 </body>
+
 </html>

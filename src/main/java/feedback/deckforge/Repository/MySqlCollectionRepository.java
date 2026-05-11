@@ -99,6 +99,12 @@ public class MySqlCollectionRepository implements ICollectionRepository {
         }
     }
 
+    @Override
+    public void initCollection(int userID) {
+        String sql = "INSERT INTO collections (user_id) VALUES (?)";
+        jdbcTemplate.update(sql, userID);
+    }
+
 
 
 }

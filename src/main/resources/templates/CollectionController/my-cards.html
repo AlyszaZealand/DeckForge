@@ -6,5 +6,29 @@
 </head>
 <body>
 
+<div th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
+    <ul>
+        <li th:each="item : ${collection.collectionItems}">
+            <strong th:text="${item.card.cardName}">Card Name</strong>
+            (x<span th:text="${item.quantity}">Quantity</span>)
+
+            <form th:action="@{/removeCardFromCollection}" method="post" style="display:inline;">
+                <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                <button type="submit">Fjern 1</button>
+            </form>
+
+            <form th:action="@{/addCardToTradeList}" method="post" style="display:inline;">
+                <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                <button type="submit">Sæt til bytte</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
+    <p>Din samling er tom! Gå til kort-databasen for at tilføje kort.</p>
+</div>
+
+
 </body>
 </html>

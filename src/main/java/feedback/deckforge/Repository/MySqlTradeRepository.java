@@ -141,17 +141,11 @@ public class MySqlTradeRepository implements ITradeRepository {
     }
 
     @Override
-    public void updateTrade(Trade trade) {
-        String sql = "UPDATE trades SET trade_status = ?, initiator_confirmed = ?, " +
-                "receiver_confirmed = ?, completed_date = ? WHERE trade_id = ?";
+    public void updateTradeStatus(int tradeId, TradeStatus status) {
+        String sql = "UPDATE trades SET trade_status = ? WHERE trade_id = ?";
 
-        jdbcTemplate.update(sql,
-                trade.getTradeStatus().name(),
-                trade.isInitiatorConfirmed(),
-                trade.isReceiverConfirmed(),
-                trade.getCompletedDate(),
-                trade.getTradeId()
-        );
+        // Her sender vi både status-navnet og ID'et ned til databasen
+        jdbcTemplate.update(sql, status.name(), tradeId);
     }
 
     // ==========================================

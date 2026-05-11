@@ -1,7 +1,10 @@
 package feedback.deckforge.Service;
 
 import feedback.deckforge.Model.User;
+import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
+import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.IUserRepository;
+import feedback.deckforge.Service.RepoInterfaces.IWishCollectionRepository;
 import feedback.deckforge.Service.Validation.UserValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import org.mindrot.jbcrypt.BCrypt;
@@ -13,12 +16,23 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private IUserRepository userRepository;
-    private UserValidation userValidation;
+    private final IUserRepository userRepository;
+    private final UserValidation userValidation;
+    private final ICollectionRepository collectionRepository;
+    private final ITradeCollectionRepository tradeCollectionRepository;
+    private final IWishCollectionRepository wishCollectionRepository;
 
-    public UserService(IUserRepository userRepository, UserValidation userValidation) {
+
+    public UserService(IUserRepository userRepository,
+                       UserValidation userValidation,
+                       ICollectionRepository collectionRepository,
+                       ITradeCollectionRepository tradeCollectionRepository,
+                       IWishCollectionRepository wishCollectionRepository) {
         this.userRepository = userRepository;
         this.userValidation = userValidation;
+        this.collectionRepository = collectionRepository;
+        this.tradeCollectionRepository = tradeCollectionRepository;
+        this.wishCollectionRepository = wishCollectionRepository;
     }
 
     public List<User> getAllUsers(){
@@ -36,35 +50,36 @@ public class UserService {
         return userRepository.findUserByID(userID);
     }
 
-    public void saveUser(User user){
-        userRepository.saveUser(user);
-    }
-
     public void deleteUser(User user){
         userRepository.deleteUser(user.getUserID());
     }
 
 
-    public ValidationResult registerNewUser(User newUser){
-
+    public ValidationResult registerNewUser(User newUser) {
         ValidationResult result = userValidation.validateRegisterUser(newUser);
 
-        // 1. Return early if basic validation fails
         if (result.hasErrors()){
             return result;
         }
 
-        // 2. Check if email is already taken
+        // Tjek email som før...
         Optional<User> existingUser = userRepository.findUserByEmail(newUser.getEmail());
         if (existingUser.isPresent()){
             result.addError("Denne e-mail er allerede i brug");
             return result;
         }
 
-        // 3. Hash password and save
+        // 1. Hash password
         String hashedPassword = BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt());
         newUser.setPassword(hashedPassword);
-        userRepository.saveUser(newUser);
+
+        // 2. Gem brugeren og få det nye ID
+        int newUserId = userRepository.saveUser(newUser);
+
+        // 3. Opret de tre tomme samlinger med det samme
+        collectionRepository.initCollection(newUserId);
+        tradeCollectionRepository.initTradeCollection(newUserId);
+        wishCollectionRepository.initWishCollection(newUserId);
 
         return result;
     }

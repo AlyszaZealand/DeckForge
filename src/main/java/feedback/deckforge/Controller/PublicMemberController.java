@@ -9,17 +9,16 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class MemberController {
+public class PublicMemberController {
 
     private UserService userService;
     private CollectionService collectionService;
     private TradeCollectionService tradeCollectionService;
     private WishCollectionService wishCollectionService;
 
-    public MemberController(UserService userService, CollectionService collectionService, TradeCollectionService tradeCollectionService
+    public PublicMemberController(UserService userService, CollectionService collectionService, TradeCollectionService tradeCollectionService
                         , WishCollectionService wishCollectionService) {
         this.userService = userService;
         this.collectionService = collectionService;
@@ -27,24 +26,9 @@ public class MemberController {
         this.wishCollectionService = wishCollectionService;
     }
 
-    @GetMapping("/profile")
-    public String showProfilePage(HttpSession session, Model model){
-
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-
-        if(loggedInUser == null){
-            return "redirect:/login";
-        }
-
-        model.addAttribute("loggedInUser",loggedInUser);
-        return "UserController/profile";
-    }
 
 
-    /*@PostMapping("/profile")
-    public String handleGoToCollectionPage(){
-        return "CollectionController/collection-hub";
-    }*/
+
 
 
 

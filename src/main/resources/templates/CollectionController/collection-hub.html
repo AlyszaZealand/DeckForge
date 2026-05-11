@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Collection Hub - Deck Forge</title>
 </head>
 <body>
+
+<section th:insert="~{parts/header.html :: header}"></section>
+
+<main class="container">
+    <h1>Collection Hub</h1>
+    <p>Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
+
+    <hr>
+
+    <div class="hub-menu">
+
+        <div>
+            <h2>Mine Kort</h2>
+            <a th:href="@{/myCards}">
+                <button type="button">Gå til Mine Kort</button>
+            </a>
+        </div>
+
+        <div>
+            <h2>Min Tradelist</h2>
+            <a th:href="@{/myTradeList}">
+                <button type="button">Gå til Tradelist</button>
+            </a>
+        </div>
+
+        <div>
+            <h2>Min Wishlist</h2>
+            <a th:href="@{/myWishCollection}">
+                <button type="button">Gå til Wishlist</button>
+            </a>
+        </div>
+
+        <div>
+            <h2>Mine Decks</h2>
+            <a th:href="@{/myDecks}">
+                <button type="button">Gå til Mine Decks</button>
+            </a>
+        </div>
+
+    </div>
+</main>
 
 </body>
 </html>

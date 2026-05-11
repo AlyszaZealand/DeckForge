@@ -1,5 +1,6 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Exceptions.TradeNotFoundException;
 import feedback.deckforge.Model.Card;
 import feedback.deckforge.Model.Enum.TradeStatus;
 import feedback.deckforge.Model.Trade;
@@ -47,36 +48,41 @@ public class TradeService {
     // ==========================================
     // 2. ACCEPTER ELLER AFVIS
     // ==========================================
-    public void respondToTrade(int tradeID, boolean isAccepted) {
-        Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow();
-
-        // Validering: Man kan kun svare på et bytte, der er PENDING
-        if (trade.getTradeStatus() != TradeStatus.PENDING) {
-            return; // Eller smid en fejl
-        }
+    public void respondToTrade(int tradeId, boolean isAccepted) {
+        Trade trade = tradeRepository.findTradeById(tradeId).orElseThrow(() -> new TradeNotFoundException("Byttehandlen kunne ikke findes"));
 
         if (isAccepted) {
             trade.setTradeStatus(TradeStatus.ACCEPTED);
 
-            // RESERVATION: Flyt logikken til de respektive services
+            // NYT: Reserver kortene fra begge parter (Mængden er altid 1 pr. kort i listen)
             for (Card card : trade.getOfferedCards()) {
-                tradeCollectionService.removeOne(trade.getInitiator().getUserID(), card.getCardID());
+                tradeCollectionService.reserveCardsFromTradeCollection(trade.getInitiator().getUserID(), card.getCardID(), 1);
             }
             for (Card card : trade.getRequestedCards()) {
-                tradeCollectionService.removeOne(trade.getReceiver().getUserID(), card.getCardID());
+                tradeCollectionService.reserveCardsFromTradeCollection(trade.getReceiver().getUserID(), card.getCardID(), 1);
             }
+
         } else {
-            trade.setTradeStatus(TradeStatus.DECLINED);
-            trade.setCompletedDate(LocalDateTime.now());
+            // Hvis handlen var ACCEPTED før, og nu annulleres, lægges kortene tilbage (Return)
+            if (trade.getTradeStatus() == TradeStatus.ACCEPTED) {
+                for (Card card : trade.getOfferedCards()) {
+                    tradeCollectionService.returnCardsToTradeCollection(trade.getInitiator().getUserID(), card.getCardID(), 1);
+                }
+                for (Card card : trade.getRequestedCards()) {
+                    tradeCollectionService.returnCardsToTradeCollection(trade.getReceiver().getUserID(), card.getCardID(), 1);
+                }
+            }
+            trade.setTradeStatus(TradeStatus.CANCELLED);
         }
-        tradeRepository.updateTrade(trade);
+
+        tradeRepository.updateTradeStatus(tradeId, trade.getTradeStatus());
     }
 
     // ==========================================
     // 3. ANNULLER BYTTE
     // ==========================================
     public void cancelTrade(int tradeID) {
-        Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow();
+        Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow(() -> new TradeNotFoundException("Byttehandlen kunne ikke findes"));
 
         // Validering: Man kan ikke annullere et bytte, der er afvist eller allerede færdigt
         if (trade.getTradeStatus() == TradeStatus.DECLINED || trade.getTradeStatus() == TradeStatus.COMPLETED) {
@@ -95,14 +101,14 @@ public class TradeService {
 
         trade.setTradeStatus(TradeStatus.CANCELLED);
         trade.setCompletedDate(LocalDateTime.now());
-        tradeRepository.updateTrade(trade);
+        tradeRepository.updateTradeStatus(tradeID, trade.getTradeStatus());
     }
 
     // ==========================================
     // 4. FÆRDIGGØR IRL BYTTE
     // ==========================================
     public void finalizeTrade(int tradeID, int userID) {
-        Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow();
+        Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow(() -> new TradeNotFoundException("Byttehandlen kunne ikke findes"));
 
         // Validering: Kun muligt hvis handlen er ACCEPTED eller WAITING_FOR_PARTNER
         if (trade.getTradeStatus() != TradeStatus.ACCEPTED && trade.getTradeStatus() != TradeStatus.WAITING_FOR_PARTNER) {
@@ -123,15 +129,17 @@ public class TradeService {
             for (Card card : trade.getOfferedCards()) {
                 collectionService.removeOne(trade.getInitiator().getUserID(), card.getCardID());
                 collectionService.addOne(trade.getReceiver().getUserID(), card.getCardID());
+                tradeCollectionService.syncTradeCollectionWithPrivateCollection(trade.getInitiator().getUserID(), card.getCardID());
             }
             for (Card card : trade.getRequestedCards()) {
                 collectionService.removeOne(trade.getReceiver().getUserID(), card.getCardID());
                 collectionService.addOne(trade.getInitiator().getUserID(), card.getCardID());
+                tradeCollectionService.syncTradeCollectionWithPrivateCollection(trade.getInitiator().getUserID(), card.getCardID());
             }
         } else {
             trade.setTradeStatus(TradeStatus.WAITING_FOR_PARTNER);
         }
-        tradeRepository.updateTrade(trade);
+        tradeRepository.updateTradeStatus(tradeID, trade.getTradeStatus());
     }
 
     // ==========================================

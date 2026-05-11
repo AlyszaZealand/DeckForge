@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS deckforge_db;
-USE deckforge_db;
+-- CREATE DATABASE IF NOT EXISTS deckforge_db;
+-- USE deckforge_db;
 
 -- ==========================================
 -- 1. IDENTITET & KATALOG

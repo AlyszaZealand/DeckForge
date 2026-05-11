@@ -13,4 +13,6 @@ public interface IWishCollectionRepository {
     void addCardToWishCollection(int wishCollectionID, int cardID);
 
     void removeCardFromWishCollection(int wishCollectionID, int cardID);
+
+    void initWishCollection(int userID);
 }

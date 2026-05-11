@@ -1,5 +1,6 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Exceptions.CollectionNotFoundException;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Model.TradeCollection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
@@ -67,6 +68,65 @@ public class TradeCollectionService {
         } else {
             tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
         }
+    }
+
+    public void syncTradeCollectionWithPrivateCollection(int userID, int cardID) {
+        // Hent ID'er for brugerens lister
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde byttelisten for bruger ID: " + userID))
+                .getTradeCollectionId();
+        int collectionId = collectionRepository.findCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde den private samling for bruger ID: " + userID))
+                .getCollectionId();
+
+        // Hent antallet på byttelisten og i den private samling
+        int tradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
+        int ownedQty = collectionRepository.getCardQuantity(collectionId, cardID);
+
+        // Auto-Sync : Er der sat flere til bytte, end brugeren ejer?
+        if (tradeQty > ownedQty) {
+            if (ownedQty <= 0) {
+                // Hvis brugeren slet ikke ejer kortet mere (f.eks. byttet væk), fjernes det helt
+                tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
+            } else {
+                // Ellers sættes mængden på byttelisten ned til det faktiske antal, de ejer (f.eks. fra 4 til 1)
+                tradeCollectionRepository.setCardQuantity(tradeColId, cardID, ownedQty);
+            }
+        }
+    }
+
+   //reservation
+    public void reserveCardsFromTradeCollection(int userID, int cardID, int quantityToReserve) {
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke reservere kort: Bytteliste ikke fundet for bruger ID: " + userID))
+                .getTradeCollectionId();
+        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
+
+        // Regner ud hvor mange der skal være tilbage (Sikrer at vi ikke går i minus)
+        int newTradeQty = Math.max(0, currentTradeQty - quantityToReserve);
+
+        if (newTradeQty == 0) {
+            tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
+        } else {
+            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, newTradeQty);
+        }
+    }
+
+    // Annullering
+    public void returnCardsToTradeCollection(int userID, int cardID, int quantityToReturn) {
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke returnere kort: Bytteliste ikke fundet for bruger ID: " + userID))
+                .getTradeCollectionId();
+        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
+
+        if (currentTradeQty > 0) {
+            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, currentTradeQty + quantityToReturn);
+        } else {
+            tradeCollectionRepository.addCardToTradeCollection(tradeColId, cardID, quantityToReturn);
+        }
+
+        // Vi kører en auto-sync til sidst for at sikre, at vi ikke har lagt flere tilbage, end de ejer!
+        syncTradeCollectionWithPrivateCollection(userID, cardID);
     }
 
 
