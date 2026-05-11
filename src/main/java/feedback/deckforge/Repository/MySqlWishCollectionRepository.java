@@ -42,7 +42,7 @@ public class MySqlWishCollectionRepository implements IWishCollectionRepository 
 
             jdbcTemplate.query(itemsSql, rs -> {
                 Card card = new Card();
-                card.setCardId(rs.getInt("card_id"));
+                card.setCardID(rs.getInt("card_id"));
                 card.setCardName(rs.getString("card_name"));
                 card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
                 card.setCardType(CardType.valueOf(rs.getString("card_type")));

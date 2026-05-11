@@ -45,7 +45,7 @@ public class MySqlUserRepository implements IUserRepository {
 
     @Override
     public void deleteUser(int userID){
-        String sql = "Delete from users where id=?";
+        String sql = "Delete from users where user_id=?";
 
         jdbcTemplate.update(sql, userID);
     }
