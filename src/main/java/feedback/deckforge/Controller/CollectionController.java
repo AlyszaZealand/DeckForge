@@ -65,29 +65,38 @@ public class CollectionController {
     }
 
     @PostMapping("/addCardToCollection")
-    public String handleAddCardToCollection(@RequestParam int cardID, HttpSession session) {
+    public String handleAddCardToCollection(@RequestParam int cardID, @RequestParam(defaultValue = "false") boolean searchCatalog, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) return "redirect:/login";
 
-        int collectionID = collectionService.findCollectionByUserId(loggedInUser.getUserID())
-                .orElseThrow(() -> new CollectionNotFoundException("Samling ikke fundet"))
-                .getCollectionId();
-
+        int collectionID = collectionService.findCollectionByUserId(loggedInUser.getUserID()).get().getCollectionId();
         collectionService.addCardToCollection(collectionID, cardID, 1);
-        return "redirect:/myCards";
+
+        // Sender dig tilbage til den fane, du var på!
+        return "redirect:/myCards?searchCatalog=" + searchCatalog;
     }
 
     @PostMapping("/removeCardFromCollection")
-    public String handleRemoveCardFromCollection(@RequestParam int cardID, HttpSession session) {
+    public String handleRemoveCardFromCollection(@RequestParam int cardID, @RequestParam(defaultValue = "false") boolean searchCatalog, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) return "redirect:/login";
 
-        int collectionID = collectionService.findCollectionByUserId(loggedInUser.getUserID())
-                .orElseThrow(() -> new CollectionNotFoundException("Samling ikke fundet"))
-                .getCollectionId();
-
+        int collectionID = collectionService.findCollectionByUserId(loggedInUser.getUserID()).get().getCollectionId();
         collectionService.removeCardFromCollection(collectionID, cardID);
-        return "redirect:/myCards";
+
+        // Sender dig tilbage til den fane, du var på!
+        return "redirect:/myCards?searchCatalog=" + searchCatalog;
+    }
+
+    @PostMapping("/decreaseCardQuantity")
+    public String handleDecreaseCardQuantity(@RequestParam int cardID, @RequestParam(defaultValue = "false") boolean searchCatalog, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/login";
+
+        int collectionID = collectionService.findCollectionByUserId(loggedInUser.getUserID()).get().getCollectionId();
+        collectionService.decreaseCardQuantity(collectionID, cardID);
+
+        return "redirect:/myCards?searchCatalog=" + searchCatalog;
     }
 }
 

@@ -129,5 +129,9 @@ public class TradeCollectionService {
         syncTradeCollectionWithPrivateCollection(userID, cardID);
     }
 
+    public void decreaseCardQuantity(int tradeCollectionID, int cardID) {
+        collectionRepository.decreaseCardQuantity(tradeCollectionID, cardID);
+    }
+
 
 }

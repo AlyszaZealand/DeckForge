@@ -120,8 +120,13 @@ public class MySqlCardRepository implements ICardRepository {
             params.add(rarity);
         }
         if (color != null && !color.trim().isEmpty()) {
-            sql.append(" AND color_identity LIKE ?");
-            params.add("%" + color + "%");
+            // NYT: Hvis man søger på "C" (Colorless), skal den lede efter tomme felter
+            if (color.equals("C")) {
+                sql.append(" AND (color_identity = '' OR color_identity IS NULL)");
+            } else {
+                sql.append(" AND color_identity LIKE ?");
+                params.add("%" + color + "%");
+            }
         }
     }
 

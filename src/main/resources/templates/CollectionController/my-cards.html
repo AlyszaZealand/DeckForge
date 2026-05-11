@@ -18,22 +18,13 @@
 
     <div class="filter-menu">
         <form th:action="@{/myCards}" method="get">
-
             <div class="radio-toggles">
-                <label>
-                    <input type="radio" name="searchCatalog" value="true" th:checked="${searchCatalog}">
-                    Søg i Katalog (Find nye kort)
-                </label>
-                <label>
-                    <input type="radio" name="searchCatalog" value="false" th:checked="${!searchCatalog}">
-                    Filtrér min samling
-                </label>
+                <label><input type="radio" name="searchCatalog" value="true" th:checked="${searchCatalog}"> Søg i Katalog</label>
+                <label><input type="radio" name="searchCatalog" value="false" th:checked="${!searchCatalog}"> Filtrér min samling</label>
             </div>
-
             <br>
 
             <input type="text" name="cardName" placeholder="Søg på kortnavn...">
-
             <select name="rarity">
                 <option value="">Alle Sjældenheder</option>
                 <option value="COMMON">Common</option>
@@ -41,7 +32,6 @@
                 <option value="RARE">Rare</option>
                 <option value="MYTHICRARE">Mythic Rare</option>
             </select>
-
             <select name="color">
                 <option value="">Alle Farver</option>
                 <option value="W">Hvid (W)</option>
@@ -52,8 +42,8 @@
                 <option value="C">Farveløs (C)</option>
             </select>
 
-            <button type="submit">Udfør</button>
-            <a th:href="@{/myCards}">Nulstil</a>
+            <button type="submit" style="background-color: #2c3e50; color: white; padding: 5px 15px; cursor: pointer;">Søg</button>
+            <a th:href="@{/myCards}" style="margin-left: 10px;">Nulstil</a>
         </form>
     </div>
 
@@ -71,6 +61,9 @@
 
                     <form th:action="@{/addCardToCollection}" method="post">
                         <input type="hidden" name="cardID" th:value="${card.cardID}" />
+
+                        <input type="hidden" name="searchCatalog" th:value="${searchCatalog}" />
+
                         <button type="submit">Tilføj til samling</button>
                     </form>
                 </li>
@@ -85,20 +78,35 @@
         <h2>Kort i din samling</h2>
 
         <div th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
-            <ul>
-                <li th:each="item : ${collection.collectionItems}">
-                    <strong th:text="${item.card.cardName}">Kortnavn</strong>
-                    (Antal: <span th:text="${item.quantity}"></span>)
-                    - Farve: <span th:text="${item.card.colorIdentity != '' ? item.card.colorIdentity : 'Farveløs'}"></span>,
-                    Sjældenhed: <span th:text="${item.card.cardRarity}"></span>
+            <li th:each="item : ${collection.collectionItems}">
+                <strong th:text="${item.card.cardName}">Kortnavn</strong>
+                - Farve: <span th:text="${item.card.colorIdentity != '' ? item.card.colorIdentity : 'Farveløs'}"></span>,
+                Sjældenhed: <span th:text="${item.card.cardRarity}"></span>
 
-                    <form th:action="@{/removeCardFromCollection}" method="post">
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+
+                    <form th:action="@{/decreaseCardQuantity}" method="post">
                         <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                        <button type="submit">Fjern</button>
+                        <input type="hidden" name="searchCatalog" th:value="${searchCatalog}" />
+                        <button type="submit" style="padding: 2px 8px; font-weight: bold;">-</button>
                     </form>
-                </li>
-            </ul>
-        </div>
+
+                    <span>Antal: <strong th:text="${item.quantity}"></strong></span>
+
+                    <form th:action="@{/addCardToCollection}" method="post">
+                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                        <input type="hidden" name="searchCatalog" th:value="${searchCatalog}" />
+                        <button type="submit" style="padding: 2px 8px; font-weight: bold;">+</button>
+                    </form>
+
+                    <form th:action="@{/removeCardFromCollection}" method="post" style="margin-left: 15px;">
+                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                        <input type="hidden" name="searchCatalog" th:value="${searchCatalog}" />
+                        <button type="submit" style="background-color: #e74c3c; color: white;">Fjern alle</button>
+                    </form>
+
+                </div>
+            </li>
         <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
             <p>Ingen kort i samlingen matcher din søgning, eller din samling er tom.</p>
         </div>

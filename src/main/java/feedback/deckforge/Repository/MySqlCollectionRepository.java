@@ -100,6 +100,16 @@ public class MySqlCollectionRepository implements ICollectionRepository {
     }
 
     @Override
+    public void decreaseCardQuantity(int collectionID, int cardID) {
+        String sql = "UPDATE collection_items SET quantity = quantity - 1 WHERE collection_id = ? AND card_id = ?";
+        jdbcTemplate.update(sql, collectionID, cardID);
+
+        // Ryd op, hvis antallet rammer 0 eller under
+        String deleteSql = "DELETE FROM collection_items WHERE collection_id = ? AND card_id = ? AND quantity <= 0";
+        jdbcTemplate.update(deleteSql, collectionID, cardID);
+    }
+
+    @Override
     public void initCollection(int userID) {
         String sql = "INSERT INTO collections (user_id) VALUES (?)";
         jdbcTemplate.update(sql, userID);

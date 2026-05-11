@@ -71,33 +71,57 @@ public class TradeCollectionController {
     }
 
     @PostMapping("/addCardToTradeList")
-    public String handleAddCardToTradeCollection(@RequestParam int cardID, HttpSession session, RedirectAttributes redirectAttributes) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) return "redirect:/login";
+    public String handleAddCardToTradeCollection(
+            @RequestParam int cardID,
+            @RequestParam(required = false) String cardName,
+            @RequestParam(required = false) String rarity,
+            @RequestParam(required = false) String color,
+            HttpSession session) {
 
-        int tradeColID = tradeCollectionService.getTradeCollectionByUserID(loggedInUser.getUserID())
-                .orElseThrow(() -> new CollectionNotFoundException("Bytteliste ikke fundet"))
-                .getTradeCollectionId();
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) return "redirect:/login";
 
-        ValidationResult result = tradeCollectionService.addCardToTradeCollection(loggedInUser.getUserID(), tradeColID, cardID, 1);
+        int tradeColID = tradeCollectionService.getTradeCollectionByUserID(user.getUserID()).get().getTradeCollectionId();
+        tradeCollectionService.addCardToTradeCollection(user.getUserID(), tradeColID, cardID, 1);
 
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", result.getErrors().get(0));
-        }
+        // Sender filter-parametre med tilbage i URL'en
+        return String.format("redirect:/myTradeList?cardName=%s&rarity=%s&color=%s",
+                cardName != null ? cardName : "", rarity != null ? rarity : "", color != null ? color : "");
+    }
 
-        return "redirect:/myTradeList";
+    @PostMapping("/decreaseTradeCardQuantity")
+    public String handleDecreaseTradeCardQuantity(
+            @RequestParam int cardID,
+            @RequestParam(required = false) String cardName,
+            @RequestParam(required = false) String rarity,
+            @RequestParam(required = false) String color,
+            HttpSession session) {
+
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) return "redirect:/login";
+
+        int tradeColID = tradeCollectionService.getTradeCollectionByUserID(user.getUserID()).get().getTradeCollectionId();
+        tradeCollectionService.decreaseCardQuantity(tradeColID, cardID);
+
+        return String.format("redirect:/myTradeList?cardName=%s&rarity=%s&color=%s",
+                cardName != null ? cardName : "", rarity != null ? rarity : "", color != null ? color : "");
     }
 
     @PostMapping("/removeCardFromTradeList")
-    public String handleRemoveCardFromTradeCollection(@RequestParam int cardID, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) return "redirect:/login";
+    public String handleRemoveCardFromTradeCollection(
+            @RequestParam int cardID,
+            @RequestParam(required = false) String cardName,
+            @RequestParam(required = false) String rarity,
+            @RequestParam(required = false) String color,
+            HttpSession session) {
 
-        int tradeColID = tradeCollectionService.getTradeCollectionByUserID(loggedInUser.getUserID())
-                .orElseThrow(() -> new CollectionNotFoundException("Bytteliste ikke fundet"))
-                .getTradeCollectionId();
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) return "redirect:/login";
 
+        int tradeColID = tradeCollectionService.getTradeCollectionByUserID(user.getUserID()).get().getTradeCollectionId();
         tradeCollectionService.removeCardFromTradeCollection(tradeColID, cardID);
-        return "redirect:/myTradeList";
+
+        return String.format("redirect:/myTradeList?cardName=%s&rarity=%s&color=%s",
+                cardName != null ? cardName : "", rarity != null ? rarity : "", color != null ? color : "");
     }
 }

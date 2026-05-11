@@ -91,10 +91,21 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
     }
 
     @Override
+    public void decreaseCardQuantity(int tradeCollectionId, int cardId) {
+        String sql = "UPDATE tradecollection_items SET quantity = quantity - 1 WHERE tradecollection_id = ? AND card_id = ?";
+        jdbcTemplate.update(sql, tradeCollectionId, cardId);
+
+        // Slet kortet hvis antallet rammer 0
+        String deleteSql = "DELETE FROM tradecollection_items WHERE tradecollection_id = ? AND card_id = ? AND quantity <= 0";
+        jdbcTemplate.update(deleteSql, tradeCollectionId, cardId);
+    }
+
+    @Override
     public void initTradeCollection(int userID) {
         String sql = "INSERT INTO tradecollections (user_id) VALUES (?)";
         jdbcTemplate.update(sql, userID);
     }
+
 
 
 }

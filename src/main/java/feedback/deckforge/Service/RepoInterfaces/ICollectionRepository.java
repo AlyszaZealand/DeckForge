@@ -18,5 +18,7 @@ public interface ICollectionRepository {
     int getCardQuantity(int collectionID, int cardID);
 
     void initCollection(int userID);
+
+    void decreaseCardQuantity(int collectionID, int cardID);
 }
 

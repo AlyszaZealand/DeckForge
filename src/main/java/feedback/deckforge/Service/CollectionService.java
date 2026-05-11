@@ -71,4 +71,8 @@ public class CollectionService {
             collectionRepository.removeCardFromCollection(collectionId, cardID);
         }
     }
+
+    public void decreaseCardQuantity(int collectionId, int cardId) {
+        collectionRepository.decreaseCardQuantity(collectionId, cardId);
+    }
 }

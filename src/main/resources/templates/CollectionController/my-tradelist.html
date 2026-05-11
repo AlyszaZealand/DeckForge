@@ -38,8 +38,8 @@
         <option value="C">Farveløs (C)</option>
       </select>
 
-      <button type="submit">Filtrér</button>
-      <a th:href="@{/myTradeList}">Nulstil</a>
+      <button type="submit" style="background-color: #2c3e50; color: white; padding: 5px 15px; cursor: pointer;">Søg</button>
+      <a th:href="@{/myTradeList}" style="margin-left: 10px;">Nulstil</a>
     </form>
   </div>
 
@@ -47,19 +47,40 @@
 
   <h2>Dine byttekort</h2>
   <div th:if="${tradeCollection != null and not #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
-    <ul>
-      <li th:each="item : ${tradeCollection.tradeCollectionItems}">
-        <strong th:text="${item.card.cardName}">Kortnavn</strong>
-        (Antal: <span th:text="${item.quantity}"></span>)
-        - Farve: <span th:text="${item.card.colorIdentity != '' ? item.card.colorIdentity : 'Farveløs'}"></span>,
-        Sjældenhed: <span th:text="${item.card.cardRarity}"></span>
+    <li th:each="item : ${tradeCollection.tradeCollectionItems}">
+      <strong th:text="${item.card.cardName}">Kortnavn</strong>
+      - Farve: <span th:text="${item.card.colorIdentity != '' ? item.card.colorIdentity : 'Farveløs'}"></span>,
+      Sjældenhed: <span th:text="${item.card.cardRarity}"></span>
 
-        <form th:action="@{/removeCardFromTradeList}" method="post">
+      <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+
+        <form th:action="@{/decreaseTradeCardQuantity}" method="post">
           <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-          <button type="submit">Fjern fra bytteliste</button>
+          <input type="hidden" name="cardName" th:value="${param.cardName}" />
+          <input type="hidden" name="rarity" th:value="${param.rarity}" />
+          <input type="hidden" name="color" th:value="${param.color}" />
+          <button type="submit">-</button>
         </form>
-      </li>
-    </ul>
+
+        <span>Antal: <strong th:text="${item.quantity}"></strong></span>
+
+        <form th:action="@{/addCardToTradeList}" method="post">
+          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+          <input type="hidden" name="cardName" th:value="${param.cardName}" />
+          <input type="hidden" name="rarity" th:value="${param.rarity}" />
+          <input type="hidden" name="color" th:value="${param.color}" />
+          <button type="submit">+</button>
+        </form>
+
+        <form th:action="@{/removeCardFromTradeList}" method="post" style="margin-left: 15px;">
+          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+          <input type="hidden" name="cardName" th:value="${param.cardName}" />
+          <input type="hidden" name="rarity" th:value="${param.rarity}" />
+          <input type="hidden" name="color" th:value="${param.color}" />
+          <button type="submit" style="background-color: #e74c3c; color: white;">Fjern helt</button>
+        </form>
+      </div>
+    </li>
   </div>
 
   <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
