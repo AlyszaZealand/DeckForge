@@ -9,14 +9,14 @@ DROP TABLE IF EXISTS collection_items;
 DROP TABLE IF EXISTS tradecollection_items;
 DROP TABLE IF EXISTS wishcollection_items;
 DROP TABLE IF EXISTS deck_items;
-DROP TABLE IF EXISTS event_registrations
+DROP TABLE IF EXISTS event_registrations;
 DROP TABLE IF EXISTS trade_items;
 DROP TABLE IF EXISTS trades;
 DROP TABLE IF EXISTS decks;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS collections;
-DROP TABLE IF EXISTS trade_collections;
-DROP TABLE IF EXISTS wish_collections;
+DROP TABLE IF EXISTS tradecollections;
+DROP TABLE IF EXISTS wishcollections;
 DROP TABLE IF EXISTS cards;
 DROP TABLE IF EXISTS formats;
 DROP TABLE IF EXISTS users;

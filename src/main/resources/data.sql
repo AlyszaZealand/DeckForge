@@ -6,7 +6,7 @@
 INSERT INTO users (username, email, password_hash, user_role) VALUES
                                                                   ('AdminAnders', 'anders@deckforge.dk', '$2a$10$ba3ML9Sh/vaILC6oywLzEOEI1DY2VrDeGSUVUCZZqVB0fWxUTQy/6', 'ADMIN'),
                                                                   ('EventEva', 'eva@deckforge.dk', 'event123', 'ORGANIZER'),
-                                                                  ('SpillerSøren', 'søren@deckforge.dk', '$2a$10$mwgqBHg3o8QeP1dxEhfEfej9/jdbf2ZMhWhNnv5AD/FSD3wMOHkP6', 'MEMBER'), // kode spiller123
+                                                                  ('SpillerSøren', 'soren@deckforge.dk', '$2a$10$mwgqBHg3o8QeP1dxEhfEfej9/jdbf2ZMhWhNnv5AD/FSD3wMOHkP6', 'MEMBER'), -- kode spiller123
                                                                   ('KortKaj', 'kaj@deckforge.dk', '$2a$10$wS63DEbMVNo4PvYjJs4YXebI.QCraVJV5GzJGsWBkcdf1Kvz76WIi', 'MEMBER');
 
 
@@ -30,6 +30,16 @@ INSERT INTO formats (format_name, min_deck_size, max_deck_size, max_copies_of_ca
 INSERT INTO collections (user_id) VALUES
                                       (3), -- Samling ID 1 tilhører SpillerSøren
                                       (4); -- Samling ID 2 tilhører KortKaj
+
+-- Opret Byttelister (TILFØJ DISSE)
+INSERT INTO tradecollections (user_id) VALUES
+                                           (3),
+                                           (4);
+
+-- Opret Ønskelister (TILFØJ DISSE)
+INSERT INTO wishcollections (user_id) VALUES
+                                          (3),
+                                          (4);
 
 -- 5. Fyld kort i samlingerne (Fjernet 'card_condition' da det ikke findes i tabellen)
 INSERT INTO collection_items (collection_id, card_id, quantity) VALUES

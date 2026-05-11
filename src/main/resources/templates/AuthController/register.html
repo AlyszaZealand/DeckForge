@@ -15,20 +15,11 @@
 </div>
 
 <div class="form-container">
-    <form action="/registerUser" method="post">
-        <label>Navn:</label><br>
-        <input type="text" name="username"><br><br>
-
-        <label>E-mail:</label><br>
-        <input type="text" name="email"><br><br>
-
-        <label>Adgangskode:</label><br>
-        <input type="password" name="password"><br><br>
-
-        <label>Beskrivelse:</label><br>
-        <textarea name="memberDescription" rows="3"></textarea><br><br>
-
-        <button type="submit">Opret</button>
+    <form th:action="@{/register}" th:object="${user}" method="post">
+        <input type="text" th:field="*{username}" placeholder="Brugernavn">
+        <input type="email" th:field="*{email}" placeholder="Email">
+        <input type="password" th:field="*{password}" placeholder="Adgangskode">
+        <button type="submit">Opret Bruger</button>
     </form>
     <button onclick="window.location.href='/login'" class="back-button" style="margin-top: 10px;">Gå til Login</button>
 </div>

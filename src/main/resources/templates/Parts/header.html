@@ -6,27 +6,22 @@
 
 <body>
     <section th:fragment="header">
-        <header class="website-header"> <!-- Naming for css styling -->
-            <div class="container"> <!-- Container for header content, for css styling -->
-                <h1>Deck Forge</h1>
+        <header th:fragment="header">
+            <nav>
+                <a th:href="@{/}">Forside</a>
+                <a th:href="@{/events}">Events</a>
+                <a th:href="@{/my-decks}">Mine Decks</a>
+                <a th:href="@{/collectionPage}">Samling</a>
+                <a th:href="@{/trade-search}">Bytte-Søgning</a>
+                <a th:href="@{/profile}">Profil</a>
 
-                <!-- POSSIBLE <nav class="website-navigation"> -->
-                <nav>
-                    <a href="/">Forside</a>
-                    <a href="/login">Login</a>
-                    <a href="/registerUser">Register</a>
-                    <a href="/profile">Profil</a>
-                    <a href="/registerEvent">Event</a>
-
-                    <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
-                        <a href="/addCard">Tilføj Kort</a>
-                        <a href="/addFormat">Tilføj Format</a>
-                    </th:block>
-                    <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}">
-                        <a href="/createEvent">Tilføj Event</a>
-                    </th:block>
-                </nav>
-            </div>
+                <span th:if="${session.loggedInUser == null}">
+            <a th:href="@{/login}">Login</a>
+        </span>
+                <span th:if="${session.loggedInUser != null}">
+            <a th:href="@{/logout}">Logout</a>
+        </span>
+            </nav>
         </header>
     </section>
 </body>

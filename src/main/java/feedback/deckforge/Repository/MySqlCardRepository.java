@@ -86,8 +86,8 @@ public class MySqlCardRepository implements ICardRepository {
     public List<Card> searchTradeCards(int userId, String name, String rarity, String color) {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.* FROM cards c " +
-                        "JOIN trade_collection_items tci ON c.card_id = tci.card_id " +
-                        "JOIN trade_collections tc ON tci.trade_collection_id = tc.trade_collection_id " +
+                        "JOIN tradecollection_items tci ON c.card_id = tci.card_id " +
+                        "JOIN tradecollections tc ON tci.tradecollection_id = tc.tradecollection_id " +
                         "WHERE tc.user_id = ?"
         );
         List<Object> params = new ArrayList<>();
@@ -100,8 +100,8 @@ public class MySqlCardRepository implements ICardRepository {
     public List<Card> searchWishlistCards(int userId, String name, String rarity, String color) {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.* FROM cards c " +
-                        "JOIN wish_collection_items wci ON c.card_id = wci.card_id " +
-                        "JOIN wish_collections wc ON wci.wish_collection_id = wc.wish_collection_id " +
+                        "JOIN wishcollection_items wci ON c.card_id = wci.card_id " +
+                        "JOIN wishcollections wc ON wci.wishcollection_id = wc.wishcollection_id " +
                         "WHERE wc.user_id = ?"
         );
         List<Object> params = new ArrayList<>();

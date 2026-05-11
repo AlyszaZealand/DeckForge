@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title th:text="${event.eventName}">Event Details</title>
 </head>
@@ -12,15 +12,19 @@
 
 <hr>
 
-<div>
-  <form th:if="${!isAttending}" th:action="@{/events/{id}/signup(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
-    <button type="submit">Sign Up for Event</button>
-  </form>
+<div th:if="${session.loggedInUser != null}">
+  <div th:if="${!isAttending}">
+    <form th:action="@{/events/{id}/signup(id=${event.getEventId()})}" method="post">
+      <button type="submit">Tilmeld mig dette event</button>
+    </form>
+  </div>
 
-  <form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
-    <button type="submit">Leave Event</button>
-    <p><em>You are signed up for this event!</em></p>
-  </form>
+  <div th:if="${isAttending}">
+    <p>Du er tilmeldt dette event!</p>
+    <form th:action="@{/events/{id}/remove(id=${event.getEventId()})}" method="post">
+      <button type="submit">Afmeld</button>
+    </form>
+  </div>
 </div>
 
 <hr>

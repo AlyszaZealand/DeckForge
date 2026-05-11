@@ -23,7 +23,7 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
 
     public Optional<TradeCollection> findTradeCollectionByUserId(int userID){
         try {
-            String sql = "SELECT tradecollection_id FROM tradecollections WHERE user_id = ?";
+            String sql = "SELECT tradecollection_id FROM trade_collections WHERE user_id = ?";
             Integer tradeCollectionID = jdbcTemplate.queryForObject(sql, Integer.class, userID);
 
             TradeCollection tc = new TradeCollection();
@@ -34,7 +34,7 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
             tc.setUser(user);
 
             // TRIN 2: Hent kort og mængder via JOIN
-            String itemsSql = "SELECT tci.quantity, c.* FROM tradecollection_items tci " +
+            String itemsSql = "SELECT tci.quantity, c.* FROM trade_collection_items tci " +
                     "JOIN cards c ON tci.card_id = c.card_id " +
                     "WHERE tci.tradecollection_id = ?";
 
