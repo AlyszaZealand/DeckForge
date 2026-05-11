@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Fejl opstået</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="error-container">
+    <h1>Hov! Noget gik galt</h1>
+    <p th:text="${errorMessage}"></p>
+    <a href="/static">Gå tilbage til forsiden</a>
+</div>
+</body>
+</html>
