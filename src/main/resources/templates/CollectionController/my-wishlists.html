@@ -12,12 +12,40 @@
 
 <body>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
+<div th:if="${errorMessage != null}">
+    <p th:text="${errorMessage}" style="color: red; text-align: center"></p>
 </div>
 
 <main>
     <section th:insert="parts/header.html :: header"></section>
+
+    <h1>Min Ønskeliste</h1>
+
+    <div class="filter-menu" style="margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+        <form th:action="@{/my-wishlists}" method="get" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <input type="text" name="cardName" placeholder="Søg på kortnavn..." style="padding: 5px;">
+            <select name="rarity" style="padding: 5px;">
+                <option value="">Sjældenhed</option>
+                <option value="COMMON">Common</option>
+                <option value="UNCOMMON">Uncommon</option>
+                <option value="RARE">Rare</option>
+                <option value="MYTHICRARE">Mythic Rare</option>
+            </select>
+            <select name="color" style="padding: 5px;">
+                <option value="">Farve</option>
+                <option value="W">Hvid (W)</option>
+                <option value="U">Blå (U)</option>
+                <option value="B">Sort (B)</option>
+                <option value="R">Rød (R)</option>
+                <option value="G">Grøn (G)</option>
+                <option value="C">Farveløs (C)</option>
+            </select>
+            <button type="submit" class="btn">Søg i samling</button>
+            <a th:href="@{/my-wishlists}" class="btn" style="text-decoration: none; background-color: #666;">Nulstil</a>
+        </form>
+    </div>
+
+    <hr>
 
     <div th:if="${collection != null and not #lists.isEmpty(collection.wishCollectionItems)}">
         <ul>

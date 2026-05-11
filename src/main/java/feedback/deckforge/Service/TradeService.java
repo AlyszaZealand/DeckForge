@@ -31,11 +31,8 @@ public class TradeService {
         this.tradeValidation = tradeValidation;
     }
 
-    // ==========================================
-    // 1. OPRET FORSLAG (Med TradeValidation)
-    // ==========================================
+
     public ValidationResult proposeTrade(Trade trade) {
-        // Her kalder vi din nye valideringsklasse!
         ValidationResult result = tradeValidation.validateProposal(trade);
 
         if (!result.hasErrors()) {

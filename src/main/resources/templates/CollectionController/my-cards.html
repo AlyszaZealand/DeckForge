@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- TEMPLATE -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="description" content="Login">
+    <meta name="keywords" content="HTML, CSS">
+    <meta name="author" content="Bug Busters">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
+
+<div th:if="${errorMessage != null}">
+    <p th:text="${errorMessage}" style="color: red; text-align: center"></p>
+</div>
+
+<main>
+    <section th:insert="parts/header.html :: header"></section>
+
+    <h1>Mine Kort</h1>
+
+    <div class="filter-menu" style="margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+        <form th:action="@{/myCards}" method="get" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <input type="text" name="cardName" placeholder="Søg på kortnavn..." style="padding: 5px;">
+            <select name="rarity" style="padding: 5px;">
+                <option value="">Sjældenhed</option>
+                <option value="COMMON">Common</option>
+                <option value="UNCOMMON">Uncommon</option>
+                <option value="RARE">Rare</option>
+                <option value="MYTHICRARE">Mythic Rare</option>
+            </select>
+            <select name="color" style="padding: 5px;">
+                <option value="">Farve</option>
+                <option value="W">Hvid (W)</option>
+                <option value="U">Blå (U)</option>
+                <option value="B">Sort (B)</option>
+                <option value="R">Rød (R)</option>
+                <option value="G">Grøn (G)</option>
+                <option value="C">Farveløs (C)</option>
+            </select>
+            <button type="submit" class="btn">Søg i samling</button>
+            <a th:href="@{/myCards}" class="btn" style="text-decoration: none; background-color: #666;">Nulstil</a>
+        </form>
+    </div>
+
+    <hr>
 
 <div th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
     <ul>

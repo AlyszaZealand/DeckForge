@@ -17,7 +17,7 @@ public class EventService {
 
     private final IEventRepository eventRepository;
     private final EventValidation eventValidation;
-    private IUserRepository userRepository;
+    private final IUserRepository userRepository;
 
     public EventService(IEventRepository eventRepository, EventValidation eventValidation, IUserRepository userRepository) {
         this.eventRepository = eventRepository;

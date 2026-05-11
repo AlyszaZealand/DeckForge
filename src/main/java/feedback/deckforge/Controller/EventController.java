@@ -1,83 +1,83 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Exceptions.CollectionNotFoundException;
+import feedback.deckforge.Exceptions.EventNotFoundException;
 import feedback.deckforge.Model.Event;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.EventService;
-import feedback.deckforge.Service.UserService;
-import feedback.deckforge.Service.Validation.EventValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class EventController {
 
-    private EventService eventService;
-    private EventValidation eventValidation;
-    private UserService userService;
+    private final EventService eventService;
 
-    public EventController(EventService eventService, EventValidation eventValidation) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.eventValidation = eventValidation;
     }
 
+    // --- VISNING AF ALLE EVENTS ---
+
+    @GetMapping("/events")
+    public String showAllEvents(HttpSession session, Model model) {
+        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
+
+        List<Event> events = eventService.getAllEvents();
+        model.addAttribute("events", events);
+        return "EventController/events";
+    }
+
+    // --- OPRETTELSE AF EVENT ---
+
     @GetMapping("/registerEvent")
-    public String showEventForm(Model model, HttpSession httpSession){
-        if (httpSession.getAttribute("loggedInUser") == null){
-            return "redirect:/login";
-        }
+    public String showEventForm(Model model, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
 
         model.addAttribute("event", new Event());
         return "EventController/create-event";
     }
 
     @PostMapping("/registerEvent")
-    public String handleEventForm(@ModelAttribute Event newEvent, Model model, HttpSession httpSession){
-        if (httpSession.getAttribute("loggedInUser") == null){
-            return "redirect:/login";
-        }
+    public String handleEventForm(@ModelAttribute Event newEvent, Model model, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
 
         ValidationResult result = eventService.createEvent(newEvent);
 
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             model.addAttribute("errors", result.getErrors());
             model.addAttribute("event", newEvent);
             return "EventController/create-event";
         }
 
-        return "redirect:/";
+        return "redirect:/events";
     }
 
+    // --- EVENT DETALJER OG DELTAGELSE ---
+
     @GetMapping("/events/{id}")
-    public String showEventDetails(@PathVariable int id, HttpSession httpSession, Model model){
-        if (httpSession.getAttribute("loggedInUser") == null){
-            return "redirect:/login";
-        }
+    public String showEventDetails(@PathVariable int id, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/login";
 
-        Optional<Event> eventOptional = eventService.getEventByID(id);
-        if (eventOptional.isEmpty()){
-            return "redirect:/";
-        }
+        // Brug orElseThrow for at aktivere GlobalExceptionHandler hvis eventet ikke findes
+        Event event = eventService.getEventByID(id)
+                .orElseThrow(() -> new EventNotFoundException("Eventet med ID " + id + " blev ikke fundet."));
 
-        Event event = eventOptional.get();
-
-        //Get User and Attendees
-        User loggedInUser = (User) httpSession.getAttribute("loggedInUser");
         List<User> attendingUsers = eventService.getSignedUpUsersByEventID(id);
 
-        //Check if the logged-in user is already signed up
+        // Tjek om den loggede bruger er på deltagerlisten med et for-loop
         boolean isAttending = false;
         for (User user : attendingUsers) {
             if (user.getUserID() == loggedInUser.getUserID()) {
                 isAttending = true;
+                break; // Vi har fundet brugeren, så vi behøver ikke lede videre i listen!
             }
         }
 
@@ -88,5 +88,26 @@ public class EventController {
         return "EventController/event-details";
     }
 
+    @PostMapping("/events/{id}/join")
+    public String joinEvent(@PathVariable int id, HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/login";
 
+        // Tilmeld brugeren via servicen
+        eventService.signUpForEvent(id, loggedInUser.getUserID());
+
+        return "redirect:/events/" + id;
+    }
+
+    @PostMapping("/events/{id}/leave")
+    public String leaveEvent(@PathVariable int id, HttpSession session, RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) return "redirect:/login";
+
+        // Afmeld brugeren via servicen
+        eventService.removeSignUpForEvent(id, loggedInUser.getUserID());
+
+        redirectAttributes.addFlashAttribute("successMessage", "Du er nu afmeldt eventet.");
+        return "redirect:/events/" + id;
+    }
 }

@@ -9,6 +9,11 @@
 <section th:insert="~{parts/header.html :: header}"></section>
 
 <main class="container">
+
+    <div th:if="${errorMessage != null}">
+        <p th:text="${errorMessage}" style="color: red; text-align: center"></p>
+    </div>
+
     <h1>Collection Hub</h1>
     <p>Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
 

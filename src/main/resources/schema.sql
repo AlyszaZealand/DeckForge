@@ -1,6 +1,29 @@
 -- CREATE DATABASE IF NOT EXISTS deckforge_db;
 -- USE deckforge_db;
 
+-- 1. Slå referencetjek fra midlertidigt
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 2. Slet alle tabeller, hvis de findes (Sørg for at alle jeres tabeller står her)
+DROP TABLE IF EXISTS collection_items;
+DROP TABLE IF EXISTS tradecollection_items;
+DROP TABLE IF EXISTS wishcollection_items;
+DROP TABLE IF EXISTS deck_items;
+DROP TABLE IF EXISTS event_registrations
+DROP TABLE IF EXISTS trade_items;
+DROP TABLE IF EXISTS trades;
+DROP TABLE IF EXISTS decks;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS collections;
+DROP TABLE IF EXISTS trade_collections;
+DROP TABLE IF EXISTS wish_collections;
+DROP TABLE IF EXISTS cards;
+DROP TABLE IF EXISTS formats;
+DROP TABLE IF EXISTS users;
+
+-- 3. Slå referencetjek til igen! (Meget vigtigt)
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- ==========================================
 -- 1. IDENTITET & KATALOG
 -- ==========================================
