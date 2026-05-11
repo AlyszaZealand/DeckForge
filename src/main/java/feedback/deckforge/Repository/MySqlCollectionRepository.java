@@ -43,7 +43,7 @@ public class MySqlCollectionRepository implements ICollectionRepository {
 
                 jdbcTemplate.query(itemsSql, rs -> {
                     Card card = new Card();
-                    card.setCardId(rs.getInt("card_id"));
+                    card.setCardID(rs.getInt("card_id"));
                     card.setCardName(rs.getString("card_name"));
                     card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
                     card.setCardType(CardType.valueOf(rs.getString("card_type")));
@@ -87,6 +87,16 @@ public class MySqlCollectionRepository implements ICollectionRepository {
     public void updateCardQuantity(int collectionId, int cardId, int newQuantity){
         String sql = "UPDATE collection_items SET quantity = ? WHERE collection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, newQuantity, collectionId, cardId);
+    }
+
+    @Override
+    public int getCardQuantity(int collectionID, int cardID) {
+        String sql = "SELECT quantity FROM collection_items WHERE collection_id = ? AND card_id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, collectionID, cardID);
+        } catch (EmptyResultDataAccessException e) {
+            return 0; // Hvis kortet ikke findes i samlingen, er antallet 0
+        }
     }
 
 

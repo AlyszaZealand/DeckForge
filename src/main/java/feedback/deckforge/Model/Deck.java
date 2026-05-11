@@ -43,7 +43,7 @@ public class Deck {
 
     public void addCard(Card card, int quantity) {
         for (DeckItem item : deckItems) {
-            if (item.getCard().getCardId() == card.getCardId()) {
+            if (item.getCard().getCardID() == card.getCardID()) {
                 item.setQuantity(item.getQuantity() + quantity);
                 return;
             }

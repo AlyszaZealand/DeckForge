@@ -12,7 +12,7 @@ public class TradeCollection {
 
     public void addCard(Card card, int quantity) {
         for (TradeCollectionItem item : items) {
-            if (item.getCard().getCardId() == card.getCardId()) {
+            if (item.getCard().getCardID() == card.getCardID()) {
                 item.setQuantity(item.getQuantity() + quantity);
                 return;
             }

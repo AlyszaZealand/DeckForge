@@ -38,7 +38,4 @@ public class WishCollectionService {
         wishCollectionRepository.removeCardFromWishCollection(wishCollectionID, cardID);
     }
 
-
-
-
 }
