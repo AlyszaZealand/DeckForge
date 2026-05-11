@@ -52,40 +52,38 @@
       - Farve: <span th:text="${item.card.colorIdentity != '' ? item.card.colorIdentity : 'Farveløs'}"></span>,
       Sjældenhed: <span th:text="${item.card.cardRarity}"></span>
 
-      <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+      <<div style="display: flex; gap: 10px; align-items: center;">
+      <form th:action="@{/decreaseTradeCardQuantity}" method="post">
+        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+        <button type="submit">-</button>
+      </form>
 
-        <form th:action="@{/decreaseTradeCardQuantity}" method="post">
-          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-          <input type="hidden" name="cardName" th:value="${param.cardName}" />
-          <input type="hidden" name="rarity" th:value="${param.rarity}" />
-          <input type="hidden" name="color" th:value="${param.color}" />
-          <button type="submit">-</button>
-        </form>
+      <span th:text="${item.quantity}">1</span>
 
-        <span>Antal: <strong th:text="${item.quantity}"></strong></span>
+      <form th:action="@{/addCardToTradeList}" method="post">
+        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+        <button type="submit">+</button>
+      </form>
 
-        <form th:action="@{/addCardToTradeList}" method="post">
-          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-          <input type="hidden" name="cardName" th:value="${param.cardName}" />
-          <input type="hidden" name="rarity" th:value="${param.rarity}" />
-          <input type="hidden" name="color" th:value="${param.color}" />
-          <button type="submit">+</button>
-        </form>
-
-        <form th:action="@{/removeCardFromTradeList}" method="post" style="margin-left: 15px;">
-          <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-          <input type="hidden" name="cardName" th:value="${param.cardName}" />
-          <input type="hidden" name="rarity" th:value="${param.rarity}" />
-          <input type="hidden" name="color" th:value="${param.color}" />
-          <button type="submit" style="background-color: #e74c3c; color: white;">Fjern helt</button>
-        </form>
-      </div>
+      <form th:action="@{/removeCardFromTradeList}" method="post">
+        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+        <button type="submit" style="color: red;">Slet alle</button>
+      </form>
+    </div>
     </li>
   </div>
 
-  <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
-    <p>Du har ingen kort på din bytteliste, eller ingen kort matcher dit filter.</p>
-  </div>
+  <h3>Søg i din samling for at tilføje til bytteliste:</h3>
+  <ul th:if="${ownedResults != null}">
+    <li th:each="card : ${ownedResults}">
+      <span th:text="${card.cardName}">Kortnavn</span>
+      <form th:action="@{/addCardToTradeList}" method="post" style="display:inline;">
+        <input type="hidden" name="cardID" th:value="${card.cardID}" />
+        <button type="submit">Læg på bytteliste</button>
+      </form>
+    </li>
+  </ul>
+  <p th:if="${ownedResults != null && ownedResults.isEmpty()}">Ingen kort fundet i din samling med de kriterier.</p>
 
   <section th:insert="~{Parts/footer.html :: footer}"></section>
 </main>

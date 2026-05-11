@@ -35,19 +35,19 @@ public class CardService {
         return cardRepository.findAllCards();
     }
 
-    public List<Card> searchCards(String name, String rarity, String color, CollectionType type, Integer userId) {
+    public List<Card> searchCards(String name, String rarity, String color, CollectionType type, Integer userID) {
 
         if (type == CollectionType.CATALOG) {
             return cardRepository.searchAllCards(name, rarity, color);
         }
 
-        if (userId == null || userId <= 0) return List.of();
+        if (userID == null || userID <= 0) return List.of();
 
 
         return switch (type) {
-            case COLLECTION -> cardRepository.searchCollectionCards(userId, name, rarity, color);
-            case TRADE      -> cardRepository.searchTradeCards(userId, name, rarity, color);
-            case WISH       -> cardRepository.searchWishlistCards(userId, name, rarity, color);
+            case COLLECTION -> cardRepository.searchCollectionCards(userID, name, rarity, color);
+            case TRADE      -> cardRepository.searchTradeCards(userID, name, rarity, color);
+            case WISH       -> cardRepository.searchWishlistCards(userID, name, rarity, color);
             case CATALOG    -> List.of();
         };
     }

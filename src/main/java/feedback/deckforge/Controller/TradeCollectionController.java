@@ -49,25 +49,13 @@ public class TradeCollectionController {
                 (rarity != null && !rarity.trim().isEmpty()) ||
                 (color != null && !color.trim().isEmpty());
 
-        if (hasSearch) {
-            // Vi kalder searchCards med TRADE-typen, så den kun kigger i brugerens egne byttekort
-            List<Card> searchResult = cardService.searchCards(cardName, rarity, color, CollectionType.TRADE, loggedInUser.getUserID());
-
-            // Lav en liste over de ID'er der matchede søgningen
-            List<Integer> matchedIds = searchResult.stream().map(Card::getCardID).toList();
-
-            // Filtrér byttelistens items, så vi kun beholder dem, hvis kort-ID'et findes i søgeresultatet
-            List<TradeCollectionItem> filteredItems = tradeCollection.getTradeCollectionItems().stream()
-                    .filter(item -> matchedIds.contains(item.getCard().getCardID()))
-                    .toList();
-
-            // Opdater objektet med den filtrerede liste inden det sendes til HTML
-            tradeCollection.setTradeCollectionItems(filteredItems);
+        if ((cardName != null && !cardName.isEmpty()) || rarity != null || color != null) {
+            // Vi bruger CardService til at søge specifikt i denne brugers samling
+            List<Card> ownedResults = cardService.searchCards(cardName, rarity, color, CollectionType.COLLECTION, loggedInUser.getUserID());
+            model.addAttribute("ownedResults", ownedResults);
         }
 
-        // 4. Send data til HTML-siden
-        model.addAttribute("tradeCollection", tradeCollection);
-        return "CollectionController/myTradeList";
+        return "CollectionController/my-tradelist";
     }
 
     @PostMapping("/addCardToTradeList")
