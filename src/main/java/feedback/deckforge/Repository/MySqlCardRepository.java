@@ -130,7 +130,7 @@ public class MySqlCardRepository implements ICardRepository {
     private final RowMapper<Card> cardRowMapper = (rs, rowNum) -> {
         Card card = new Card();
 
-        card.setCardID(rs.getInt("card_id"));
+        card.setCardId(rs.getInt("card_id"));
         card.setCardName(rs.getString("card_name"));
         card.setCardSet(rs.getString("card_set"));
 

@@ -95,7 +95,7 @@ public class MySqlEventRepository implements IEventRepository {
     }
 
     @Override
-    public void signUp(int eventID, int userID){
+    public void singUp(int eventID, int userID){
         String sql = "insert into event_registrations (event_id, user_id) values (?,?)";
 
         jdbcTemplate.update(sql, eventID, userID);

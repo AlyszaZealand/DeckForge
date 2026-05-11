@@ -19,7 +19,7 @@ public class TradeCollectionValidation {
         // Tjek om brugeren faktisk ejer kortet (og har nok af dem)
         if (userPrivateCollection != null) {
             boolean ownsEnough = userPrivateCollection.getCollectionItems().stream()
-                    .anyMatch(item -> item.getCard().getCardID() == cardID && item.getQuantity() >= quantity);
+                    .anyMatch(item -> item.getCard().getCardId() == cardID && item.getQuantity() >= quantity);
 
             if (!ownsEnough) {
                 result.addError("Du ejer ikke nok kopier af dette kort til at sætte det til bytte."); //

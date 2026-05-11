@@ -13,7 +13,7 @@ public class Collection {
     // Hjælpemetode til at håndtere mængder logisk
     public void addCard(Card card, int quantity) {
         for (CollectionItem item : items) {
-            if (item.getCard().getCardID() == card.getCardID()) {
+            if (item.getCard().getCardId() == card.getCardId()) {
                 item.setQuantity(item.getQuantity() + quantity);
                 return;
             }

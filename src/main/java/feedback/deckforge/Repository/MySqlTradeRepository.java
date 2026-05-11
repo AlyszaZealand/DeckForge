@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +34,6 @@ public class MySqlTradeRepository implements ITradeRepository {
         Trade trade = new Trade();
         trade.setTradeId(rs.getInt("trade_id"));
         trade.setTradeStatus(TradeStatus.valueOf(rs.getString("trade_status")));
-
-        trade.setInitiatorConfirmed(rs.getBoolean("initiator_confirmed"));
-        trade.setReceiverConfirmed(rs.getBoolean("receiver_confirmed"));
 
         if (rs.getTimestamp("trade_date") != null) {
             trade.setTradeDate(rs.getTimestamp("trade_date").toLocalDateTime());
@@ -77,12 +75,12 @@ public class MySqlTradeRepository implements ITradeRepository {
 
         // 1. Gem alle de kort, Initiator tilbyder (is_offered_by_initiator = TRUE)
         for (Card offered : trade.getOfferedCards()) {
-            jdbcTemplate.update(insertItemSql, newTradeId, offered.getCardID(), true);
+            jdbcTemplate.update(insertItemSql, newTradeId, offered.getCardId(), true);
         }
 
         // 2. Gem alle de kort, Initiator ønsker fra modtageren (is_offered_by_initiator = FALSE)
         for (Card requested : trade.getRequestedCards()) {
-            jdbcTemplate.update(insertItemSql, newTradeId, requested.getCardID(), false);
+            jdbcTemplate.update(insertItemSql, newTradeId, requested.getCardId(), false);
         }
     }
 
@@ -140,20 +138,6 @@ public class MySqlTradeRepository implements ITradeRepository {
         return trades;
     }
 
-    @Override
-    public void updateTrade(Trade trade) {
-        String sql = "UPDATE trades SET trade_status = ?, initiator_confirmed = ?, " +
-                "receiver_confirmed = ?, completed_date = ? WHERE trade_id = ?";
-
-        jdbcTemplate.update(sql,
-                trade.getTradeStatus().name(),
-                trade.isInitiatorConfirmed(),
-                trade.isReceiverConfirmed(),
-                trade.getCompletedDate(),
-                trade.getTradeId()
-        );
-    }
-
     // ==========================================
     // HJÆLPE-METODE: Henter kortene til en Trade
     // ==========================================
@@ -165,7 +149,7 @@ public class MySqlTradeRepository implements ITradeRepository {
 
         jdbcTemplate.query(sql, rs -> {
             Card card = new Card();
-            card.setCardID(rs.getInt("card_id"));
+            card.setCardId(rs.getInt("card_id"));
             card.setCardName(rs.getString("card_name"));
             card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
             card.setCardType(CardType.valueOf(rs.getString("card_type")));

@@ -18,8 +18,8 @@ public class Card {
 
     public Card() {}
 
-    public Card(int cardID, String cardName, String cardSet, CardType cardType, CardRarity cardRarity, String manaCost, int power, int health, String description, String colorIdentity) {
-        this.cardID = cardID;
+    public Card(int cardId, String cardName, String cardSet, CardType cardType, CardRarity cardRarity, String manaCost, int power, int health, String description, String colorIdentity) {
+        this.cardID = cardId;
         this.cardName = cardName;
         this.cardSet = cardSet;
         this.cardType = cardType;
@@ -32,8 +32,8 @@ public class Card {
     }
 
     // Getters og Setters
-    public int getCardID() { return cardID; }
-    public void setCardID(int cardID) { this.cardID = cardID; }
+    public int getCardId() { return cardID; }
+    public void setCardId(int cardId) { this.cardID = cardId; }
 
     public String getCardName() { return cardName; }
     public void setCardName(String cardName) { this.cardName = cardName; }
