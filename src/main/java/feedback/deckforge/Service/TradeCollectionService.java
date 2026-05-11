@@ -47,27 +47,5 @@ public class TradeCollectionService {
         tradeCollectionRepository.setCardQuantity(tradeCollectionID, cardID, newQuantity);
     }
 
-    public void addOne(int userID, int cardID) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID).orElseThrow().getTradeCollectionId();
-        int qty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
-
-        if (qty > 0) {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, qty + 1);
-        } else {
-            tradeCollectionRepository.addCardToTradeCollection(tradeColId, cardID, 1);
-        }
-    }
-
-    public void removeOne(int userID, int cardID) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID).orElseThrow().getTradeCollectionId();
-        int qty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
-
-        if (qty > 1) {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, qty - 1);
-        } else {
-            tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
-        }
-    }
-
 
 }

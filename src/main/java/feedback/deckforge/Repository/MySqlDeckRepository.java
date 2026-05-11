@@ -47,7 +47,7 @@ public class MySqlDeckRepository implements IDeckRepository {
         int commanderId = rs.getInt("commander_card_id");
         if (!rs.wasNull()) {
             Card commander = new Card();
-            commander.setCardID(commanderId);
+            commander.setCardId(commanderId);
             deck.setCommander(commander);
         }
 
@@ -58,7 +58,7 @@ public class MySqlDeckRepository implements IDeckRepository {
     public void saveDeck(Deck deck){
         String sql = "INSERT INTO decks (user_id, format_id, deck_name, commander_card_id) VALUES (?, ?, ?, ?)";
 
-        Integer commanderID = (deck.getCommander() != null) ? deck.getCommander().getCardID() : null;
+        Integer commanderID = (deck.getCommander() != null) ? deck.getCommander().getCardId() : null;
 
         jdbcTemplate.update(sql,
                 deck.getUser().getUserID(),
@@ -72,7 +72,7 @@ public class MySqlDeckRepository implements IDeckRepository {
     public void updateDeck(Deck deck) {
         String sql = "UPDATE decks SET deck_name = ?, format_id = ?, commander_card_id = ? WHERE deck_id = ?";
 
-        Integer commanderId = (deck.getCommander() != null) ? deck.getCommander().getCardID() : null;
+        Integer commanderId = (deck.getCommander() != null) ? deck.getCommander().getCardId() : null;
 
         jdbcTemplate.update(sql,
                 deck.getDeckName(),

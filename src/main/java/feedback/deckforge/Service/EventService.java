@@ -74,7 +74,7 @@ public class EventService {
     }
 
     public void signUpForEvent(int eventID, int userID){
-        eventRepository.signUp(eventID, userID);
+        eventRepository.singUp(eventID, userID);
     }
     public void removeSignUpForEvent(int eventID, int userID){
         eventRepository.removeSignUp(eventID, userID);

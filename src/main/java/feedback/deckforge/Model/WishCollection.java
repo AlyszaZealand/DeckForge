@@ -12,7 +12,7 @@ public class WishCollection {
 
     public void addCard(Card card) {
         for (WishCollectionItem item : items) {
-            if (item.getCard().getCardID() == card.getCardID()) {
+            if (item.getCard().getCardId() == card.getCardId()) {
                 return;
             }
         }

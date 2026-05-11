@@ -13,7 +13,7 @@ public interface IEventRepository {
     Optional<Event> findEventByID(int eventID);
     List<Event> findAllEvents();
     List<Integer> findSignedUpUsersByEventID(int eventID);
-    void signUp(int eventID, int userID);
+    void singUp(int eventID, int userID);
     void removeSignUp(int eventID, int userID);
 
 }

@@ -40,7 +40,7 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
 
             jdbcTemplate.query(itemsSql, rs -> {
                 Card card = new Card();
-                card.setCardID(rs.getInt("card_id"));
+                card.setCardId(rs.getInt("card_id"));
                 card.setCardName(rs.getString("card_name"));
                 card.setCardRarity(CardRarity.valueOf(rs.getString("card_rarity")));
                 card.setCardType(CardType.valueOf(rs.getString("card_type")));
@@ -78,16 +78,6 @@ public class MySqlTradeCollectionRepository implements ITradeCollectionRepositor
     public void setCardQuantity(int tradeCollectionID, int cardID, int newQuantity) {
         String sql = "UPDATE tradecollection_items SET quantity = ? WHERE tradecollection_id = ? AND card_id = ?";
         jdbcTemplate.update(sql, newQuantity, tradeCollectionID, cardID);
-    }
-
-    @Override
-    public int getCardQuantity(int tradeCollectionID, int cardID) {
-        String sql = "SELECT quantity FROM tradecollection_items WHERE tradecollection_id = ? AND card_id = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, Integer.class, tradeCollectionID, cardID);
-        } catch (EmptyResultDataAccessException e) {
-            return 0;
-        }
     }
 
 
