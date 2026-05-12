@@ -62,5 +62,14 @@ public class AuthController {
         return "redirect:/login";
     }
 
+    @PostMapping("/logout")
+    public String handleLogout(HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if(loggedInUser == null){
+            return "redirect:/login";
+        }
+        session.invalidate();
+        return "redirect:/";
+    }
 
 }

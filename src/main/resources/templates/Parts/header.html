@@ -17,6 +17,11 @@
                     <a href="/registerUser">Register</a>
                     <a href="/profile">Profil</a>
                     <a href="/registerEvent">Event</a>
+                    <a href="/collectionPage">Collections</a>
+                    <a href="/logout">Logout</a>
+                    <form th:if="${loggedInUser != null}" th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" style="background-color: red; width: 80px;color: white; border: none; padding: 5px 10px; cursor: pointer;">Logout</button>
+                    </form>
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
                         <a href="/addCard">Tilføj Kort</a>

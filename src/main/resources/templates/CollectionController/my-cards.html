@@ -2,33 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <title>Deck Forge</title>
 </head>
 <body>
+<main>
+    <div class="collection-layout" th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
 
-<div th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
-    <ul>
-        <li th:each="item : ${collection.collectionItems}">
-            <strong th:text="${item.card.cardName}">Card Name</strong>
-            (x<span th:text="${item.quantity}">Quantity</span>)
+        <div class="main-collection">
+            <h2>Din Samling</h2>
+            <ul>
+                <li th:each="item : ${collection.collectionItems}">
+                    <strong th:text="${item.card.cardName}">Card Name</strong>
+                    (x<span th:text="${item.quantity}">Quantity</span>)
 
-            <form th:action="@{/removeCardFromCollection}" method="post" style="display:inline;">
-                <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                <button type="submit">Fjern 1</button>
-            </form>
+                    <form th:action="@{/removeCardFromCollection}" method="post" style="display:inline;">
+                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                        <button type="submit">Fjern 1</button>
+                    </form>
 
-            <form th:action="@{/addCardToTradeList}" method="post" style="display:inline;">
-                <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                <button type="submit">Sæt til bytte</button>
-            </form>
-        </li>
-    </ul>
-</div>
+                    <form th:action="@{/addExtraCardToCollection}" method="post" style="display:inline;">
+                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                        <button type="submit">Tilføj x1 af dette kort</button>
+                    </form>
 
-<div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
-    <p>Din samling er tom! Gå til kort-databasen for at tilføje kort.</p>
-</div>
+                    <form th:action="@{/addCardToTradeList}" method="post" style="display:inline;">
+                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                        <button type="submit">Sæt til bytte</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
 
+        <aside class="sidebar-catalog">
+            <h2>Kort Database</h2>
+            <ul>
+                <li th:each="card : ${cardList}">
+                    <div>
+                        <strong th:text="${card.cardName}">Kortets Navn</strong>
+                        <p th:text="${card.description}">Beskrivelse</p>
+
+                        <form th:action="@{/addNewCard}" method="post" style="display:inline;">
+                            <input type="hidden" name="cardID" th:value="${card.cardID}" />
+                            <button type="submit" style="color: white; background-color: black">Tilføj til min samling</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </aside>
+
+    </div>
+    <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
+        <p>Din samling er tom! Gå til kort-databasen for at tilføje kort.</p>
+    </div>
+</main>
 
 </body>
 </html>
+
