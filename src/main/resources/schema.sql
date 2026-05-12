@@ -55,7 +55,8 @@ CREATE TABLE collection_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        UNIQUE(collection_id, card_id)
 );
 
 CREATE TABLE wishcollections (
@@ -69,7 +70,8 @@ CREATE TABLE wishcollection_items (
                         wishcollection_id INT NOT NULL,
                         card_id INT NOT NULL,
                         FOREIGN KEY (wishcollection_id) REFERENCES wishcollections(wishcollection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        UNIQUE(wishcollection_id, card_id)
 );
 
 CREATE TABLE tradecollections (
@@ -84,7 +86,8 @@ CREATE TABLE tradecollection_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (tradecollection_id) REFERENCES tradecollections(tradecollection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        UNIQUE(tradecollection_id, card_id)
 );
 
 -- ==========================================

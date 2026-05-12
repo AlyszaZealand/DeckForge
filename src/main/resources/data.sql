@@ -13,10 +13,10 @@ INSERT INTO users (username, email, password_hash, user_role) VALUES
 
 -- 2. Opret Kort (Kataloget)
 INSERT INTO cards (card_id, card_name, card_set, card_type, card_rarity, mana_cost, color_identity, power, health, description) VALUES
-                                                                                                                                    (1, 'Black Lotus', 'Alpha', 'ARTIFACT', 'MYTHICRARE', '{0}', '', NULL, NULL, 'Adds 3 mana of any single color.'),
+                                                                                                                                    (1, 'Black Lotus', 'Alpha', 'ARTIFACT', 'MYTHICRARE', '{0}', 'C', NULL, NULL, 'Adds 3 mana of any single color.'),
                                                                                                                                     (2, 'Shivan Dragon', 'Alpha', 'CREATURE', 'RARE', '{4}{R}{R}', 'R', 5, 5, 'Flying, {R}: +1/+0 until end of turn.'),
                                                                                                                                     (3, 'Lightning Bolt', 'Alpha', 'INSTANT', 'COMMON', '{R}', 'R', NULL, NULL, 'Lightning Bolt deals 3 damage to any target.'),
-                                                                                                                                    (4, 'Sol Ring', 'Alpha', 'ARTIFACT', 'UNCOMMON', '{1}', '', NULL, NULL, '{T}: Add {C}{C}.'),
+                                                                                                                                    (4, 'Sol Ring', 'Alpha', 'ARTIFACT', 'UNCOMMON', '{1}', 'C', NULL, NULL, '{T}: Add {C}{C}.'),
                                                                                                                                     (5, 'Forest', 'Zendikar', 'LAND', 'COMMON', '', 'G', NULL, NULL, '{T}: Add {G}.');
 
 -- 3. Opret Formater (Regelbøgerne)

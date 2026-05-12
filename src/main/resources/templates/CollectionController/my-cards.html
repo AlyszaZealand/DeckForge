@@ -8,10 +8,12 @@
 <body>
 <main>
     <section th:insert="parts/header.html :: header"></section>
-    <div class="collection-layout" th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
+
+    <div class="collection-layout">
 
         <div class="main-collection">
             <h2>Din Samling</h2>
+
             <form action="/myCards" method="get" style="margin-bottom: 20px; padding: 10px; background-color: #eee;">
                 <input type="text" name="name" placeholder="Søg efter kortnavn..." th:value="${param.name}">
 
@@ -30,6 +32,7 @@
                     <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
                     <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
                     <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+                    <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
                 </select>
 
                 <select name="searchTarget">
@@ -39,7 +42,8 @@
 
                 <button type="submit">Søg & Filtrér</button>
             </form>
-            <ul>
+
+            <ul th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
                 <li th:each="item : ${collection.collectionItems}">
                     <strong th:text="${item.card.cardName}">Card Name</strong>
                     (x<span th:text="${item.quantity}">Quantity</span>)
@@ -61,6 +65,13 @@
                     </form>
                 </li>
             </ul>
+
+            <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
+                <p style="padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba;">
+                    Din samling er tom, eller din søgning gav ingen resultater. Brug "Kort Database" ude til højre for at tilføje dit første kort!
+                </p>
+            </div>
+
         </div>
 
         <aside class="sidebar-catalog">
