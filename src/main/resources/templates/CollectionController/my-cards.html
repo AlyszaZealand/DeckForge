@@ -7,14 +7,43 @@
 </head>
 <body>
 <main>
+    <section th:insert="parts/header.html :: header"></section>
     <div class="collection-layout" th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
 
         <div class="main-collection">
             <h2>Din Samling</h2>
+            <form action="/myCards" method="get" style="margin-bottom: 20px; padding: 10px; background-color: #eee;">
+                <input type="text" name="name" placeholder="Søg efter kortnavn..." th:value="${param.name}">
+
+                <select name="rarity">
+                    <option value="">Alle Rariteter</option>
+                    <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
+                    <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
+                    <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
+                    <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
+                </select>
+
+                <select name="color">
+                    <option value="">Alle Farver</option>
+                    <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+                    <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+                    <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+                    <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+                    <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+                </select>
+
+                <select name="searchTarget">
+                    <option value="CATALOG" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'CATALOG'}">Søg i Katalog</option>
+                    <option value="COLLECTION" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'COLLECTION'}">Søg i Min Samling</option>
+                </select>
+
+                <button type="submit">Søg & Filtrér</button>
+            </form>
             <ul>
                 <li th:each="item : ${collection.collectionItems}">
                     <strong th:text="${item.card.cardName}">Card Name</strong>
                     (x<span th:text="${item.quantity}">Quantity</span>)
+                    <span th:text="${item.card.colorIdentity}">Farve</span>
 
                     <form th:action="@{/removeCardFromCollection}" method="post" style="display:inline;">
                         <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
@@ -41,6 +70,7 @@
                     <div>
                         <strong th:text="${card.cardName}">Kortets Navn</strong>
                         <p th:text="${card.description}">Beskrivelse</p>
+                        <span th:text="${card.colorIdentity}"></span>
 
                         <form th:action="@{/addNewCard}" method="post" style="display:inline;">
                             <input type="hidden" name="cardID" th:value="${card.cardID}" />
@@ -50,11 +80,8 @@
                 </li>
             </ul>
         </aside>
-
     </div>
-    <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
-        <p>Din samling er tom! Gå til kort-databasen for at tilføje kort.</p>
-    </div>
+    <section th:insert="parts/footer.html :: footer"></section>
 </main>
 
 </body>

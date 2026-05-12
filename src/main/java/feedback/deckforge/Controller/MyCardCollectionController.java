@@ -2,6 +2,7 @@ package feedback.deckforge.Controller;
 
 import feedback.deckforge.Model.Card;
 import feedback.deckforge.Model.Collection;
+import feedback.deckforge.Model.Enum.CollectionType;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.CardService;
 import feedback.deckforge.Service.CollectionService;
@@ -28,20 +29,49 @@ public class MyCardCollectionController {
 
 
     @GetMapping("/myCards")
-    public String showMyCards(HttpSession session, Model model){
+    public String showMyCards(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String rarity,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false, defaultValue = "CATALOG") String searchTarget,
+            HttpSession session, Model model) {
+
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if(loggedInUser == null){
-            return "redirect:/login";
+        if(loggedInUser == null) return "redirect:/login";
+
+        // 1. Hent altid brugerens fulde samling først
+        Optional<Collection> collectionOptional = collectionService.findCollectionByUserId(loggedInUser.getUserID());
+
+        List<Card> catalogCards;
+
+        if ("COLLECTION".equals(searchTarget)) {
+            // --- LOGIK FOR SØGNING I EGEN SAMLING ---
+
+            // Vi henter listen over kort i samlingen der matcher filteret
+            List<Card> filteredOwnedCards = cardService.searchCards(name, rarity, color, CollectionType.COLLECTION, loggedInUser.getUserID());
+
+            // Vi filtrerer 'collection' objektet, så det kun indeholder de matchende kort
+            collectionOptional.ifPresent(coll -> {
+                coll.getCollectionItems().removeIf(item ->
+                        filteredOwnedCards.stream().noneMatch(c -> c.getCardID() == item.getCard().getCardID())
+                );
+                model.addAttribute("collection", coll);
+            });
+
+            // Katalog-baren (højre side) skal bare vise alle kort (eller være tom/uændret)
+            catalogCards = cardService.searchCards("", "", "", CollectionType.CATALOG, null);
+
+        } else {
+            // --- LOGIK FOR SØGNING I KATALOG (Standard) ---
+
+            // Filtrér kataloget (højre side)
+            catalogCards = cardService.searchCards(name, rarity, color, CollectionType.CATALOG, null);
+
+            // Vis den fulde samling (venstre side) uden filtrering
+            collectionOptional.ifPresent(coll -> model.addAttribute("collection", coll));
         }
 
-        Optional<Collection> collectionOptional = collectionService.findCollectionByUserId(loggedInUser.getUserID());
-        collectionOptional.ifPresent(collection -> model.addAttribute("collection", collection));
-
-
-        List<Card> cardList = cardService.getAllCards();
-        model.addAttribute("cardList", cardList);
-
-
+        model.addAttribute("cardList", catalogCards);
         return "CollectionController/my-cards";
     }
 
