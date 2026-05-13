@@ -79,9 +79,6 @@ public class MyCardCollectionController {
     @PostMapping("/addExtraCardToCollection")
     public String handleAddExtraCardToCollection(@RequestParam int cardID, HttpSession session){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if(loggedInUser == null){
-            return "redirect:/login";
-        }
 
         Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
         int collectionID = collectionOpt.get().getCollectionId();

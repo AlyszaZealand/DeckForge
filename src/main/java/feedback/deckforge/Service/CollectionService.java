@@ -1,5 +1,6 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Exceptions.CardNotOwnedException;
 import feedback.deckforge.Exceptions.CollectionNotFoundException;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
@@ -63,7 +64,12 @@ public class CollectionService {
         int collectionId = collectionRepository.findCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
                 .getCollectionId();
+
         int qty = collectionRepository.getCardQuantity(collectionId, cardID);
+
+        if (qty <= 0) {
+            throw new CardNotOwnedException("Du kan ikke fjerne et kort, du ikke har i din samling.");
+        }
 
         if (qty > 1) {
             collectionRepository.updateCardQuantity(collectionId, cardID, qty - 1);

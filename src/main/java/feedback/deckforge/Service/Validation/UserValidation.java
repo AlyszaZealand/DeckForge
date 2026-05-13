@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserValidation {
 
+
+
     public ValidationResult validateRegisterUser(User user){
 
         ValidationResult result = new ValidationResult();

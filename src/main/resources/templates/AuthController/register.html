@@ -13,25 +13,21 @@
 </div>
 
 <div class="form-container">
-    <form action="/registerUser" method="post">
+    <form action="/registerUser" method="post" th:object="${user}">
+
         <label>Navn:</label><br>
-        <input type="text" name="username"><br><br>
+        <input type="text" th:field="*{username}"><br><br>
 
         <label>E-mail:</label><br>
-        <input type="text" name="email"><br><br>
+        <input type="text" th:field="*{email}"><br><br>
 
         <label>Adgangskode:</label><br>
         <input type="password" name="password"><br><br>
-
-        <label>Beskrivelse:</label><br>
-        <textarea name="memberDescription" rows="3"></textarea><br><br>
 
         <button type="submit">Opret</button>
     </form>
     <button onclick="window.location.href='/login'" class="back-button" style="margin-top: 10px;">Gå til Login</button>
 </div>
-
-
 
 </body>
 </html>

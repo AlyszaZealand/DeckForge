@@ -1,5 +1,8 @@
 package feedback.deckforge.Service;
 
+import feedback.deckforge.Exceptions.EmailAlreadyInUseException;
+import feedback.deckforge.Exceptions.InvalidCredentialsException;
+import feedback.deckforge.Exceptions.UserNotFoundException;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
@@ -42,12 +45,14 @@ public class UserService {
         return userList;
     }
 
-    public Optional<User> getUserByEmail(String email){
-        return userRepository.findUserByEmail(email);
+    public User getUserByID(int userID) {
+        return userRepository.findUserByID(userID)
+                .orElseThrow(() -> new UserNotFoundException("Brugeren med ID " + userID + " blev ikke fundet."));
     }
 
-    public Optional<User> getUserByID(int userID){
-        return userRepository.findUserByID(userID);
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Ingen bruger fundet med e-mailen: " + email));
     }
 
     public void deleteUser(User user){
@@ -62,11 +67,9 @@ public class UserService {
             return result;
         }
 
-        // Tjek email som før...
-        Optional<User> existingUser = userRepository.findUserByEmail(newUser.getEmail());
-        if (existingUser.isPresent()){
-            result.addError("Denne e-mail er allerede i brug");
-            return result;
+        // Tjek email
+        if (userRepository.findUserByEmail(newUser.getEmail()).isPresent()){
+            throw new EmailAlreadyInUseException("Denne e-mail er allerede i brug");
         }
 
         // 1. Hash password
@@ -84,23 +87,20 @@ public class UserService {
         return result;
     }
 
-    public Optional<User> loginValidation(String email, String rawPassword) {
-        Optional<User> userOptional = userRepository.findUserByEmail(email);
+    public User loginValidation(String email, String rawPassword) {
+        // Hvis brugeren ikke findes, kastes vores nye InvalidCredentialsException direkte
+        User loggedUser = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Hov! E-mailen eller kodeordet er forkert."));
 
-        if(userOptional.isPresent()){
-            User loggedUser = userOptional.get();
-
-            try{
-                if(BCrypt.checkpw(rawPassword, loggedUser.getPassword())){
-                    return Optional.of(loggedUser);
-                } else {
-                    return Optional.empty();
-                }
-            } catch (IllegalArgumentException e) {
-                return Optional.empty();
+        try {
+            if(BCrypt.checkpw(rawPassword, loggedUser.getPassword())){
+                return loggedUser; // Succes! Returner brugeren direkte
+            } else {
+                throw new InvalidCredentialsException("Hov! E-mailen eller kodeordet er forkert.");
             }
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCredentialsException("Der skete en fejl under validering af kodeord.");
         }
-        return Optional.empty();
     }
 
 

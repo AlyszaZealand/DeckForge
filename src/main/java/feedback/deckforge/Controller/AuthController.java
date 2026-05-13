@@ -29,18 +29,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String handleLogin(@RequestParam String email, @RequestParam String password, HttpSession httpSession, Model model) {
-        Optional<User> userOptional = userService.loginValidation(email,password);
+    public String handleLogin(@RequestParam String email, @RequestParam String password, HttpSession httpSession) {
+        // Starter userService - kaster automatisk exception ved fejl!
+        User user = userService.loginValidation(email, password);
 
-        if (userOptional.isPresent()) {
-            httpSession.setAttribute("loggedInUser", userOptional.get());
-            return "redirect:/";
-        }
-
-        else {
-            model.addAttribute("errorMessage", "Hov! E-mailen eller kodeordet er forkert.");
-            return "AuthController/login";
-        }
+        // Hvis vi når hertil, var login en succes
+        httpSession.setAttribute("loggedInUser", user);
+        return "redirect:/";
     }
 
     @GetMapping("/registerUser")
@@ -50,8 +45,8 @@ public class AuthController {
     }
 
     @PostMapping("/registerUser")
-    public String handleRegistration(@ModelAttribute User newUser, Model model){
-
+    public String handleRegistration(@ModelAttribute User newUser, Model model) {
+        // registerNewUser kaster EmailAlreadyInUseException hvis mail findes
         ValidationResult result = userService.registerNewUser(newUser);
 
         if (result.hasErrors()) {
