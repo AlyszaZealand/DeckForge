@@ -12,12 +12,11 @@
 
 <body>
 
-<div th:if="${errorMessage}"
-     style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-     th:text="${errorMessage}">
-</div>
-
 <main>
+    <div th:if="${errorMessage}"
+         style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
+         th:text="${errorMessage}">
+    </div>
     <section th:insert="parts/header.html :: header"></section>
         <div class="form-container">
             <form action="/login" method="post">

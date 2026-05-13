@@ -1,6 +1,7 @@
 package feedback.deckforge.Service;
 
 import feedback.deckforge.Exceptions.CollectionNotFoundException;
+import feedback.deckforge.Exceptions.InsufficientCardsException;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Model.TradeCollection;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
@@ -28,16 +29,25 @@ public class TradeCollectionService {
         return tradeCollectionRepository.findTradeCollectionByUserId(userID);
     }
 
-    public ValidationResult addCardToTradeCollection(int userID, int tradeCollectionID, int cardID, int quantity) {
+    public void addCardToTradeCollection(int userID, int tradeCollectionID, int cardID, int quantityToAdd) {
         Collection privateCol = collectionRepository.findCollectionByUserId(userID).orElse(null);
 
-        ValidationResult result = tradeCollectionValidation.validateAddCardToTradeCollection(cardID,quantity, privateCol);
+        // 1. Find ud af, hvor mange der allerede ligger på byttelisten
+        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeCollectionID, cardID);
 
-        if (!result.hasErrors()) {
-            tradeCollectionRepository.addCardToTradeCollection(tradeCollectionID, cardID, quantity);
+        // 2. Regn den nye total ud
+        int newTotalQuantity = currentTradeQty + quantityToAdd;
+
+        // 3. Valider med den NYE total for at sikre, at brugeren faktisk har nok
+        ValidationResult result = tradeCollectionValidation.validateAddCardToTradeCollection(cardID, newTotalQuantity, privateCol);
+
+        // 4. Hvis der er fejl, KAST exception, så din GlobalExceptionHandler griber den!
+        if (result.hasErrors()) {
+            throw new InsufficientCardsException(result.getErrors().get(0));
         }
 
-        return result;
+        // 5. Hvis ingen fejl, opdater databasen
+        tradeCollectionRepository.addCardToTradeCollection(tradeCollectionID, cardID, quantityToAdd);
     }
 
     public void removeCardFromTradeCollection(int tradeCollectionID, int cardID){
