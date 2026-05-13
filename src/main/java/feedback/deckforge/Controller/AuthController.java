@@ -18,11 +18,9 @@ import java.util.Optional;
 public class AuthController {
 
     private UserService userService;
-    private final UserValidation userValidation;
 
     public AuthController(UserService userService, UserValidation userValidation) {
         this.userService = userService;
-        this.userValidation = userValidation;
     }
 
     @GetMapping("/login")
@@ -38,8 +36,9 @@ public class AuthController {
             httpSession.setAttribute("loggedInUser", userOptional.get());
             return "redirect:/";
         }
+
         else {
-            model.addAttribute("error", "Hov! E-mailen eller kodeordet er forkert.");
+            model.addAttribute("errorMessage", "Hov! E-mailen eller kodeordet er forkert.");
             return "AuthController/login";
         }
     }
@@ -56,7 +55,7 @@ public class AuthController {
         ValidationResult result = userService.registerNewUser(newUser);
 
         if (result.hasErrors()) {
-            model.addAttribute("errors", result.getErrors());
+            model.addAttribute("errorMessage", result.getErrors());
             return "AuthController/register";
         }
         return "redirect:/login";
@@ -64,10 +63,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String handleLogout(HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if(loggedInUser == null){
-            return "redirect:/login";
-        }
         session.invalidate();
         return "redirect:/";
     }

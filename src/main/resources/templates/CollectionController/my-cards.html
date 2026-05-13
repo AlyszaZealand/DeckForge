@@ -14,6 +14,11 @@
         <div class="main-collection">
             <h2>Din Samling</h2>
 
+            <div th:if="${errorMessage}"
+                 style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
+                 th:text="${errorMessage}">
+            </div>
+
             <form action="/myCards" method="get" style="margin-bottom: 20px; padding: 10px; background-color: #eee;">
                 <input type="text" name="name" placeholder="Søg efter kortnavn..." th:value="${param.name}">
 

@@ -1,10 +1,12 @@
 package feedback.deckforge.Service;
 
 
+import feedback.deckforge.Exceptions.CardAlreadyInWishListException;
 import feedback.deckforge.Model.WishCollection;
 import feedback.deckforge.Service.RepoInterfaces.IWishCollectionRepository;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import feedback.deckforge.Service.Validation.WishCollectionValidation;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 
@@ -29,7 +31,11 @@ public class WishCollectionService {
     public ValidationResult addCardToWishCollection(int wishCollectionID, int cardID){
         ValidationResult result = wishCollectionValidation.validateAddCardToWishlist(cardID);
         if (!result.hasErrors()) {
-            wishCollectionRepository.addCardToWishCollection(wishCollectionID, cardID);
+            try{
+                wishCollectionRepository.addCardToWishCollection(wishCollectionID, cardID);
+            } catch (DuplicateKeyException e){
+                throw new CardAlreadyInWishListException("Dette kort findes allerede i din ønskeliste!");
+            }
         }
         return result;
     }

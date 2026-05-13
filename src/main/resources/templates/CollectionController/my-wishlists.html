@@ -1,7 +1,7 @@
 <!DOCTYPE html> <!-- TEMPLATE -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Wishlist</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
     <meta name="description" content="Login">
@@ -11,30 +11,83 @@
 </head>
 
 <body>
+<section th:insert="parts/header.html :: header"></section>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
 
 <main>
-    <section th:insert="parts/header.html :: header"></section>
+    <div class="collection-layout">
+        <div class="main-collection">
+            <h2>Din Ønske liste</h2>
 
-    <div th:if="${collection != null and not #lists.isEmpty(collection.wishCollectionItems)}">
-        <ul>
-            <li th:each="item : ${collection.wishCollectionItems}">
-                <strong th:text="${item.card.cardName}">Card Name</strong>
+            <div th:if="${errorMessage}"
+                 style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
+                 th:text="${errorMessage}">
+            </div>
 
-                <form th:action="@{/removeCardFromWishList}" method="post" style="display:inline;">
-                    <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                    <button type="submit">Fjern</button>
-                </form>
-            </li>
-        </ul>
+            <form action="/myWishCollection" method="get" style="margin-bottom: 20px; padding: 10px; background-color: #eee;">
+                <input type="text" name="name" placeholder="Søg efter kortnavn..." th:value="${param.name}">
+
+                <select name="rarity">
+                    <option value="">Alle Rariteter</option>
+                    <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
+                    <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
+                    <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
+                    <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
+                </select>
+
+                <select name="color">
+                    <option value="">Alle Farver</option>
+                    <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+                    <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+                    <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+                    <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+                    <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+                    <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
+                </select>
+
+                <select name="searchTarget">
+                    <option value="CATALOG" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'CATALOG'}">Søg i Katalog</option>
+                    <option value="COLLECTION" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'COLLECTION'}">Søg i Ønske listen</option>
+                </select>
+
+                <button type="submit">Søg & Filtrér</button>
+            </form>
+
+
+            <div th:if="${wishCollection != null and not #lists.isEmpty(wishCollection.wishCollectionItems)}">
+                <ul>
+                    <li th:each="item : ${wishCollection.wishCollectionItems}">
+                        <strong th:text="${item.card.cardName}">Card Name</strong>
+
+                        <form th:action="@{/removeCardFromWishList}" method="post" style="display:inline;">
+                            <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                            <button type="submit">Fjern</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <aside class="sidebar-catalog">
+            <h2>Kort Database</h2>
+            <ul>
+                <li th:each="card : ${cardList}">
+                    <div>
+                        <strong th:text="${card.cardName}">Kortets Navn</strong>
+                        <p th:text="${card.description}">Beskrivelse</p>
+                        <span th:text="${card.colorIdentity}"></span>
+
+                        <form th:action="@{/addCardToWishList}" method="post" style="display:inline;">
+                            <input type="hidden" name="cardID" th:value="${card.cardID}" />
+                            <button type="submit" style="color: white; background-color: black">Tilføj til min samling</button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </aside>
     </div>
 
-    <div th:if="${collection == null or #lists.isEmpty(collection.wishCollectionItems)}">
-        <p>Din ønskeliste er tom!</p>
-    </div>
+
     <!-- FIT WITH CONTROLLER -->
 
 

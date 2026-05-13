@@ -7,11 +7,9 @@
 <body>
 <h1 style="text-align: center; color: rebeccapurple; font-size: 30px; margin-top: 10px;">Opret ny profil</h1>
 
-
-<div th:if="${errors != null}">
-    <ul>
-        <li th:each="error : ${errors}" th:text="${error}" style="color: red"></li>
-    </ul>
+<div th:if="${errorMessage}"
+     style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
+     th:text="${errorMessage}">
 </div>
 
 <div class="form-container">

@@ -21,7 +21,7 @@ public class TradeCollection {
     }
 
     public int getTradeCollectionId() { return tradeCollectionID; }
-    public void setTradeCollectionId(int tradelistId) { this.tradeCollectionID = tradeCollectionID; }
+    public void setTradeCollectionId(int tradeCollectionID) { this.tradeCollectionID = tradeCollectionID; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

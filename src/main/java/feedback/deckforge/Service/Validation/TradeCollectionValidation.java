@@ -6,26 +6,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class TradeCollectionValidation {
 
-    public ValidationResult validateAddCardToTradeCollection(int cardID, int quantity, Collection userPrivateCollection) {
-        ValidationResult result = new ValidationResult(); //
+    // BEMÆRK: Parameteren hedder nu newTotalQuantity
+    public ValidationResult validateAddCardToTradeCollection(int cardID, int newTotalQuantity, Collection userPrivateCollection) {
+        ValidationResult result = new ValidationResult();
 
-        if (cardID <= 0) {
-            result.addError("Ugyldigt kort.");
-        }
-        if (quantity <= 0) {
-            result.addError("Antal skal være mindst 1.");
-        }
+        if (cardID <= 0) result.addError("Ugyldigt kort.");
+        if (newTotalQuantity <= 0) result.addError("Antal skal være mindst 1.");
 
-        // Tjek om brugeren faktisk ejer kortet (og har nok af dem)
         if (userPrivateCollection != null) {
             boolean ownsEnough = userPrivateCollection.getCollectionItems().stream()
-                    .anyMatch(item -> item.getCard().getCardID() == cardID && item.getQuantity() >= quantity);
+                    .anyMatch(item -> item.getCard().getCardID() == cardID && item.getQuantity() >= newTotalQuantity);
 
             if (!ownsEnough) {
-                result.addError("Du ejer ikke nok kopier af dette kort til at sætte det til bytte."); //
+                result.addError("Du ejer ikke nok kopier af dette kort til at sætte flere til bytte.");
             }
         } else {
-            result.addError("Kunne ikke finde din private samling."); //
+            result.addError("Kunne ikke finde din private samling.");
         }
 
         return result;
