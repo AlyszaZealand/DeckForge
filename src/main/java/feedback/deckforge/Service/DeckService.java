@@ -100,30 +100,33 @@ public class DeckService {
         }
     }
 
+
+
     public void addOneToDeck(int deckID, int cardID) {
-        // 1. Hent deck og kort for at kunne validere mod format-reglerne
+        // 1. Hent decket (som kun har en "skal" af en commander)
         Deck deck = deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
+
+        // 2. VIGTIGT: Hent de fulde detaljer for commanderen (inkl. farver!),
+        if (deck.getCommander() != null && deck.getCommander().getCardID() > 0) {
+            Card fullCommander = cardRepository.findCardByID(deck.getCommander().getCardID())
+                    .orElse(null);
+            deck.setCommander(fullCommander);
+        }
+
+        // 3. Hent kortet der skal trykkes '+' på
         Card card = cardRepository.findCardByID(cardID)
                 .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
 
-        // 2. Tjek format-reglerne (max 4 kopier, deck size osv.)
-        // Vi prøver at tilføje 1 ekstra kopi
         ValidationResult result = deckValidation.validateAddCard(deck, card, 1);
 
         if (result.hasErrors()) {
             throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
         }
 
-        // 3. Find nuværende mængde og opdater
+        // 5. Opdater mængden i databasen
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
-
-        if (currentQty > 0) {
-            deckRepository.updateCardQuantity(deckID, cardID, currentQty + 1);
-        } else {
-            // Hvis kortet mod forventning ikke er der, brug den normale add-metode
-            deckRepository.addCardToDeck(deckID, cardID, 1);
-        }
+        deckRepository.updateCardQuantity(deckID, cardID, currentQty + 1);
     }
 
     // Fjerner 1 kopi af et kort fra decket

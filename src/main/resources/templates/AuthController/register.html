@@ -2,8 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <title>Title</title>
 </head>
+<section th:insert="parts/header.html :: header"></section>
+
 <body>
 <h1 style="text-align: center; color: rebeccapurple; font-size: 30px; margin-top: 10px;">Opret ny profil</h1>
 
@@ -30,4 +33,6 @@
 </div>
 
 </body>
+<section th:insert="parts/footer.html :: footer"></section>
+
 </html>

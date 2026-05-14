@@ -2,7 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title th:text="${event.eventName}">Event Details</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
+<section th:insert="parts/header.html :: header"></section>
 <body>
 
 <h1 th:text="${event.eventName}">Event Name</h1>
@@ -32,4 +34,6 @@
 <p th:if="${attendingUsers.isEmpty()}">No one has signed up yet. Be the first!</p>
 
 </body>
+<section th:insert="parts/footer.html :: footer"></section>
+
 </html>

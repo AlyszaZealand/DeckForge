@@ -115,7 +115,7 @@
             <option value="Common" th:selected="${currentRarity == 'Common'}">Common</option>
             <option value="Uncommon" th:selected="${currentRarity == 'Uncommon'}">Uncommon</option>
             <option value="Rare" th:selected="${currentRarity == 'Rare'}">Rare</option>
-            <option value="Mythic" th:selected="${currentRarity == 'Mythic'}">Mythic</option>
+            <option value="MythicRare" th:selected="${currentRarity == 'MythicRare'}">Mythic</option>
           </select>
         </div>
 
@@ -139,7 +139,7 @@
           <form th:if="${!deck.format.requiresCommander or deck.commander != null}"
                 th:action="@{/deckBuilder/{id}/add(id=${deck.deckID})}" method="post" style="display: flex; gap: 5px; align-items: center; margin: 0;">
             <input type="hidden" name="cardID" th:value="${card.cardID}">
-            <input type="number" name="quantity" value="1" min="1" max="4" style="width: 50px; text-align: center;" class="form-control">
+            <input type="number" name="quantity" value="1" min="1" style="width: 50px; text-align: center;" class="form-control">
             <button type="submit" class="btn btn-success" style="padding: 5px 10px;">Tilføj</button>
           </form>
 
