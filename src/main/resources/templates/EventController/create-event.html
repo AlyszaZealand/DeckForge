@@ -20,7 +20,59 @@
     <section th:insert="parts/header.html :: header"></section>
 
 
-    <!-- FIT WITH CONTROLLER -->
+    <div th:if="${errorMessage}"
+         style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
+         th:text="${errorMessage}">
+    </div>
+
+    <form action="/registerEvent" method="post" th:object="${event}" class="form-container">
+
+        <label>Event navn:</label><br>
+        <input type="text" th:field="*{eventName}" style="width: 250px"><br><br>
+
+        <label>Beskrivelse</label><br>
+        <input type="text" th:field="*{eventDescription}" style="width: 250px"><br><br>
+
+        <label>Dato</label><br>
+        <input type="datetime-local" th:field="*{eventDate}"><br><br>
+
+        <label>Format</label><br>
+        <select th:field="*{eventFormat}" style="width: 250px">
+            <option value="">Vælg et format...</option>
+            <option th:each="format : ${formats}"
+                    th:value="${format.formatName}"
+                    th:text="${format.formatName}">
+            </option>
+        </select><br><br>
+
+        <label>Status</label><br>
+        <select name="eventStatus" th:field="*{eventStatus}">
+            <option value="PLANNED">Planlagt</option>
+            <option value="ACTIVE">Aktiv</option>
+            <option value="COMPLETED">Afsluttet</option>
+            <option value="CANCELLED">Aflyst</option>
+        </select><br><br>
+
+        <label>Størrelse</label><br>
+        <select th:field="*{eventSize}" style="width: 250px">
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+        </select><br><br>
+
+        <!--    <label>Billede:</label><br>-->
+        <!--    <input type="file" name="image" accept="image/*"><br><br>-->
+
+        <button type="submit">Opret</button>
+
+    </form>
+
+
+    <div style="display: flex; justify-content: center; gap: 10px;">
+        <button onclick="window.location.href='/profile'" style="margin-top: 10px; text-align: center">Gå til Min Profil</button>
+
+        <button onclick="window.location.href='/'" style="margin-top: 10px; text-align: center">Gå til Forsiden</button>
+    </div>
 
 
     <section th:insert="parts/footer.html :: footer"></section>

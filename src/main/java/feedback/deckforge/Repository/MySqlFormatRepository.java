@@ -2,11 +2,13 @@ package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.Format;
 import feedback.deckforge.Service.RepoInterfaces.IFormatRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class MySqlFormatRepository implements IFormatRepository {
@@ -20,7 +22,7 @@ public class MySqlFormatRepository implements IFormatRepository {
     private final RowMapper<Format> formatRowMapper = (rs, rowNum) -> {
         Format format = new Format();
 
-        format.setFormatId(rs.getInt("format_id"));
+        format.setFormatID(rs.getInt("format_id"));
         format.setFormatName(rs.getString("format_name"));
         format.setMinDeckSize(rs.getInt("min_deck_size"));
         format.setMaxDeckSize(rs.getInt("max_deck_size"));
@@ -54,18 +56,18 @@ public class MySqlFormatRepository implements IFormatRepository {
 
     @Override
     public void updateFormat(Format format){
-        String sql = "update formats = set format_name = ?, min_deck_size = ?, max_deck_size = ?, max_copies_of_card = ?, requires_commader = ?, allowed_rarities =? where format_id = ? ";
+        String sql = "UPDATE formats SET format_name = ?, min_deck_size = ?, max_deck_size = ?, max_copies_of_card = ?, requires_commander = ?, allowed_rarities = ? WHERE format_id = ?";
 
         jdbcTemplate.update(sql,
                 format.getFormatName(),
-                format.getFormatName(),
+                // Fjernet den ekstra getFormatName() herfra
                 format.getMinDeckSize(),
                 format.getMaxDeckSize(),
                 format.getMaxCopiesOfCard(),
                 format.isRequiresCommander(),
                 format.getAllowedRarities(),
-                format.getFormatId()
-                );
+                format.getFormatID() // Format ID til WHERE cluse
+        );
     }
 
     @Override
@@ -73,5 +75,21 @@ public class MySqlFormatRepository implements IFormatRepository {
         String sql = "Select * from formats";
         return jdbcTemplate.query(sql, formatRowMapper);
     }
+
+    @Override
+    public Optional<Format> findFormatByID(int formatID) {
+        // SQL-forespørgslen der leder efter det specifikke id
+        String sql = "SELECT * FROM formats WHERE format_id = ?";
+
+        try {
+            // Her bruger vi jeres eksisterende formatRowMapper!
+            Format format = jdbcTemplate.queryForObject(sql, formatRowMapper, formatID);
+            return Optional.of(format);
+        } catch (EmptyResultDataAccessException e) {
+            // Hvis formatet ikke findes (f.eks. ved et ugyldigt ID), returnerer vi empty
+            return Optional.empty();
+        }
+    }
+
 
 }

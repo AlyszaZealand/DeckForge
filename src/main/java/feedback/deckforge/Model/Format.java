@@ -2,7 +2,7 @@ package feedback.deckforge.Model;
 
 public class Format {
 
-    private int formatId;
+    private int formatID;
     private String formatName;           // F.eks. "Standard", "Commander", "Pauper"
 
     // Størrelsesregler
@@ -26,8 +26,8 @@ public class Format {
     }
 
     // --- Getters og Setters ---
-    public int getFormatId() { return formatId; }
-    public void setFormatId(int formatId) { this.formatId = formatId; }
+    public int getFormatID() { return formatID; }
+    public void setFormatID(int formatID) { this.formatID = formatID; }
 
     public String getFormatName() { return formatName; }
     public void setFormatName(String formatName) { this.formatName = formatName; }

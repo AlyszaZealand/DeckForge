@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ICardRepository {
     void saveCard(Card card);
-    Optional<Card> findCardById(int cardId);
+    Optional<Card> findCardByID(int cardId);
     List<Card> findAllCards();
     List<Card> searchAllCards(String name, String rarity, String color);
     List<Card> searchCollectionCards(int userId, String name, String rarity, String color);

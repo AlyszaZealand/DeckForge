@@ -3,6 +3,7 @@ package feedback.deckforge.Model;
 public class DeckItem {
     private Card card;
     private int quantity;
+    private int ownedQuantity;
 
     public DeckItem() {}
 
@@ -16,5 +17,17 @@ public class DeckItem {
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public int getOwnedQuantity() {
+        return ownedQuantity;
+    }
+    public void setOwnedQuantity(int ownedQuantity) {
+        this.ownedQuantity = ownedQuantity;
+    }
+
+    public boolean isFullyOwned() {
+        return ownedQuantity >= quantity;
+    }
+
 }
 

@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static feedback.deckforge.Model.Enum.CollectionType.TRADE;
-
 @Service
 public class CardService {
 
@@ -28,7 +26,7 @@ public class CardService {
     }
 
     public Optional<Card> getCardById(int cardID){
-        return cardRepository.findCardById(cardID);
+        return cardRepository.findCardByID(cardID);
     }
 
     public List<Card> getAllCards(){

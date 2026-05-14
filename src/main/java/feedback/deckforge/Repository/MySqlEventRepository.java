@@ -23,7 +23,8 @@ public class MySqlEventRepository implements IEventRepository {
     }
 
     private final RowMapper<Event> eventRowMapper = (rs,rowNum) -> {
-        return new Event(
+        // 1. Create the event using your constructor
+        Event event = new Event(
                 rs.getString("event_format"),
                 EventStatus.valueOf(rs.getString("event_status")),
                 rs.getInt("event_size"),
@@ -31,6 +32,12 @@ public class MySqlEventRepository implements IEventRepository {
                 rs.getString("event_description"),
                 rs.getString("event_name")
         );
+
+        // 2. THIS IS THE MISSING PIECE! Manually set the ID:
+        event.setEventID(rs.getInt("event_id"));
+
+        // 3. Return the fully built event
+        return event;
     };
 
     @Override
@@ -39,7 +46,7 @@ public class MySqlEventRepository implements IEventRepository {
 
         jdbcTemplate.update(sql,
                 event.getEventFormat(),
-                event.getEventStatus(),
+                event.getEventStatus().name(), // Convert Java Enum to String for DB
                 event.getEventSize(),
                 event.getEventDate(),
                 event.getEventDescription(),
@@ -53,11 +60,11 @@ public class MySqlEventRepository implements IEventRepository {
 
         jdbcTemplate.update(sql,
                 event.getEventFormat(),
-                event.getEventStatus(),
+                event.getEventStatus().name(), // Convert Java Enum to String for DB
                 event.getEventSize(),
                 event.getEventDate(),
                 event.getEventDescription(),
-                event.getEventId()
+                event.getEventID()
                 );
     }
 

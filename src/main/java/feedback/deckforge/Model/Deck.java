@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Deck {
 
-    private int deckId;
+    private int deckID;
     private String deckName;
     private User user;
     private Format format;
@@ -23,8 +23,8 @@ public class Deck {
     }
 
     // --- Getters og Setters ---
-    public int getDeckId() { return deckId; }
-    public void setDeckId(int deckId) { this.deckId = deckId; }
+    public int getDeckID() { return deckID; }
+    public void setDeckID(int deckID) { this.deckID = deckID; }
 
     public String getDeckName() { return deckName; }
     public void setDeckName(String deckName) { this.deckName = deckName; }

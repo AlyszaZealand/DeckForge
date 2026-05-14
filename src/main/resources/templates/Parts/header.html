@@ -8,7 +8,7 @@
     <section th:fragment="header">
         <header class="website-header"> <!-- Naming for css styling -->
             <div class="container"> <!-- Container for header content, for css styling -->
-                <h1>Deck Forge</h1>
+                <h1>♛ Deck Forge ♛</h1>
 
                 <!-- POSSIBLE <nav class="website-navigation"> -->
                 <nav>
@@ -21,7 +21,7 @@
 
                     <th:block th:if="${session.loggedInUser != null}">
                         <a href="/profile">Profil</a>
-                        <a href="/registerEvent">Event</a>
+              <!--      <a href="/registerEvent">Event</a> -->
                         <a href="/collectionPage">Collections</a>
 
                         <form th:action="@{/logout}" method="post" style="display: inline;">
@@ -31,10 +31,10 @@
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
                         <a href="/addCard">Tilføj Kort</a>
-                        <a href="/addFormat">Tilføj Format</a>
+                        <a href="/createFormat">Tilføj Format</a>
                     </th:block>
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}">
-                        <a href="/createEvent">Tilføj Event</a>
+                        <a href="/registerEvent">Tilføj Event</a>
                     </th:block>
                 </nav>
             </div>

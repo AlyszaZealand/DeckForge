@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <title>Opdater Format - Deck Forge</title>
+</head>
+<body>
+<main>
+    <h1>Opdater format: <span th:text="${format.formatName}">Format</span></h1>
+
+    <div th:if="${errorMessage}" style="color: white; background-color: #ff4d4d; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <ul>
+            <li th:each="err : ${errorMessage}" th:text="${err}">Fejlbesked</li>
+        </ul>
+    </div>
+
+    <div class="form-container">
+        <form th:action="@{/updateFormat}" th:object="${format}" method="post">
+
+            <input type="hidden" id="formatID" th:field="*{formatID}">
+
+            <label for="formatName">Formatnavn:</label><br>
+            <input type="text" id="formatName" th:field="*{formatName}"><br><br>
+
+            <label for="minDeckSize">Minimum kort i decket:</label><br>
+            <input type="number" id="minDeckSize" th:field="*{minDeckSize}"><br><br>
+
+            <label for="maxDeckSize">Maximum kort i decket:</label><br>
+            <input type="number" id="maxDeckSize" th:field="*{maxDeckSize}"><br><br>
+
+            <label for="maxCopiesOfCard">Max antal kopier af samme kort:</label><br>
+            <input type="number" id="maxCopiesOfCard" th:field="*{maxCopiesOfCard}"><br><br>
+
+            <label for="requiresCommander">
+                <input type="checkbox" id="requiresCommander" th:field="*{requiresCommander}"> Kræver en Commander?
+            </label><br><br>
+
+            <label for="allowedRarities">Tilladte rariteter:</label><br>
+            <input type="text" id="allowedRarities" th:field="*{allowedRarities}"><br><br>
+
+            <button type="submit" style="background-color: #2ecc71; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+                Gem ændringer
+            </button>
+            <a th:href="@{/}" style="margin-left: 10px; text-decoration: none; color: gray;">Annuller</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>

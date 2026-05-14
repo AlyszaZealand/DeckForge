@@ -158,3 +158,4 @@ CREATE TABLE trade_items (
                         FOREIGN KEY (trade_id) REFERENCES trades(trade_id) ON DELETE CASCADE,
                         FOREIGN KEY (card_id) REFERENCES cards(card_id)
 );
+

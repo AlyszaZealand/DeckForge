@@ -25,7 +25,7 @@ public class EventValidation {
             result.addError("Udstillingen skal have en fastsat dato. Datoen må inte være sat tilbage i tiden.");
         }
 
-        if(event.getEventSize() != 8 || event.getEventSize() != 16 || event.getEventSize() != 32){
+        if(event.getEventSize() != 8 && event.getEventSize() != 16 && event.getEventSize() != 32){
             result.addError("Udstillingen skal have en deltager størrelse på enten 8, 16 eller 32");
         }
 

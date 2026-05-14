@@ -1,6 +1,7 @@
 package feedback.deckforge.Model;
 
 import feedback.deckforge.Model.Enum.EventStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +13,9 @@ public class Event {
     private String eventFormat;
     private EventStatus eventStatus;
     private int eventSize;
-    private LocalDateTime eventDate;
     private String eventDescription;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime eventDate;
 
     public Event() {}
 
@@ -27,8 +29,8 @@ public class Event {
     }
 
     // Getters og Setters
-    public int getEventId() { return eventID; }
-    public void setEventId(int eventId) { this.eventID = eventId; }
+    public int getEventID() { return eventID; }
+    public void setEventID(int eventID) { this.eventID = eventID; }
 
     public String getEventFormat() { return eventFormat; }
     public void setEventFormat(String eventFormat) { this.eventFormat = eventFormat; }

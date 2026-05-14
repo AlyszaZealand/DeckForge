@@ -1,14 +1,14 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Model.Event;
 import feedback.deckforge.Model.User;
+import feedback.deckforge.Service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import feedback.deckforge.Service.CollectionService;
-import feedback.deckforge.Service.TradeCollectionService;
-import feedback.deckforge.Service.UserService;
-import feedback.deckforge.Service.WishCollectionService;
+
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -17,17 +17,23 @@ public class UserController {
     private CollectionService collectionService;
     private TradeCollectionService tradeCollectionService;
     private WishCollectionService wishCollectionService;
+    private EventService eventService;
 
-    public UserController(UserService userService, CollectionService collectionService, TradeCollectionService tradeCollectionService, WishCollectionService wishCollectionService) {
+    public UserController(UserService userService, CollectionService collectionService, TradeCollectionService tradeCollectionService, WishCollectionService wishCollectionService, EventService eventService) {
         this.userService = userService;
         this.collectionService = collectionService;
         this.tradeCollectionService = tradeCollectionService;
         this.wishCollectionService = wishCollectionService;
+        this.eventService = eventService;
     }
 
 
     @GetMapping("/")
-    public String showHomePage(){
+    public String showHomePage(Model model){
+        // Hent alle events via din service og send dem til HTML'en
+        List<Event> events = eventService.getAllEvents();
+        model.addAttribute("events", events);
+
         return "UserController/home";
     }
 

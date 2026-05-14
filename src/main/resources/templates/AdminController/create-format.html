@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <title>Opret Format - Deck Forge</title>
+</head>
+<body>
+<main>
+  <h1>Opret nyt spil-format</h1>
+
+  <div th:if="${errorMessage}" style="color: white; background-color: #ff4d4d; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <ul>
+      <li th:each="error : ${errorMessage}" th:text="${err}">Fejlbesked</li>
+    </ul>
+  </div>
+
+  <div class="form-container">
+    <form th:action="@{/createFormat}" th:object="${format}" method="post">
+
+      <label for="formatName">Formatnavn:</label><br>
+      <input type="text" id="formatName" th:field="*{formatName}" placeholder="f.eks. Commander eller Standard"><br><br>
+
+      <label for="minDeckSize">Minimum kort i decket:</label><br>
+      <input type="number" id="minDeckSize" th:field="*{minDeckSize}"><br><br>
+
+      <label for="maxDeckSize">Maximum kort i decket:</label><br>
+      <input type="number" id="maxDeckSize" th:field="*{maxDeckSize}"><br><br>
+
+      <label for="maxCopiesOfCard">Max antal kopier af samme kort:</label><br>
+      <input type="number" id="maxCopiesOfCard" th:field="*{maxCopiesOfCard}"><br><br>
+
+      <label for="requiresCommander">
+        <input type="checkbox" id="requiresCommander" th:field="*{requiresCommander}"> Kræver en Commander?
+      </label><br><br>
+
+      <label for="allowedRarities">Tilladte rariteter (kommasepareret):</label><br>
+      <input type="text" id="allowedRarities" th:field="*{allowedRarities}" placeholder="Common, Uncommon, Rare..."><br><br>
+
+      <button type="submit" style="background-color: black; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+        Gem Format
+      </button>
+      <a th:href="@{/}" style="margin-left: 10px; text-decoration: none; color: gray;">Annuller</a>
+    </form>
+  </div>
+</main>
+</body>
+</html>

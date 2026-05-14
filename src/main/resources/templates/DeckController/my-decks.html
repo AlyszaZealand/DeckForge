@@ -1,30 +1,65 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Login</title>
+  <title>Mine Decks - DeckForge</title>
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
   <meta charset="UTF-8">
-  <meta name="description" content="Login">
-  <meta name="keywords" content="HTML, CSS">
-  <meta name="author" content="Bug Busters">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${errorMessage}"
-     style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-     th:text="${errorMessage}">
-</div>
 <main>
-  <section th:insert="parts/header.html :: header"></section>
+  <section th:insert="~{Parts/header.html :: header}"></section>
 
+  <div class="container" style="padding: 20px; max-width: 1000px; margin: auto;">
+    <h1>Mine Decks</h1>
 
-  <!-- FIT WITH CONTROLLER -->
+    <section class="create-deck-section" style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+      <h3>Opret nyt deck</h3>
+      <form th:action="@{/createDeck}" method="post" style="display: flex; gap: 15px; align-items: center;">
+        <input type="text" name="name" placeholder="Indtast deck navn..." required class="form-control" style="flex: 1;">
 
+        <select name="formatID" required class="form-control" style="flex: 1;">
+          <option value="">-- Vælg Format --</option>
+          <option th:each="format : ${formats}" th:value="${format.formatID}" th:text="${format.formatName}"></option>
+        </select>
 
-  <section th:insert="parts/footer.html :: footer"></section>
+        <button type="submit" class="btn btn-primary">Opret Deck</button>
+      </form>
+    </section>
+
+    <h3>Dine oprettede decks</h3>
+    <div class="deck-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+      <div th:each="deck : ${deckCollection}" class="deck-card" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 th:text="${deck.deckName}" style="margin-top: 0;">Deck Navn</h2>
+        <p><strong>Format:</strong> <span th:text="${deck.format.formatName}">Format</span></p>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+
+          <a th:href="@{/deckBuilder/{id}(id=${deck.deckID})}" class="btn btn-success" style="display: inline-block; text-decoration: none; padding: 8px 12px; background-color: #28a745; color: white; border-radius: 4px; font-size: 0.9em;">
+            Gå til Builder
+          </a>
+
+          <form th:action="@{/deleteDeck/{id}(id=${deck.deckID})}" method="post"
+                th:data-deckname="${deck.deckName}"
+                onsubmit="return confirm('Er du sikker på, at du vil slette decket: ' + this.getAttribute('data-deckname') + '?');"
+                style="margin: 0;">
+            <button type="submit" class="btn btn-danger" style="padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">
+              Slet
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(deckCollection)}">
+        <p>Du har ikke oprettet nogen decks endnu. Opret dit første deck ovenfor!</p>
+      </div>
+    </div>
+  </div>
+
+  <section th:insert="~{Parts/footer.html :: footer}"></section>
 </main>
-</body>
 
+</body>
 </html>

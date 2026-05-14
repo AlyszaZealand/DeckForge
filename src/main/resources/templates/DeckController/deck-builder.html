@@ -1,31 +1,155 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Login</title>
+  <title>Deck Builder - DeckForge</title>
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
   <meta charset="UTF-8">
-  <meta name="description" content="Login">
-  <meta name="keywords" content="HTML, CSS">
-  <meta name="author" content="Bug Busters">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${errorMessage}"
-     style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-     th:text="${errorMessage}">
-</div>
-
 <main>
-  <section th:insert="parts/header.html :: header"></section>
+  <section th:insert="~{Parts/header.html :: header}"></section>
 
+  <div th:if="${errorMessage}" style="background-color: #f8d7da; color: #721c24; padding: 15px; text-align: center; border: 1px solid #f5c6cb;">
+    <strong th:text="${errorMessage}"></strong>
+  </div>
 
-  <!-- FIT WITH CONTROLLER -->
+  <div class="deck-builder-layout" style="display: flex; gap: 40px; padding: 20px; max-width: 1200px; margin: auto;">
 
+    <section class="deck-column" style="flex: 1; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+      <a th:href="@{/myDecks}" style="text-decoration: none; color: #007bff;">&larr; Tilbage til oversigt</a>
+      <h1 th:text="${deck.deckName}" style="margin-top: 10px;">Deck Navn</h1>
+      <p><strong>Format:</strong> <span th:text="${deck.format.formatName}">Format</span></p>
+      <hr>
 
-  <section th:insert="parts/footer.html :: footer"></section>
+      <div th:if="${deck.format.requiresCommander}" style="background-color: #f1ecce; border: 2px solid #d4af37; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+
+        <h3 style="margin-top: 0; color: #8b6508;">♛ Din Commander</h3>
+
+        <div th:if="${deck.commander != null}" style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong th:text="${deck.commander.cardName}" style="font-size: 1.2em;">Commander Navn</strong><br>
+
+            <span>Farver: <strong th:text="${deck.commander.colorIdentity}" style="color: #c00;"></strong></span> |
+            <span>Sjældenhed: <strong th:text="${deck.commander.cardRarity}"></strong></span> |
+            <span th:text="${deck.commander.cardType}" style="font-style: italic;">Type</span>
+          </div>
+        </div>
+
+        <div th:if="${deck.commander == null}">
+          <strong style="color: #dc3545;">Intet valgt!</strong>
+          <p style="margin: 5px 0 0 0; font-size: 0.9em;">Brug søgemenuen til højre og vælg din Commander for at låse deckets farver op.</p>
+        </div>
+      </div>
+
+      <h3>Kort i dit deck</h3>
+      <div class="deck-list">
+        <div th:each="item : ${deck.deckItems}" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0;">
+
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <form th:action="@{/deckBuilder/{id}/removeOne(id=${deck.deckID})}" method="post" style="margin: 0;">
+                <input type="hidden" name="cardID" th:value="${item.card.cardID}">
+                <button type="submit" class="btn-qty" style="width: 25px; height: 25px; cursor: pointer;">-</button>
+              </form>
+
+              <strong th:text="${item.quantity} + 'x'"></strong>
+
+              <form th:action="@{/deckBuilder/{id}/addOne(id=${deck.deckID})}" method="post" style="margin: 0;">
+                <input type="hidden" name="cardID" th:value="${item.card.cardID}">
+                <button type="submit" class="btn-qty" style="width: 25px; height: 25px; cursor: pointer;">+</button>
+              </form>
+            </div>
+
+            <span th:text="${item.card.cardName} + ' (' + ${item.card.colorIdentity} + ', ' + ${item.card.cardRarity} + ')'" style="margin-left: 10px;">Card Name</span>
+
+            <span th:if="${item.ownedQuantity == 0}" style="color: #dc3545; font-size: 0.85em; font-weight: bold;">
+                            (Not owned)
+                        </span>
+            <span th:if="${item.ownedQuantity > 0 and item.ownedQuantity < item.quantity}" style="color: #d39e00; font-size: 0.85em; font-weight: bold;">
+                            (Not all copies owned - You have: [[${item.ownedQuantity}]])
+                        </span>
+          </div>
+        </div>
+
+        <p th:if="${#lists.isEmpty(deck.deckItems)}" style="color: #666; font-style: italic;">
+          Dit deck er tomt. Brug menuen til højre for at finde kort!
+        </p>
+      </div>
+    </section>
+
+    <section class="search-column" style="flex: 1; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+      <h2>Find kort</h2>
+
+      <form th:action="@{/deckBuilder/{id}(id=${deck.deckID})}" method="get" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+
+        <input type="text" name="search" th:value="${currentSearch}" placeholder="Søg på kortnavn..." class="form-control">
+
+        <div style="display: flex; gap: 20px; align-items: center; padding: 10px; background: #eee; border-radius: 4px;">
+          <label style="cursor: pointer;">
+            <input type="radio" name="collectionType" value="CATALOG"
+                   th:checked="${currentCollectionType == null or currentCollectionType.name() == 'CATALOG'}">
+            Hele Kataloget
+          </label>
+          <label style="cursor: pointer;">
+            <input type="radio" name="collectionType" value="COLLECTION"
+                   th:checked="${currentCollectionType != null and currentCollectionType.name() == 'COLLECTION'}">
+            Min Samling
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <select name="color" class="form-control" style="flex: 1;">
+            <option value="">Alle farver</option>
+            <option value="W" th:selected="${currentColor == 'W'}">White</option>
+            <option value="U" th:selected="${currentColor == 'U'}">Blue</option>
+            <option value="B" th:selected="${currentColor == 'B'}">Black</option>
+            <option value="R" th:selected="${currentColor == 'R'}">Red</option>
+            <option value="G" th:selected="${currentColor == 'G'}">Green</option>
+            <option value="C" th:selected="${currentColor == 'C'}">Colorless</option>
+          </select>
+
+          <select name="rarity" class="form-control" style="flex: 1;">
+            <option value="">Alle sjældenheder</option>
+            <option value="Common" th:selected="${currentRarity == 'Common'}">Common</option>
+            <option value="Uncommon" th:selected="${currentRarity == 'Uncommon'}">Uncommon</option>
+            <option value="Rare" th:selected="${currentRarity == 'Rare'}">Rare</option>
+            <option value="Mythic" th:selected="${currentRarity == 'Mythic'}">Mythic</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Søg efter kort</button>
+      </form>
+
+      <hr>
+
+      <div th:if="${searchResults != null}">
+        <div th:each="card : ${searchResults}" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding: 8px 0;">
+          <span th:text="${card.cardName} + ' (' + ${card.colorIdentity} + ', ' + ${card.cardRarity} + ')'">Card Name</span>
+
+          <form th:if="${deck.format.requiresCommander and deck.commander == null}"
+                th:action="@{/deckBuilder/{id}/setCommander(id=${deck.deckID})}" method="post" style="margin: 0;">
+            <input type="hidden" name="cardID" th:value="${card.cardID}">
+            <button type="submit" class="btn btn-warning" style="padding: 5px 10px; font-weight: bold;">
+              Vælg som Commander
+            </button>
+          </form>
+
+          <form th:if="${!deck.format.requiresCommander or deck.commander != null}"
+                th:action="@{/deckBuilder/{id}/add(id=${deck.deckID})}" method="post" style="display: flex; gap: 5px; align-items: center; margin: 0;">
+            <input type="hidden" name="cardID" th:value="${card.cardID}">
+            <input type="number" name="quantity" value="1" min="1" max="4" style="width: 50px; text-align: center;" class="form-control">
+            <button type="submit" class="btn btn-success" style="padding: 5px 10px;">Tilføj</button>
+          </form>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section th:insert="~{Parts/footer.html :: footer}"></section>
 </main>
-</body>
 
+</body>
 </html>

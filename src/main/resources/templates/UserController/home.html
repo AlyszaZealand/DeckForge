@@ -16,14 +16,38 @@
     <section th:insert="parts/header.html :: header"></section>
         <main>
             <section>
-                <p>Her skal der være indhold og billeder om og med katte.
-                Jeg ved ikke helt hvad der skal stå endnu, men det skal helst
-                fylde en hel del så vi kan teste om hjemmesiden er responsiv.
-                </p>
-                <img src="Sibirisk07.jpg"> <!-- .jpg, .jpeg, png etc -->
+                <div th:if="${events.isEmpty()}">
+                    <p>Der er i øjeblikket ingen planlagte events.</p>
+                </div>
+                <form>
+                    <table border="1" th:unless="${events.isEmpty()}" class="event-table">
+                        <thead>
+                        <tr>
+                            <th>Event Navn</th>
+                            <th>Dato</th>
+                            <th>Format</th>
+                            <th>Beskrivelse</th>
+                            <th>Status</th>
+                            <th>Størrelse</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="event : ${events}">
+                            <td th:text="${event.eventName}"></td>
+                            <td th:text="${event.eventDate}"></td>
+                            <td th:text="${event.eventFormat}"></td>
+                            <td th:text="${event.eventDescription}"></td>
+                            <td th:text="${event.eventStatus}"></td>
+                            <td th:text="${event.eventSize}"></td>
+                            <td>
+                                <a th:href="@{/events/{id}(id=${event.eventID})}">Se mere & Tilmeld dig Eventet!!!</a>                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
             </section>
         </main>
     <section th:insert="parts/footer.html :: footer"></section>
 </body>
 </html>
-

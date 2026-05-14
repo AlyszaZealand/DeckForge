@@ -12,16 +12,14 @@
 
 <hr>
 
-<div>
-  <form th:if="${!isAttending}" th:action="@{/events/{id}/signup(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
-    <button type="submit">Sign Up for Event</button>
-  </form>
+<form th:if="${!isAttending}" th:action="@{/events/{id}/signup(id=${event.eventID})}" method="post">
+  <button type="submit">Sign Up for Event</button>
+</form>
 
-  <form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventId})}" method="post"> DER SKAL LAVES POST METODE TIL DEN
-    <button type="submit">Leave Event</button>
-    <p><em>You are signed up for this event!</em></p>
-  </form>
-</div>
+<form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventID})}" method="post">
+  <button type="submit">Leave Event</button>
+  <p><em>You are signed up for this event!</em></p>
+</form>
 
 <hr>
 
