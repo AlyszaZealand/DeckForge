@@ -1,53 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Homepage</title>
+    <title>Deck Forge - Forside</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <meta name="description" content="Homepage">
-    <meta name="keywords" content="HTML, CSS, Cards, MtG">
-    <meta name="author" content="Bug Busters">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-    <!-- TEST WITH TEXT -->
-
 <body>
-    <section th:insert="parts/header.html :: header"></section>
-        <main>
-            <section>
-                <div th:if="${events.isEmpty()}">
-                    <p>Der er i øjeblikket ingen planlagte events.</p>
-                </div>
-                <form>
-                    <table border="1" th:unless="${events.isEmpty()}" class="event-table">
-                        <thead>
-                        <tr>
-                            <th>Event Navn</th>
-                            <th>Dato</th>
-                            <th>Format</th>
-                            <th>Beskrivelse</th>
-                            <th>Status</th>
-                            <th>Størrelse</th>
+<section th:insert="~{Parts/header :: header}"></section>
 
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="event : ${events}">
-                            <td th:text="${event.eventName}"></td>
-                            <td th:text="${event.eventDate}"></td>
-                            <td th:text="${event.eventFormat}"></td>
-                            <td th:text="${event.eventDescription}"></td>
-                            <td th:text="${event.eventStatus}"></td>
-                            <td th:text="${event.eventSize}"></td>
-                            <td>
-                                <a th:href="@{/events/{id}(id=${event.eventID})}">Se mere & Tilmeld dig Eventet!!!</a>                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </form>
-            </section>
-        </main>
-    <section th:insert="parts/footer.html :: footer"></section>
+<main>
+    <section style="text-align: center; padding: 60px 20px; background: linear-gradient(180deg, var(--bg-darkest) 0%, var(--bg-card) 100%); border-bottom: 1px solid var(--border-red); margin-bottom: 40px;">
+        <h1 style="font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(179,0,0,0.5);">
+            VELKOMMEN TIL <span style="color: var(--primary-red);">DECK FORGE</span>
+        </h1>
+        <p style="color: var(--text-gray); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto;">
+            Smed dine strategier, saml de stærkeste kort, og dominer i de nyeste events.
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a th:href="@{/collectionPage}" class="btn btn-primary">Gå til Samling</a>
+            <a th:href="@{/myDecks}" class="btn btn-outline">Mine Decks</a>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px; margin-bottom: 20px;">
+            Kommende Events
+        </h2>
+
+        <div th:if="${events.isEmpty()}" style="background-color: var(--bg-card); padding: 30px; text-align: center; border: 1px dashed var(--border-red); border-radius: 8px;">
+            <p style="color: var(--text-gray); font-size: 1.1rem; margin: 0;">Der er i øjeblikket ingen planlagte events.</p>
+        </div>
+
+        <div th:unless="${events.isEmpty()}" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background-color: var(--bg-card); border-radius: 8px; overflow: hidden;">
+                <thead style="background-color: var(--accent-gray); color: var(--text-white);">
+                <tr>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Event Navn</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Dato</th>
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Format</th>
+                    <th style="padding: 15px; text-align: right; border-bottom: 2px solid var(--primary-red);">Handling</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="event : ${events}" style="border-bottom: 1px solid var(--border-red);">
+                    <td th:text="${event.eventName}" style="padding: 15px; font-weight: bold;"></td>
+                    <td th:text="${event.eventDate}" style="padding: 15px; color: var(--text-gray);"></td>
+                    <td th:text="${event.eventFormat}" style="padding: 15px; color: var(--text-gray);"></td>
+                    <td style="padding: 15px; text-align: right;">
+                        <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">Se Event</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
 </body>
 </html>

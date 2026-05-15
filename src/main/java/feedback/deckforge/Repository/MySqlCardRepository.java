@@ -63,15 +63,15 @@ public class MySqlCardRepository implements ICardRepository {
     }
 
     @Override
-    public List<Card> searchAllCards(String name, String rarity, String color) {
+    public List<Card> searchAllCards(String name, String rarity, String color, String cardType) {
         StringBuilder sql = new StringBuilder("SELECT * FROM cards WHERE 1=1");
         List<Object> params = new ArrayList<>();
-        addFilters(sql, params, name, rarity, color);
+        addFilters(sql, params, name, rarity, color, cardType);
         return jdbcTemplate.query(sql.toString(), cardRowMapper, params.toArray());
     }
 
     @Override
-    public List<Card> searchCollectionCards(int userId, String name, String rarity, String color) {
+    public List<Card> searchCollectionCards(int userId, String name, String rarity, String color, String cardType) {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.* FROM cards c " +
                         "JOIN collection_items ci ON c.card_id = ci.card_id " +
@@ -80,12 +80,12 @@ public class MySqlCardRepository implements ICardRepository {
         );
         List<Object> params = new ArrayList<>();
         params.add(userId);
-        addFilters(sql, params, name, rarity, color);
+        addFilters(sql, params, name, rarity, color, cardType);
         return jdbcTemplate.query(sql.toString(), cardRowMapper, params.toArray());
     }
 
     @Override
-    public List<Card> searchTradeCards(int userId, String name, String rarity, String color) {
+    public List<Card> searchTradeCards(int userId, String name, String rarity, String color, String cardType) {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.* FROM cards c " +
                         "JOIN trade_collection_items tci ON c.card_id = tci.card_id " +
@@ -94,12 +94,12 @@ public class MySqlCardRepository implements ICardRepository {
         );
         List<Object> params = new ArrayList<>();
         params.add(userId);
-        addFilters(sql, params, name, rarity, color);
+        addFilters(sql, params, name, rarity, color, cardType);
         return jdbcTemplate.query(sql.toString(), cardRowMapper, params.toArray());
     }
 
     @Override
-    public List<Card> searchWishlistCards(int userId, String name, String rarity, String color) {
+    public List<Card> searchWishlistCards(int userId, String name, String rarity, String color, String cardType) {
         StringBuilder sql = new StringBuilder(
                 "SELECT c.* FROM cards c " +
                         "JOIN wish_collection_items wci ON c.card_id = wci.card_id " +
@@ -108,11 +108,11 @@ public class MySqlCardRepository implements ICardRepository {
         );
         List<Object> params = new ArrayList<>();
         params.add(userId);
-        addFilters(sql, params, name, rarity, color);
+        addFilters(sql, params, name, rarity, color, cardType);
         return jdbcTemplate.query(sql.toString(), cardRowMapper, params.toArray());
     }
 
-    private void addFilters(StringBuilder sql, List<Object> params, String name, String rarity, String color) {
+    private void addFilters(StringBuilder sql, List<Object> params, String name, String rarity, String color, String cardType) {
         if (name != null && !name.trim().isEmpty()) {
             sql.append(" AND card_name LIKE ?");
             params.add("%" + name + "%");
@@ -124,6 +124,10 @@ public class MySqlCardRepository implements ICardRepository {
         if (color != null && !color.trim().isEmpty()) {
             sql.append(" AND color_identity LIKE ?");
             params.add("%" + color + "%");
+        }
+        if (cardType != null && !cardType.trim().isEmpty()) {
+            sql.append(" AND card_type = ?");
+            params.add(cardType);
         }
     }
 

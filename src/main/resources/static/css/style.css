@@ -1,81 +1,298 @@
-* { margin : 0;
-    border : 0;
-    padding : 0;
-    box-sizing : border-box;
+/* =========================================
+   DECK FORGE - RED & BLACK GAMING THEME
+   ========================================= */
+
+:root {
+    --bg-darkest: #0a0a0a;       /* Siden's baggrund */
+    --bg-card: #161616;          /* Baggrund for bokse og kort */
+    --primary-red: #b30000;      /* Primær accentfarve */
+    --red-hover: #e60000;
+    --text-white: #ffffff;       /* Standard tekst */
+    --text-gray: #b0b0b0;        /* Dæmpet tekst */
+    --border-red: #4d0000;       /* Mørkerøde rammer */
+    --accent-gray: #2a2a2a;      /* Input felter m.m. */
+
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    --red-glow: 0 0 10px rgba(179, 0, 0, 0.3);
 }
 
-header {background-color : #0000ff;
-    color : #ffffff;
-    text-align : center;
-    padding : 5px;
-    margin : 5px;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-nav {	background-color : #00ff00;
-    color : #ffffff;
-    font-weight : bold;
-    padding : 5px;
-    margin : 5px;
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-darkest);
+    color: var(--text-white);
+    line-height: 1.6;
 }
 
-main {	background-color : #ffff00;
-    color : #000000;
-    padding : 5px;
-    margin : 5px;
-}
-
-footer {background-color : #ff0000;
-    color : #ffffff;
-    font-weight : bold;
-    text-align : center;
-    padding : 5px;
-    margin : 5px;
-}
-
-/* header class styling */
-.website-header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 1rem;
-}
-
-/* header responsive layout */
+/* --- LAYOUT --- */
 .container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 30px 20px;
+}
+
+/* --- HEADER & NAVIGATION --- */
+header {
+    background-color: var(--bg-darkest);
+    border-bottom: 2px solid var(--primary-red);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* test h1 */
-.website-header h1 { margin: 0; }
-
-/* footer class styling */
-.website-footer {
-    background-color: #333;
-    color:white;
-    text-align: center;
-    padding: 2rem 0;
-}
-
-/* Sidebar Catalog */
-.collection-layout {
+.nav-links {
     display: flex;
-    gap: 40px; /* Creates space between the list and the aside */
-    align-items: flex-start; /* Keeps both columns aligned at the top */
+    gap: 20px;
+    list-style: none;
 }
 
-/* Makes the main list take up 2/3 of the screen */
-.main-collection {
-    flex: 2;
+.nav-links a {
+    color: var(--text-white);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: color 0.2s;
 }
 
-/* Makes the aside take up 1/3 of the screen and gives it a nice background */
-.sidebar-catalog {
-    flex: 1;
-    background-color: #f4f4f4;
+.nav-links a:hover {
+    color: var(--primary-red);
+}
+
+/* --- TYPOGRAFI & OVERSKRIFTER --- */
+h1, h2, h3 {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-white);
+    margin-bottom: 15px;
+}
+
+.page-header {
+    border-bottom: 2px solid var(--primary-red);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px -5px var(--primary-red);
+}
+
+/* --- AUTH (LOGIN / OPRET BRUGER) --- */
+.auth-wrapper {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-box {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-red);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.auth-box form {
+    margin-top: 20px;
+}
+
+/* --- FORMS & SØGNING --- */
+.search-filter-box {
+    background-color: var(--bg-card);
     padding: 20px;
     border-radius: 8px;
+    border: 1px solid var(--border-red);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    color: var(--primary-red);
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.form-control {
+    background-color: var(--accent-gray);
+    border: 1px solid var(--border-red);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: var(--red-glow);
+}
+
+/* --- KNAPPER --- */
+.btn {
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--red-hover);
+    box-shadow: var(--red-glow);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--primary-red);
+    color: var(--primary-red);
+}
+
+.btn-outline:hover {
+    background-color: rgba(179, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background-color: transparent;
+    border: 1px solid #ff4444;
+    color: #ff4444;
+}
+
+.btn-danger:hover {
+    background-color: #ff4444;
+    color: white;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* --- KORT KATALOG / GRID --- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 25px;
+}
+
+/* TCG Kort Look */
+.tcg-card {
+    background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
+    border: 2px solid var(--accent-gray);
+    border-radius: 12px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    min-height: 280px;
+}
+
+.tcg-card:hover {
+    border-color: var(--primary-red);
+    transform: translateY(-5px);
+    box-shadow: var(--red-glow);
+}
+
+.tcg-card-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--primary-red);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.tcg-card-type {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.tcg-card-desc {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 4px;
+    flex-grow: 1; /* Presser stats og knapper ned */
+    margin-bottom: 10px;
+}
+
+.tcg-card-stats {
+    text-align: right;
+    color: var(--primary-red);
+    font-weight: bold;
+    border-top: 1px dashed var(--accent-gray);
+    padding-top: 10px;
+}
+
+/* --- SCROLLBARE LISTER --- */
+.scrollable-container {
+    max-height: 600px;
+    overflow-y: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-red);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+/* Custom scrollbar til mørkt tema */
+.scrollable-container::-webkit-scrollbar { width: 8px; }
+.scrollable-container::-webkit-scrollbar-track { background: var(--bg-darkest); border-radius: 4px; }
+.scrollable-container::-webkit-scrollbar-thumb { background: var(--accent-gray); border-radius: 4px; }
+.scrollable-container::-webkit-scrollbar-thumb:hover { background: var(--primary-red); }
+
+/* --- RESPONSIVT DESIGN (Mobiler) --- */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Skjuler menu på små skærme, kan laves til burgermenu senere */
+    }
+    .card-grid {
+        grid-template-columns: 1fr; /* Én kolonne på mobil */
+    }
+    .search-filter-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

@@ -2,51 +2,61 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <title>Collection Hub - Deck Forge</title>
 </head>
 <body>
 
-<section th:insert="~{parts/header.html :: header}"></section>
+<section th:insert="~{Parts/header :: header}"></section>
 
 <main class="container">
-    <h1>Collection Hub</h1>
-    <p>Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
 
-    <hr>
-
-    <div class="hub-menu">
-
+    <div class="page-header">
         <div>
-            <h2>Mine Kort</h2>
-            <a th:href="@{/myCards}">
-                <button type="button">Gå til Mine Kort</button>
-            </a>
+            <h1>Collection Hub</h1>
+            <p style="color: var(--text-gray);">Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
+        </div>
+    </div>
+
+    <div class="card-grid">
+
+        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="color: var(--primary-red); margin-bottom: 10px;">Mine Kort</h2>
+            <p class="tcg-card-desc" style="background: none; padding: 0;">Se og administrer hele din kortsamling.</p>
+            <div style="margin-top: 20px;">
+                <a th:href="@{/myCards}" class="btn btn-primary btn-block">Gå til Mine Kort</a>
+            </div>
         </div>
 
-        <div>
-            <h2>Min Tradelist</h2>
-            <a th:href="@{/myTradeList}">
-                <button type="button">Gå til Tradelist</button>
-            </a>
+        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="color: var(--primary-red); margin-bottom: 10px;">Min Tradelist</h2>
+            <p class="tcg-card-desc" style="background: none; padding: 0;">Administrer de kort, du har til overs til bytte.</p>
+            <div style="margin-top: 20px;">
+                <a th:href="@{/myTradeList}" class="btn btn-primary btn-block">Gå til Tradelist</a>
+            </div>
         </div>
 
-        <div>
-            <h2>Min Wishlist</h2>
-            <a th:href="@{/myWishCollection}">
-                <button type="button">Gå til Wishlist</button>
-            </a>
+        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="color: var(--primary-red); margin-bottom: 10px;">Min Wishlist</h2>
+            <p class="tcg-card-desc" style="background: none; padding: 0;">Hold styr på de kort, du mangler og ønsker dig.</p>
+            <div style="margin-top: 20px;">
+                <a th:href="@{/myWishCollection}" class="btn btn-primary btn-block">Gå til Wishlist</a>
+            </div>
         </div>
 
-        <div>
-            <h2>Mine Decks</h2>
-            <a th:href="@{/myDecks}">
-                <button type="button">Gå til Mine Decks</button>
-            </a>
+        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+            <h2 style="color: var(--primary-red); margin-bottom: 10px;">Mine Decks</h2>
+            <p class="tcg-card-desc" style="background: none; padding: 0;">Byg, rediger og forbered dine decks til kamp.</p>
+            <div style="margin-top: 20px;">
+                <a th:href="@{/myDecks}" class="btn btn-primary btn-block">Gå til Mine Decks</a>
+            </div>
         </div>
 
     </div>
 </main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
 
 </body>
 </html>

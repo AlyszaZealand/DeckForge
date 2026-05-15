@@ -1,105 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-    <title>Deck Forge</title>
+    <title>Mine Kort - Deck Forge</title>
 </head>
 <body>
-<main>
-    <section th:insert="parts/header.html :: header"></section>
 
-    <div class="collection-layout">
+<section th:insert="~{Parts/header :: header}"></section>
 
-        <div class="main-collection">
-            <h2>Din Samling</h2>
+<main class="container" style="max-width: 1500px;"> <div class="page-header">
+    <h1>Min Samling & Database</h1>
+    <p style="color: var(--text-gray);">Brug søgefunktionen til at finde nye kort, eller sortér i din egen samling.</p>
+</div>
 
-            <div th:if="${errorMessage}"
-                 style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-                 th:text="${errorMessage}">
-            </div>
+    <div th:if="${errorMessage}" style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px;" th:text="${errorMessage}"></div>
 
-            <form action="/myCards" method="get" style="margin-bottom: 20px; padding: 10px; background-color: #eee;">
-                <input type="text" name="name" placeholder="Søg efter kortnavn..." th:value="${param.name}">
+    <form action="/myCards" method="get" class="search-filter-box">
 
-                <select name="rarity">
-                    <option value="">Alle Rariteter</option>
-                    <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
-                    <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
-                    <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
-                    <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
-                </select>
-
-                <select name="color">
-                    <option value="">Alle Farver</option>
-                    <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
-                    <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
-                    <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
-                    <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
-                    <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
-                    <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
-                </select>
-
-                <select name="searchTarget">
-                    <option value="CATALOG" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'CATALOG'}">Søg i Katalog</option>
-                    <option value="COLLECTION" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'COLLECTION'}">Søg i Min Samling</option>
-                </select>
-
-                <button type="submit">Søg & Filtrér</button>
-            </form>
-
-            <ul th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
-                <li th:each="item : ${collection.collectionItems}">
-                    <strong th:text="${item.card.cardName}">Card Name</strong>
-                    (x<span th:text="${item.quantity}">Quantity</span>)
-                    <span th:text="${item.card.colorIdentity}">Farve</span>
-
-                    <form th:action="@{/removeCardFromCollection}" method="post" style="display:inline;">
-                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                        <button type="submit">Fjern 1</button>
-                    </form>
-
-                    <form th:action="@{/addExtraCardToCollection}" method="post" style="display:inline;">
-                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                        <button type="submit">Tilføj x1 af dette kort</button>
-                    </form>
-
-                    <form th:action="@{/addCardToTradeList}" method="post" style="display:inline;">
-                        <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
-                        <button type="submit">Sæt til bytte</button>
-                    </form>
-                </li>
-            </ul>
-
-            <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}">
-                <p style="padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba;">
-                    Din samling er tom, eller din søgning gav ingen resultater. Brug "Kort Database" ude til højre for at tilføje dit første kort!
-                </p>
-            </div>
-
+        <div class="form-group">
+            <label>Søg Kortnavn</label>
+            <input type="text" name="name" class="form-control" placeholder="Søg efter kort..." th:value="${param.name}">
         </div>
 
-        <aside class="sidebar-catalog">
-            <h2>Kort Database</h2>
-            <ul>
-                <li th:each="card : ${cardList}">
-                    <div>
-                        <strong th:text="${card.cardName}">Kortets Navn</strong>
-                        <p th:text="${card.description}">Beskrivelse</p>
-                        <span th:text="${card.colorIdentity}"></span>
+        <div class="form-group">
+            <label>Type</label>
+            <select name="type" class="form-control">
+                <option value="">Alle Typer</option>
+                <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
+                        th:value="${enumType}"
+                        th:text="${enumType}"
+                        th:selected="${param.type != null and param.type[0] == enumType.name()}">
+                </option>
+            </select>
+        </div>
 
-                        <form th:action="@{/addNewCard}" method="post" style="display:inline;">
+        <div class="form-group">
+            <label>Raritet</label>
+            <select name="rarity" class="form-control">
+                <option value="">Alle Rariteter</option>
+                <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
+                <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
+                <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
+                <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Farve</label>
+            <select name="color" class="form-control">
+                <option value="">Alle Farver</option>
+                <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+                <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+                <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+                <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+                <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+                <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Søg I</label>
+            <select name="searchTarget" class="form-control">
+                <option value="CATALOG" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'CATALOG'}">Søg i Katalog</option>
+                <option value="COLLECTION" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'COLLECTION'}">Søg i Min Samling</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-bottom: 15px;">Søg & Filtrér</button>
+    </form>
+
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+
+        <section>
+            <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Din Samling</h2>
+
+            <div th:if="${collection == null or #lists.isEmpty(collection.collectionItems)}" style="background-color: var(--bg-card); padding: 20px; border: 1px dashed var(--border-red); color: var(--text-gray); border-radius: 4px;">
+                Din samling er tom, eller din søgning gav ingen resultater. Brug databasen til højre for at tilføje dit første kort!
+            </div>
+
+            <div class="scrollable-container" th:if="${collection != null and not #lists.isEmpty(collection.collectionItems)}">
+                <div class="card-grid">
+
+                    <div class="tcg-card" th:each="item : ${collection.collectionItems}">
+                        <div class="tcg-card-header">
+                            <span th:text="${item.card.cardName}">Kort Navn</span>
+                            <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${item.card.manaCost}">Mana</span>
+                        </div>
+
+                        <div class="tcg-card-type">
+                            <span th:text="${item.card.cardType}">Type</span> - <span th:text="${item.card.cardRarity}">Raritet</span>
+                            (x<span style="color: white; font-weight: bold;" th:text="${item.quantity}"></span>)
+                        </div>
+
+                        <div class="tcg-card-desc" th:text="${item.card.description}">Beskrivelse</div>
+
+                        <div class="tcg-card-stats" th:if="${item.card.power != null and item.card.health != null}">
+                            <span th:text="${item.card.power}"></span> / <span th:text="${item.card.health}"></span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
+                            <div style="display: flex; gap: 5px;">
+                                <form th:action="@{/addExtraCardToCollection}" method="post" style="flex: 1;">
+                                    <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                                    <button type="submit" class="btn btn-outline btn-block" style="padding: 4px; font-size: 0.8rem;">+1</button>
+                                </form>
+                                <form th:action="@{/removeCardFromCollection}" method="post" style="flex: 1;">
+                                    <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                                    <button type="submit" class="btn btn-danger btn-block" style="padding: 4px; font-size: 0.8rem;">-1</button>
+                                </form>
+                            </div>
+                            <form th:action="@{/addCardToTradeList}" method="post">
+                                <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
+                                <button type="submit" class="btn btn-primary btn-block" style="padding: 6px; font-size: 0.8rem;">Sæt til Bytte</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <aside>
+            <h2 style="color: var(--text-gray); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Kort Database</h2>
+
+            <div class="scrollable-container">
+                <div class="card-grid" style="grid-template-columns: 1fr;">
+
+                    <div class="tcg-card" th:each="card : ${cardList}">
+                        <div class="tcg-card-header">
+                            <span th:text="${card.cardName}">Kort Navn</span>
+                            <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${card.manaCost}">Mana</span>
+                        </div>
+
+                        <div class="tcg-card-type">
+                            <span th:text="${card.cardType}">Type</span> - <span th:text="${card.cardRarity}">Raritet</span>
+                        </div>
+
+                        <div class="tcg-card-desc" th:text="${card.description}">Beskrivelse</div>
+
+                        <div class="tcg-card-stats" th:if="${card.power != null and card.health != null}">
+                            <span th:text="${card.power}"></span> / <span th:text="${card.health}"></span>
+                        </div>
+
+                        <form th:action="@{/addNewCard}" method="post" style="margin-top: 15px;">
                             <input type="hidden" name="cardID" th:value="${card.cardID}" />
-                            <button type="submit" style="color: white; background-color: black">Tilføj til min samling</button>
+                            <button type="submit" class="btn btn-outline btn-block" style="padding: 8px; font-size: 0.85rem;">+ Tilføj Samling</button>
                         </form>
                     </div>
-                </li>
-            </ul>
+
+                </div>
+            </div>
         </aside>
+
     </div>
-    <section th:insert="parts/footer.html :: footer"></section>
 </main>
 
+<section th:insert="~{Parts/footer :: footer}"></section>
 </body>
 </html>
-

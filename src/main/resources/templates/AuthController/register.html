@@ -2,37 +2,56 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opret Profil - Deck Forge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-    <title>Title</title>
 </head>
-<section th:insert="parts/header.html :: header"></section>
-
 <body>
-<h1 style="text-align: center; color: rebeccapurple; font-size: 30px; margin-top: 10px;">Opret ny profil</h1>
 
-<div th:if="${errorMessage}"
-     style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-     th:text="${errorMessage}">
-</div>
+<section th:insert="~{Parts/header.html :: header}"></section>
 
-<div class="form-container">
-    <form action="/registerUser" method="post" th:object="${user}">
+<main>
+    <div class="auth-wrapper">
+        <div class="auth-box">
 
-        <label>Navn:</label><br>
-        <input type="text" th:field="*{username}"><br><br>
+            <h2 style="color: var(--primary-red);">OPRET PROFIL</h2>
+            <p style="color: var(--text-gray); margin-bottom: 25px;">Bliv en del af smedjen og begynd din samling.</p>
 
-        <label>E-mail:</label><br>
-        <input type="text" th:field="*{email}"><br><br>
+            <div th:if="${errorMessage}"
+                 style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px; text-align: left;"
+                 th:text="${errorMessage}">
+            </div>
 
-        <label>Adgangskode:</label><br>
-        <input type="password" name="password"><br><br>
+            <form th:action="@{/registerUser}" method="post" th:object="${user}">
 
-        <button type="submit">Opret</button>
-    </form>
-    <button onclick="window.location.href='/login'" class="back-button" style="margin-top: 10px;">Gå til Login</button>
-</div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Navn:</label>
+                    <input type="text" th:field="*{username}" class="form-control" placeholder="Dit brugernavn..." required>
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label>E-mail:</label>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="din@email.dk" required>
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label>Adgangskode:</label>
+                    <input type="password" name="password" class="form-control" placeholder="Vælg en stærk kode..." required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Opret Profil</button>
+            </form>
+
+            <div style="margin-top: 15px;">
+                <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 10px;">Har du allerede en profil?</p>
+                <a th:href="@{/login}" class="btn btn-outline btn-block">Gå til Login</a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<section th:insert="~{Parts/footer.html :: footer}"></section>
 
 </body>
-<section th:insert="parts/footer.html :: footer"></section>
-
 </html>

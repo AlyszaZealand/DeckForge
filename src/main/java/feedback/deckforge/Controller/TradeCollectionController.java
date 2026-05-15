@@ -21,9 +21,8 @@ import java.util.Optional;
 public class TradeCollectionController {
 
     private TradeCollectionService tradeCollectionService;
-    private CardService cardService; // <-- VIGTIGT: Vi tilføjer CardService!
+    private CardService cardService;
 
-    // VIGTIGT: Constructor er opdateret til at modtage CardService
     public TradeCollectionController(TradeCollectionService tradeCollectionService, CardService cardService) {
         this.tradeCollectionService = tradeCollectionService;
         this.cardService = cardService;
@@ -34,6 +33,7 @@ public class TradeCollectionController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String rarity,
             @RequestParam(required = false) String color,
+            @RequestParam(required = false) String type, // <-- NY PARAMETER TILFØJET HER
             @RequestParam(required = false, defaultValue = "COLLECTION") String searchTarget,
             HttpSession session, Model model){
 
@@ -47,7 +47,8 @@ public class TradeCollectionController {
 
         if ("TRADELIST".equals(searchTarget)) {
             // --- SØG I TRADELIST (Venstre Side) ---
-            List<Card> filteredTradeCards = cardService.searchCards(name, rarity, color, CollectionType.TRADE, loggedInUser.getUserID());
+            // 'type' parameteren sendes med ind som 4. parameter
+            List<Card> filteredTradeCards = cardService.searchCards(name, rarity, color, type, CollectionType.TRADE, loggedInUser.getUserID());
 
             tradeCollectionOptional.ifPresent(tc -> {
                 tc.getTradeCollectionItems().removeIf(item ->
@@ -56,16 +57,16 @@ public class TradeCollectionController {
                 model.addAttribute("tradeCollection", tc);
             });
 
-            // Vis hele den private samling til højre uden filter
-            List<Card> allOwnedCards = cardService.searchCards("", "", "", CollectionType.COLLECTION, loggedInUser.getUserID());
+            // Vis hele den private samling til højre uden filter ("" sendt ind for type)
+            List<Card> allOwnedCards = cardService.searchCards("", "", "", "", CollectionType.COLLECTION, loggedInUser.getUserID());
             model.addAttribute("myOwnedCards", allOwnedCards);
 
         } else {
             // --- SØG I EGEN SAMLING (Højre Side - Standard) ---
             tradeCollectionOptional.ifPresent(tc -> model.addAttribute("tradeCollection", tc));
 
-            // Filtrer den private samling og send den til HTML
-            List<Card> myOwnedCards = cardService.searchCards(name, rarity, color, CollectionType.COLLECTION, loggedInUser.getUserID());
+            // Filtrer den private samling og send den til HTML (type sendes med ind)
+            List<Card> myOwnedCards = cardService.searchCards(name, rarity, color, type, CollectionType.COLLECTION, loggedInUser.getUserID());
             model.addAttribute("myOwnedCards", myOwnedCards);
         }
 

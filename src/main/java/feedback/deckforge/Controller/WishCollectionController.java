@@ -31,14 +31,15 @@ public class WishCollectionController {
         this.cardService = cardService;
     }
 
-
-
     @GetMapping("/myWishCollection")
-public String showWishCollection(  @RequestParam(required = false) String name,
-                                   @RequestParam(required = false) String rarity,
-                                   @RequestParam(required = false) String color,
-                                   @RequestParam(required = false, defaultValue = "CATALOG") String searchTarget,
-                                   HttpSession session, Model model){
+    public String showWishCollection(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String rarity,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String type, // <-- NY PARAMETER TILFØJET HER
+            @RequestParam(required = false, defaultValue = "CATALOG") String searchTarget,
+            HttpSession session, Model model){
+
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if(loggedInUser == null) return "redirect:/login";
 
@@ -47,31 +48,32 @@ public String showWishCollection(  @RequestParam(required = false) String name,
         List<Card> catalogCards;
 
         if("COLLECTION".equals(searchTarget)){
-            // --- LOGIK FOR SØGNING I EGEN SAMLING ---
+            // --- LOGIK FOR SØGNING I EGEN ØNSKELISTE ---
 
-            // Vi henter listen over kort i samlingen der matcher filteret
-            List<Card> filteredOwnedCards = cardService.searchCards(name, rarity, color, CollectionType.COLLECTION, loggedInUser.getUserID());
+            // RETTET: Den søger nu i CollectionType.WISH i stedet for COLLECTION
+            List<Card> filteredWishCards = cardService.searchCards(name, rarity, color, type, CollectionType.WISH, loggedInUser.getUserID());
 
-            // Vi filtrerer 'collection' objektet, så det kun indeholder de matchende kort
+            // Vi filtrerer 'wishCollection' objektet, så det kun indeholder de matchende kort
             wishCollectionOptional.ifPresent(coll -> {
                 coll.getWishCollectionItems().removeIf(item ->
-                        filteredOwnedCards.stream().noneMatch(c -> c.getCardID() == item.getCard().getCardID())
+                        filteredWishCards.stream().noneMatch(c -> c.getCardID() == item.getCard().getCardID())
                 );
                 model.addAttribute("wishCollection", coll);
             });
 
-            // Katalog-baren (højre side) skal bare vise alle kort (eller være tom/uændret)
-            catalogCards = cardService.searchCards("", "", "", CollectionType.CATALOG, null);
+            // Katalog-baren (højre side) skal bare vise alle kort uden filter
+            catalogCards = cardService.searchCards("", "", "", "", CollectionType.CATALOG, null);
 
         } else {
             // --- LOGIK FOR SØGNING I KATALOG (Standard) ---
 
-            // Filtrér kataloget (højre side)
-            catalogCards = cardService.searchCards(name, rarity, color, CollectionType.CATALOG, null);
+            // Filtrér kataloget (højre side) med den nye type parameter
+            catalogCards = cardService.searchCards(name, rarity, color, type, CollectionType.CATALOG, null);
 
-            // Vis den fulde samling (venstre side) uden filtrering
+            // Vis den fulde ønskeliste (venstre side) uden filtrering
             wishCollectionOptional.ifPresent(coll -> model.addAttribute("wishCollection", coll));
         }
+
         model.addAttribute("cardList", catalogCards);
         return "CollectionController/my-wishlists";
     }
@@ -92,7 +94,6 @@ public String showWishCollection(  @RequestParam(required = false) String name,
         return "redirect:/myWishCollection";
     }
 
-
     @PostMapping("/removeCardFromWishList")
     public String handleAddCardToWishCollection(@RequestParam int cardID, HttpSession session){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
@@ -106,6 +107,4 @@ public String showWishCollection(  @RequestParam(required = false) String name,
 
         return "redirect:/myWishCollection";
     }
-
-
 }

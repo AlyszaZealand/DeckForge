@@ -8,8 +8,8 @@ public interface ICardRepository {
     void saveCard(Card card);
     Optional<Card> findCardByID(int cardId);
     List<Card> findAllCards();
-    List<Card> searchAllCards(String name, String rarity, String color);
-    List<Card> searchCollectionCards(int userId, String name, String rarity, String color);
-    List<Card> searchTradeCards(int userId, String name, String rarity, String color);
-    List<Card> searchWishlistCards(int userId, String name, String rarity, String color);
+    List<Card> searchAllCards(String name, String rarity, String color, String cardType);
+    List<Card> searchCollectionCards(int userId, String name, String rarity, String color, String cardType);
+    List<Card> searchTradeCards(int userId, String name, String rarity, String color, String cardType);
+    List<Card> searchWishlistCards(int userId, String name, String rarity, String color, String cardType);
 }

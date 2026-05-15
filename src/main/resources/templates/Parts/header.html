@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<!-- Insert fragment header at the top of every html page -->
-<!-- <section th:insert="parts/header.html :: header"></section> -->
-
 <body>
-    <section th:fragment="header">
-        <header class="website-header"> <!-- Naming for css styling -->
-            <div class="container"> <!-- Container for header content, for css styling -->
-                <h1>♛ Deck Forge ♛</h1>
+<section th:fragment="header">
+    <header>
+        <div class="nav-container">
 
-                <!-- POSSIBLE <nav class="website-navigation"> -->
-                <nav>
-                    <a href="/">Forside</a>
+            <a th:href="@{/}" style="text-decoration: none;">
+                <h2 style="color: var(--primary-red); margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <span>♛</span> DECK <span style="color: var(--text-white);">FORGE</span> <span>♛</span>
+                </h2>
+            </a>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Forside</a></li>
 
                     <th:block th:if="${session.loggedInUser == null}">
-                        <a href="/login">Login</a>
-                        <a href="/registerUser">Register</a>
+                        <li><a th:href="@{/login}">Login</a></li>
+                        <li><a th:href="@{/registerUser}">Register</a></li>
                     </th:block>
 
                     <th:block th:if="${session.loggedInUser != null}">
-                        <a href="/profile">Profil</a>
-              <!--      <a href="/registerEvent">Event</a> -->
-                        <a href="/collectionPage">Collections</a>
-
-                        <form th:action="@{/logout}" method="post" style="display: inline;">
-                            <button type="submit" style="background-color: red; width: 80px;color: white; border: none; padding: 5px 10px; cursor: pointer;">Logout</button>
-                        </form>
+                        <li><a th:href="@{/profile}">Profil</a></li>
+                        <li><a th:href="@{/collectionPage}">Collections</a></li>
                     </th:block>
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
-                        <a href="/addCard">Tilføj Kort</a>
-                        <a href="/createFormat">Tilføj Format</a>
+                        <li><a th:href="@{/addCard}" style="color: var(--text-gray);">Tilføj Kort</a></li>
+                        <li><a th:href="@{/createFormat}" style="color: var(--text-gray);">Tilføj Format</a></li>
                     </th:block>
+
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}">
-                        <a href="/registerEvent">Tilføj Event</a>
+                        <li><a th:href="@{/registerEvent}" style="color: var(--text-gray);">Tilføj Event</a></li>
                     </th:block>
-                </nav>
-            </div>
-        </header>
-    </section>
-</body>
-</html>
+
+                    <th:block th:if="${session.loggedInUser != null}">
+                        <li style="display: flex; align-items: center;">
+                            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">LOGOUT</button>
+                            </form>
+                        </li>
+                    </th:block>
+                </ul>
+            </nav>
+        </div>

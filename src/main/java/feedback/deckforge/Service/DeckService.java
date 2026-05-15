@@ -40,7 +40,6 @@ public class DeckService {
         newDeck.setDeckName(name);
         newDeck.setFormat(format);
 
-        // Opret en bruger og sæt ID'et
         User user = new User();
         user.setUserID(userID);
         newDeck.setUser(user);
@@ -48,11 +47,12 @@ public class DeckService {
         deckRepository.saveDeck(newDeck);
     }
 
-    // Henter decket og udregner ejerskab til builder-visningen
+    // OPTIMERET: findDeckByID henter nu selv commander og items med beskrivelser
     public Deck getDeckForBuilder(int deckID, int userID) {
         Deck deck = deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
+        // Vi mangler stadig at vide, om brugeren ejer kortene i sit deck
         int collectionId = collectionRepository.findCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Samling ikke fundet")).getCollectionId();
 
@@ -61,37 +61,26 @@ public class DeckService {
             item.setOwnedQuantity(owned);
         }
 
-        if (deck.getCommander() != null && deck.getCommander().getCardID() > 0) {
-            Card fullCommander = cardRepository.findCardByID(deck.getCommander().getCardID()).orElse(null);
-            deck.setCommander(fullCommander);
-        }
+        // Vi behøver ikke længere kalde cardRepository for commanderen her,
+        // da repository.findDeckByID() allerede har fyldt den ud med detaljer.
+
         return deck;
     }
 
     public void addCardToDeck(int deckID, int cardID, int quantity) {
-        // 1. Hent decket
+        // findDeckByID henter nu automatisk Commanderen med farver, så valideringen virker!
         Deck deck = deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
-        // 2. VIGTIGT: Hvis der er en commander, skal vi hente dens farver fra databasen!
-        if (deck.getCommander() != null && deck.getCommander().getCardID() > 0) {
-            Card fullCommander = cardRepository.findCardByID(deck.getCommander().getCardID())
-                    .orElse(null);
-            deck.setCommander(fullCommander);
-        }
-
-        // 3. Hent det kort der skal tilføjes
         Card card = cardRepository.findCardByID(cardID)
-                .orElseThrow(() -> new RuntimeException("Kort ikke fundet"));
+                .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
 
-        // 4. Nu virker valideringen, fordi deck.getCommander() har sine farver ("R")
         ValidationResult result = deckValidation.validateAddCard(deck, card, quantity);
 
         if (result.hasErrors()) {
             throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
         }
 
-        // ... gem kortet i databasen herunder ...
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
         if (currentQty > 0) {
             deckRepository.updateCardQuantity(deckID, cardID, currentQty + quantity);
@@ -100,21 +89,11 @@ public class DeckService {
         }
     }
 
-
-
     public void addOneToDeck(int deckID, int cardID) {
-        // 1. Hent decket (som kun har en "skal" af en commander)
+        // Igen, decket kommer nu med fuld Commander-info direkte fra Repo
         Deck deck = deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
-        // 2. VIGTIGT: Hent de fulde detaljer for commanderen (inkl. farver!),
-        if (deck.getCommander() != null && deck.getCommander().getCardID() > 0) {
-            Card fullCommander = cardRepository.findCardByID(deck.getCommander().getCardID())
-                    .orElse(null);
-            deck.setCommander(fullCommander);
-        }
-
-        // 3. Hent kortet der skal trykkes '+' på
         Card card = cardRepository.findCardByID(cardID)
                 .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
 
@@ -124,24 +103,21 @@ public class DeckService {
             throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
         }
 
-        // 5. Opdater mængden i databasen
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
         deckRepository.updateCardQuantity(deckID, cardID, currentQty + 1);
     }
 
-    // Fjerner 1 kopi af et kort fra decket
     public void removeOneFromDeck(int deckID, int cardID) {
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
 
         if (currentQty > 1) {
-            // Hvis der er mere end 1, trækker vi én fra
             deckRepository.updateCardQuantity(deckID, cardID, currentQty - 1);
         } else {
-            // Hvis der kun er 1 tilbage (eller 0), fjerner vi kortet helt fra tabellen
             deckRepository.removeCardFromDeck(deckID, cardID);
         }
     }
 
+    // VIGTIG FOR TÆLLEREN: findAllDecksByUserID i Repo henter nu items, så vi kan tælle 45/60
     public List<Deck> findAllDecksByUserId(int userID) {
         return deckRepository.findAllDecksByUserID(userID);
     }
@@ -155,15 +131,13 @@ public class DeckService {
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
         Card card = cardRepository.findCardByID(cardID)
-                .orElseThrow(() -> new RuntimeException("Kort ikke fundet"));
+                .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
 
-        // Valider om kortet må være en commander
         ValidationResult result = deckValidation.validateCommander(card);
         if (result.hasErrors()) {
             throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
         }
 
-        // Gem commander på decket og opdater databasen
         deck.setCommander(card);
         deckRepository.updateDeck(deck);
     }
