@@ -2,6 +2,7 @@ package feedback.deckforge.Repository;
 
 import feedback.deckforge.Model.*;
 import feedback.deckforge.Model.Enum.CardRarity;
+import feedback.deckforge.Model.Enum.CardType;
 import feedback.deckforge.Service.RepoInterfaces.IDeckRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,36 @@ public class MySqlDeckRepository implements IDeckRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- 1. RowMapper til et komplet Kort (Card) ---
+    private final RowMapper<Card> cardRowMapper = (rs, rowNum) -> {
+        Card c = new Card();
+        c.setCardID(rs.getInt("card_id"));
+        c.setCardName(rs.getString("card_name"));
+        // c.setCardSet(rs.getString("card_set")); // Fjern '//' hvis du har 'card_set' i DB
+        c.setManaCost(rs.getString("mana_cost"));
+        c.setPower(rs.getInt("power"));
+        c.setHealth(rs.getInt("health"));
+        c.setDescription(rs.getString("description"));
+        c.setColorIdentity(rs.getString("color_identity"));
+
+        String typeStr = rs.getString("card_type");
+        if (typeStr != null) c.setCardType(CardType.valueOf(typeStr.toUpperCase()));
+
+        String rarityStr = rs.getString("card_rarity");
+        if (rarityStr != null) c.setCardRarity(CardRarity.valueOf(rarityStr.toUpperCase()));
+
+        return c;
+    };
+
+    // --- 2. RowMapper til DeckItem (Henter mængde og genbruger cardRowMapper) ---
+    private final RowMapper<DeckItem> deckItemRowMapper = (rs, rowNum) -> {
+        DeckItem item = new DeckItem();
+        item.setQuantity(rs.getInt("quantity"));
+        item.setCard(cardRowMapper.mapRow(rs, rowNum)); // Her mapper vi selve kortet
+        return item;
+    };
+
+    // --- 3. RowMapper til selve Decket ---
     private final RowMapper<Deck> deckRowMapper = (rs, rowNum) -> {
         Format format = new Format();
         format.setFormatID(rs.getInt("format_id"));
@@ -30,18 +61,15 @@ public class MySqlDeckRepository implements IDeckRepository {
         format.setRequiresCommander(rs.getBoolean("requires_commander"));
         format.setAllowedRarities(rs.getString("allowed_rarities"));
 
-        // opret user
         User owner = new User();
         owner.setUserID(rs.getInt("user_id"));
 
-        // Opret Decket
         Deck deck = new Deck();
         deck.setDeckID(rs.getInt("deck_id"));
         deck.setDeckName(rs.getString("deck_name"));
         deck.setUser(owner);
         deck.setFormat(format);
 
-        // Håndter Commander hvis den findes
         int commanderId = rs.getInt("commander_card_id");
         if (!rs.wasNull()) {
             Card commander = new Card();
@@ -52,42 +80,25 @@ public class MySqlDeckRepository implements IDeckRepository {
         return deck;
     };
 
+
     @Override
     public void saveDeck(Deck deck){
         String sql = "INSERT INTO decks (user_id, format_id, deck_name, deck_format, commander_card_id) VALUES (?, ?, ?, ?, ?)";
-
         Integer commanderID = (deck.getCommander() != null) ? deck.getCommander().getCardID() : null;
-
-        jdbcTemplate.update(sql,
-                deck.getUser().getUserID(),
-                deck.getFormat().getFormatID(),
-                deck.getDeckName(),
-                deck.getFormat().getFormatName(),
-                commanderID
-        );
+        jdbcTemplate.update(sql, deck.getUser().getUserID(), deck.getFormat().getFormatID(), deck.getDeckName(), deck.getFormat().getFormatName(), commanderID);
     }
 
     @Override
     public void updateDeck(Deck deck) {
         String sql = "UPDATE decks SET deck_name = ?, format_id = ?, commander_card_id = ? WHERE deck_id = ?";
-
         Integer commanderId = (deck.getCommander() != null) ? deck.getCommander().getCardID() : null;
-
-        jdbcTemplate.update(sql,
-                deck.getDeckName(),
-                deck.getFormat().getFormatID(),
-                commanderId,
-                deck.getDeckID()
-        );
+        jdbcTemplate.update(sql, deck.getDeckName(), deck.getFormat().getFormatID(), commanderId, deck.getDeckID());
     }
 
     @Override
     public void deleteDeck(int deckID) {
-        String deleteItemsSql = "DELETE FROM deck_items WHERE deck_id = ?";
-        jdbcTemplate.update(deleteItemsSql, deckID);
-
-        String deleteDeckSql = "DELETE FROM decks WHERE deck_id = ?";
-        jdbcTemplate.update(deleteDeckSql, deckID);
+        jdbcTemplate.update("DELETE FROM deck_items WHERE deck_id = ?", deckID);
+        jdbcTemplate.update("DELETE FROM decks WHERE deck_id = ?", deckID);
     }
 
     @Override
@@ -99,48 +110,31 @@ public class MySqlDeckRepository implements IDeckRepository {
 
     @Override
     public void removeCardFromDeck(int deckID, int cardID) {
-        String sql = "DELETE FROM deck_items WHERE deck_id = ? AND card_id = ?";
-        jdbcTemplate.update(sql, deckID, cardID);
+        jdbcTemplate.update("DELETE FROM deck_items WHERE deck_id = ? AND card_id = ?", deckID, cardID);
     }
 
     @Override
     public Optional<Deck> findDeckByID(int deckID) {
-        // Vi joiner nu også med cards tabellen (som 'cmd') for at få Commander-detaljer
-        String sql = "SELECT d.*, f.*, " +
-                "cmd.card_name AS cmd_name, cmd.color_identity AS cmd_identity, cmd.card_rarity AS cmd_rarity, cmd.card_type AS cmd_type " +
-                "FROM decks d " +
+        String sql = "SELECT d.*, f.* FROM decks d " +
                 "JOIN formats f ON d.format_id = f.format_id " +
-                "LEFT JOIN cards cmd ON d.commander_card_id = cmd.card_id " + // LEFT JOIN så vi stadig finder decks uden commander
                 "WHERE d.deck_id = ?";
         try {
+            // Hent basis-decket via deckRowMapper
             Deck deck = jdbcTemplate.queryForObject(sql, deckRowMapper, deckID);
 
             if (deck != null) {
-                // --- NYT: Udfyld Commander-objektet hvis der findes et ID ---
-                // (Tjek om jeres ResultSet har et navn i 'cmd_name')
-                String cmdName = jdbcTemplate.queryForObject("SELECT commander_card_id FROM decks WHERE deck_id = ?", Integer.class, deckID) != null ? "exists" : null;
+                // Hent commander (hvis der er valgt en) via cardRowMapper
+                if (deck.getCommander() != null && deck.getCommander().getCardID() > 0) {
+                    String cmdSql = "SELECT * FROM cards WHERE card_id = ?";
+                    Card commander = jdbcTemplate.queryForObject(cmdSql, cardRowMapper, deck.getCommander().getCardID());
+                    deck.setCommander(commander);
+                }
 
-                // Hvis der er en commander, så byg kort-objektet manuelt fra de kolonner vi hentede
-                // Alternativt kan du køre et hurtigt cardRepository.findCardByID() kald her.
-
-                // --- Hent deck items (som før) ---
+                // Hent alle kort (DeckItems) via deckItemRowMapper
                 String itemsSql = "SELECT di.quantity, c.* FROM deck_items di " +
                         "JOIN cards c ON di.card_id = c.card_id " +
                         "WHERE di.deck_id = ?";
-
-                List<DeckItem> items = jdbcTemplate.query(itemsSql, (rs, rowNum) -> {
-                    DeckItem item = new DeckItem();
-                    item.setQuantity(rs.getInt("quantity"));
-                    Card card = new Card();
-                    card.setCardID(rs.getInt("card_id"));
-                    card.setCardName(rs.getString("card_name"));
-                    card.setColorIdentity(rs.getString("color_identity"));
-                    String rarityStr = rs.getString("card_rarity");
-                    if (rarityStr != null) card.setCardRarity(CardRarity.valueOf(rarityStr.toUpperCase()));
-                    item.setCard(card);
-                    return item;
-                }, deckID);
-
+                List<DeckItem> items = jdbcTemplate.query(itemsSql, deckItemRowMapper, deckID);
                 deck.setDeckItems(items);
             }
             return Optional.ofNullable(deck);
@@ -154,19 +148,28 @@ public class MySqlDeckRepository implements IDeckRepository {
         String sql = "SELECT d.*, f.* FROM decks d " +
                 "JOIN formats f ON d.format_id = f.format_id " +
                 "WHERE d.user_id = ?";
-        return jdbcTemplate.query(sql, deckRowMapper, userID);
+
+        List<Deck> decks = jdbcTemplate.query(sql, deckRowMapper, userID);
+
+        for (Deck deck : decks) {
+            String itemsSql = "SELECT di.quantity, c.* FROM deck_items di " +
+                    "JOIN cards c ON di.card_id = c.card_id " +
+                    "WHERE di.deck_id = ?";
+
+            // Genbruger vores deckItemRowMapper præcis som i findDeckByID
+            List<DeckItem> items = jdbcTemplate.query(itemsSql, deckItemRowMapper, deck.getDeckID());
+            deck.setDeckItems(items);
+        }
+
+        return decks;
     }
 
     @Override
     public int getCardQuantity(int deckID, int cardID) {
         String sql = "SELECT quantity FROM deck_items WHERE deck_id = ? AND card_id = ?";
         try {
-            // Vi gemmer resultatet som et Integer objekt først
             Integer quantity = jdbcTemplate.queryForObject(sql, Integer.class, deckID, cardID);
-
-            // Hvis quantity ikke er null, returnerer vi værdien. Ellers returnerer vi 0.
             return quantity != null ? quantity : 0;
-
         } catch (EmptyResultDataAccessException e) {
             return 0;
         }
@@ -178,4 +181,3 @@ public class MySqlDeckRepository implements IDeckRepository {
         jdbcTemplate.update(sql, quantity, deckID, cardID);
     }
 }
-

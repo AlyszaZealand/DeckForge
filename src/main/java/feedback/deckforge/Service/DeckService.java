@@ -61,9 +61,6 @@ public class DeckService {
             item.setOwnedQuantity(owned);
         }
 
-        // Vi behøver ikke længere kalde cardRepository for commanderen her,
-        // da repository.findDeckByID() allerede har fyldt den ud med detaljer.
-
         return deck;
     }
 
