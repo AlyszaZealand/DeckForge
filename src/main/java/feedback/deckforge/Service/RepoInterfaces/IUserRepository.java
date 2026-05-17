@@ -13,6 +13,8 @@ public interface IUserRepository {
     List<User> findAllUsers();
     Optional<User> findUserByEmail(String email);
     Optional<User> findUserByID(int userID);
+    List<User> findMembersByTradelistCard(String cardName);
+    void changeUserRole(int userId, feedback.deckforge.Model.Enum.UserRole newRole);
 
 
 }

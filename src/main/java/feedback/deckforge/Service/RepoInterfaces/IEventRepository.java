@@ -15,5 +15,7 @@ public interface IEventRepository {
     List<Integer> findSignedUpUsersByEventID(int eventID);
     void signUp(int eventID, int userID);
     void removeSignUp(int eventID, int userID);
-
+    List<Event> getEventsByOrganizerId(int organizerId);
+    List<Event> getEventsByAttendeeId(int attendeeId);
+    void cancelUpcomingEventsByOrganizerId(int organizerId);
 }

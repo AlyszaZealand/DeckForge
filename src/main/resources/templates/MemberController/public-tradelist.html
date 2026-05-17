@@ -1,30 +1,49 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title th:text="${profileUser.username} + 's Tradelist - DeckForge'">Tradelist</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<section th:insert="~{Parts/header :: header}"></section>
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+<main class="container">
+    <div class="auth-wrapper">
+        <div class="auth-box" style="max-width: 900px; padding: 40px;">
 
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 30px;">
+                <h1 style="margin: 0; color: var(--text-white);"><span th:text="${profileUser.username}">Bruger</span>'s Tradelist</h1>
+                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline">Tilbage til Profil</a>
+            </div>
 
-    <!-- FIT WITH CONTROLLER -->
+            <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection?.tradeCollectionItems)}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
+                <p style="color: var(--text-gray); font-style: italic;">Denne bruger har i øjeblikket ingen kort i sin bytteliste.</p>
+            </div>
 
+            <div th:unless="${tradeCollection == null or #lists.isEmpty(tradeCollection?.tradeCollectionItems)}"
+                 style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
 
-    <section th:insert="parts/footer.html :: footer"></section>
+                <div th:each="item : ${tradeCollection?.tradeCollectionItems}" class="auth-box" style="margin: 0; padding: 15px; background-color: var(--bg-darkest); border-color: var(--accent-gray); text-align: center;">
+                    <h3 th:text="${item.card.cardName}" style="color: var(--text-white); margin-top: 0; font-size: 1.1rem;">Kort Navn</h3>
+                    <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Rarity: ' + ${item.card.cardRarity}">Rarity</p>
+                    <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
+                    <p style="color: var(--primary-red); font-weight: bold; font-size: 0.9rem; margin: 10px 0;" th:text="'Antal til rådighed: ' + ${item.quantity}">Antal: 1</p>
+
+                    <a th:href="@{/trade/propose(targetUserId=${profileUser.userID})}" class="btn btn-primary btn-block" style="font-size: 0.8rem; padding: 8px;">
+                        🤝 Foreslå Bytte
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </main>
-</body>
 
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
 </html>

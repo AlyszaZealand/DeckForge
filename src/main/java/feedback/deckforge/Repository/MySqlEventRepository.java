@@ -119,5 +119,26 @@ public class MySqlEventRepository implements IEventRepository {
         jdbcTemplate.update(sql, eventID, userID);
     }
 
+    @Override
+    public List<Event> getEventsByOrganizerId(int organizerId) {
+        String sql = "SELECT * FROM events WHERE organizer_id = ?";
+        return jdbcTemplate.query(sql, eventRowMapper, organizerId);
+    }
+
+    @Override
+    public List<Event> getEventsByAttendeeId(int attendeeId) {
+        String sql = "SELECT e.* FROM events e " +
+                "JOIN event_registrations er ON e.event_id = er.event_id " +
+                "WHERE er.user_id = ?";
+        return jdbcTemplate.query(sql, eventRowMapper, attendeeId);
+    }
+
+    @Override
+    public void cancelUpcomingEventsByOrganizerId(int organizerId) {
+        String sql = "UPDATE events SET event_status = 'CANCELLED' " +
+                "WHERE organizer_id = ? AND (event_status = 'PLANNED' || event_status = 'ACTIVE')";
+        jdbcTemplate.update(sql, organizerId);
+    }
+
 
 }

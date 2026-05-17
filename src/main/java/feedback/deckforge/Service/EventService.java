@@ -135,4 +135,12 @@ public class EventService {
         return true;
     }
 
+    public List<Event> getEventsByOrganizerId(int organizerId) {
+        return eventRepository.getEventsByOrganizerId(organizerId);
+    }
+
+    public List<Event> getEventsByAttendeeId(int attendeeId) {
+        return eventRepository.getEventsByAttendeeId(attendeeId);
+    }
+
 }

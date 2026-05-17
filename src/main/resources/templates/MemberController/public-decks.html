@@ -1,30 +1,51 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title th:text="${profileUser.username} + 's Decks - DeckForge'">Decks</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<section th:insert="~{Parts/header :: header}"></section>
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+<main class="container">
+    <div class="auth-wrapper">
+        <div class="auth-box" style="max-width: 800px; padding: 40px;">
 
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 30px;">
+                <h1 style="margin: 0; color: var(--text-white);"><span th:text="${profileUser.username}">Bruger</span>'s Decks</h1>
+                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline">Tilbage til Profil</a>
+            </div>
 
-    <!-- FIT WITH CONTROLLER -->
+            <div th:if="${#lists.isEmpty(decks)}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
+                <p style="color: var(--text-gray); font-style: italic;">Denne bruger har ikke oprettet nogen decks endnu.</p>
+            </div>
 
+            <div th:unless="${#lists.isEmpty(decks)}" style="display: flex; flex-direction: column; gap: 12px;">
 
-    <section th:insert="parts/footer.html :: footer"></section>
+                <div th:each="deck : ${decks}"
+                     style="background-color: var(--bg-card); border-left: 4px solid var(--primary-red); padding: 20px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+
+                    <div>
+                        <h3 th:text="${deck.deckName}" style="color: var(--text-white); margin: 0 0 5px 0;">Deck Navn</h3>
+                        <p style="color: var(--text-gray); font-size: 0.85rem; margin: 0;" th:text="'Format: ' + ${deck.deckFormat}">Format</p>
+                    </div>
+
+                    <div>
+                        <span style="color: var(--text-gray); font-size: 0.9rem; font-style: italic;">Offentligt Deck</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </main>
-</body>
 
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
 </html>

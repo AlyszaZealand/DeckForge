@@ -1,30 +1,65 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Deck Forge - Members</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<section th:insert="~{Parts/header :: header}"></section>
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+<main class="container">
+    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
 
+        <div class="auth-box" style="flex: 2; min-width: 300px; margin: 0; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 20px;">
+                <h1 style="margin: 0; color: var(--text-white); text-shadow: var(--red-glow);">Medlemmer</h1>
 
-    <!-- FIT WITH CONTROLLER -->
+                <span style="color: var(--text-gray);">Viser <strong th:text="${#lists.size(members)}">0</strong> spillere</span>
+            </div>
 
+            <div th:if="${members.isEmpty()}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
+                <p style="color: var(--text-gray); font-style: italic; font-size: 1.1rem;">Ingen medlemmer fundet med dette kort i deres Tradelist.</p>
+                <a th:href="@{/members}" class="btn btn-outline" style="margin-top: 15px;">Vis alle medlemmer</a>
+            </div>
 
-    <section th:insert="parts/footer.html :: footer"></section>
+            <div class="scrollable-container" style="max-height: 600px;">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li th:each="user : ${members}" style="margin-bottom: 10px;">
+
+                        <a th:href="@{/profile/{id}(id=${user.userID})}"
+                           style="display: block; background-color: var(--bg-card); padding: 15px 20px; border-radius: 4px; border-left: 3px solid var(--primary-red); color: var(--text-white); text-decoration: none;">
+
+                            <h3 th:text="${user.username}" style="margin: 0 0 5px 0; font-size: 1.2rem;">Username</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-gray);">Klik for at se profil, Decks og Tradelist</span>
+
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="auth-box" style="flex: 1; max-width: 350px; min-width: 250px; margin: 0; height: fit-content; padding: 25px;">
+            <h3 style="border-bottom: 1px solid var(--primary-red); padding-bottom: 10px; margin-top: 0; color: var(--text-white);">Find Kort</h3>
+            <p style="font-size: 0.9rem; color: var(--text-gray); margin-bottom: 20px;">Søg efter et specifikt kort for at finde medlemmer, der har det sat til bytte.</p>
+
+            <form th:action="@{/members}" method="get">
+                <div class="form-group">
+                    <input type="text" name="searchCard" class="form-control" placeholder="F.eks. Black Lotus..." th:value="${searchCard}">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Søg i Tradelists</button>
+
+                <a th:if="${searchCard != null and !searchCard.isEmpty()}" th:href="@{/members}" class="btn btn-outline btn-block" style="margin-top: 10px;">Ryd Søgning</a>
+            </form>
+        </div>
+
+    </div>
 </main>
-</body>
 
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
 </html>

@@ -3,11 +3,9 @@ package feedback.deckforge.Service;
 import feedback.deckforge.Exceptions.EmailAlreadyInUseException;
 import feedback.deckforge.Exceptions.InvalidCredentialsException;
 import feedback.deckforge.Exceptions.UserNotFoundException;
+import feedback.deckforge.Model.Enum.UserRole;
 import feedback.deckforge.Model.User;
-import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
-import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
-import feedback.deckforge.Service.RepoInterfaces.IUserRepository;
-import feedback.deckforge.Service.RepoInterfaces.IWishCollectionRepository;
+import feedback.deckforge.Service.RepoInterfaces.*;
 import feedback.deckforge.Service.Validation.UserValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import org.mindrot.jbcrypt.BCrypt;
@@ -15,11 +13,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final IUserRepository userRepository;
+    private final IEventRepository eventRepository;
     private final UserValidation userValidation;
     private final ICollectionRepository collectionRepository;
     private final ITradeCollectionRepository tradeCollectionRepository;
@@ -27,11 +27,13 @@ public class UserService {
 
 
     public UserService(IUserRepository userRepository,
+                       IEventRepository eventRepository,
                        UserValidation userValidation,
                        ICollectionRepository collectionRepository,
                        ITradeCollectionRepository tradeCollectionRepository,
                        IWishCollectionRepository wishCollectionRepository) {
         this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
         this.userValidation = userValidation;
         this.collectionRepository = collectionRepository;
         this.tradeCollectionRepository = tradeCollectionRepository;
@@ -57,6 +59,17 @@ public class UserService {
 
     public void deleteUser(User user){
         userRepository.deleteUser(user.getUserID());
+    }
+
+    public List<User> getMembersByTradelistCard(String cardName) {
+        return userRepository.findMembersByTradelistCard(cardName);
+    }
+
+
+    public List<User> getAllMembers() {
+        return userRepository.findAllUsers().stream()
+                .filter(u -> u.getUserRole() == UserRole.MEMBER)
+                .collect(Collectors.toList());
     }
 
 
@@ -103,5 +116,15 @@ public class UserService {
         }
     }
 
+    public void changeUserRole(int userId, feedback.deckforge.Model.Enum.UserRole newRole) {
+        userRepository.changeUserRole(userId, newRole);
 
+        // Hvis den nye rolle er MEMBER, så aflyser vi alle deres planlagte events
+        if (newRole == feedback.deckforge.Model.Enum.UserRole.MEMBER) {
+            eventRepository.cancelUpcomingEventsByOrganizerId(userId);
+        }
+    }
 }
+
+
+

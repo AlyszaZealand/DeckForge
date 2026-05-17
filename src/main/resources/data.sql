@@ -9,8 +9,9 @@ INSERT INTO users (username, email, password_hash, user_role) VALUES
                                                                   ('SpillerSøren', 'søren@deckforge.dk', 'spiller123', 'MEMBER'),
                                                                   ('KortKaj', 'kaj@deckforge.dk', '$2a$10$wS63DEbMVNo4PvYjJs4YXebI.QCraVJV5GzJGsWBkcdf1Kvz76WIi', 'MEMBER'),
                                                                   ('Holger','holger@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ADMIN'), -- kode123
-                                                                  ('Eventus', 'event@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER'); -- kode123
-
+                                                                  ('Eventus', 'event@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER'), -- kode123
+                                                                  ('organ', 'organ@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER'),
+                                                                  ('daniel', 'daniel@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'MEMBER');
 
 
 

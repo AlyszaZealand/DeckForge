@@ -97,6 +97,25 @@ public class MySqlUserRepository implements IUserRepository {
         }
     }
 
+    @Override
+    public List<User> findMembersByTradelistCard(String cardName) {
+        String sql = "SELECT DISTINCT u.* FROM users u " +
+                "JOIN tradecollections tc ON u.user_id = tc.user_id " +
+                "JOIN tradecollection_items tci ON tc.tradecollection_id = tci.tradecollection_id " +
+                "JOIN cards c ON tci.card_id = c.card_id " +
+                "WHERE u.user_role = 'MEMBER' AND c.card_name LIKE ?";
+
+        String searchParam = "%" + cardName + "%";
+
+        return jdbcTemplate.query(sql, userRowMapper, searchParam);
+    }
+
+    @Override
+    public void changeUserRole(int userId, feedback.deckforge.Model.Enum.UserRole newRole) {
+        String sql = "UPDATE users SET user_role = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, newRole.name(), userId);
+    }
+
 
 
 }
