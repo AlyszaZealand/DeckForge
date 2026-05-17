@@ -1,5 +1,6 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Model.Enum.EventStatus;
 import feedback.deckforge.Model.Event;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.*;
@@ -7,8 +8,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -27,12 +29,19 @@ public class UserController {
         this.eventService = eventService;
     }
 
-
     @GetMapping("/")
     public String showHomePage(Model model){
-        // Hent alle events via din service og send dem til HTML'en
-        List<Event> events = eventService.getAllEvents();
-        model.addAttribute("events", events);
+        // Sørg for at status på events er opdateret inden vi sorterer
+        eventService.updateEventStatuses();
+
+        // Hent alle events, og brug stream til at filtrere, sortere og tage top 3
+        List<Event> top3UpcomingEvents = eventService.getAllEvents().stream()
+                .filter(e -> e.getEventStatus() == EventStatus.PLANNED || e.getEventStatus() == EventStatus.ACTIVE)
+                .sorted(Comparator.comparing(Event::getEventDate))
+                .limit(3)
+                .collect(Collectors.toList());
+
+        model.addAttribute("events", top3UpcomingEvents);
 
         return "UserController/home";
     }
@@ -57,7 +66,4 @@ public class UserController {
         }
         return "CollectionController/colletion-hub";
     }
-
-
-
 }

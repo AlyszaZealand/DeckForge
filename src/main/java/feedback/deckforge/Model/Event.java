@@ -13,19 +13,27 @@ public class Event {
     private String eventFormat;
     private EventStatus eventStatus;
     private int eventSize;
-    private String eventDescription;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime eventDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime eventEndDate;
+    private Integer winnerID;// integer så winner kan være null
+    private int organizerID;
+    private String eventDescription;
+
 
     public Event() {}
 
-    public Event(String eventFormat, EventStatus eventStatus, int eventSize, LocalDateTime eventDate, String eventDescription, String eventName) {
+    public Event(String eventName, String eventFormat, EventStatus eventStatus, int eventSize, LocalDateTime eventDate, LocalDateTime eventEndDate, Integer winnerID, int organizerID, String eventDescription) {
+        this.eventName = eventName;
         this.eventFormat = eventFormat;
         this.eventStatus = eventStatus;
         this.eventSize = eventSize;
         this.eventDate = eventDate;
+        this.eventEndDate = eventEndDate;
+        this.winnerID = winnerID;
+        this.organizerID = organizerID;
         this.eventDescription = eventDescription;
-        this.eventName = eventName;
     }
 
     // Getters og Setters
@@ -53,5 +61,15 @@ public class Event {
     public void setEventName(String eventName){
         this.eventName = eventName;
     }
+
+    public LocalDateTime getEventEndDate() {return eventEndDate;}
+    public void setEventEndDate(LocalDateTime eventEndDate) {this.eventEndDate = eventEndDate;}
+
+    public Integer getWinnerId() {return winnerID;}
+    public void setWinnerId(Integer winnerId) {this.winnerID = winnerId;}
+
+    public int getOrganizerId() {return organizerID;}
+
+    public void setOrganizerId(int organizerId) {this.organizerID = organizerId;}
 }
 

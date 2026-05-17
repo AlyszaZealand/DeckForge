@@ -4,10 +4,13 @@
 
 -- 1. Opret Brugere
 INSERT INTO users (username, email, password_hash, user_role) VALUES
-                                                                  ('AdminAnders', 'anders@deckforge.dk', '$2a$10$ba3ML9Sh/vaILC6oywLzEOEI1DY2VrDeGSUVUCZZqVB0fWxUTQy/6', 'ADMIN'),
-                                                                  ('EventEva', 'eva@deckforge.dk', 'event123', 'ORGANIZER'),
+                                                                  ('AdminAnders', 'anders@deckforge.dk', '$2a$12$hx.NYvSQPeiozdpmLb0wp.PZ0B9ScLEbWiq5SqjdI.a9R4OUq6taG', 'ADMIN'), --admin123
+                                                                  ('EventEva', 'eva@deckforge.dk', '$2a$12$RK11jJu6WyEQvMeFyMkCRe1T161uwNz4hBbTj6fB7EpV1qVsqghHa', 'ORGANIZER'), --event123
                                                                   ('SpillerSøren', 'søren@deckforge.dk', 'spiller123', 'MEMBER'),
-                                                                  ('KortKaj', 'kaj@deckforge.dk', '$2a$10$wS63DEbMVNo4PvYjJs4YXebI.QCraVJV5GzJGsWBkcdf1Kvz76WIi', 'MEMBER');
+                                                                  ('KortKaj', 'kaj@deckforge.dk', '$2a$10$wS63DEbMVNo4PvYjJs4YXebI.QCraVJV5GzJGsWBkcdf1Kvz76WIi', 'MEMBER'),
+                                                                  ('Holger','holger@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ADMIN'), -- kode123
+                                                                  ('Eventus', 'event@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER'); -- kode123
+
 
 
 

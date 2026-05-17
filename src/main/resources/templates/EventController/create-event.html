@@ -1,82 +1,81 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Deck Forge - Opret Event</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<section th:insert="~{Parts/header :: header}"></section>
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+<main class="container">
+    <div class="auth-wrapper">
+        <div class="auth-box" style="max-width: 600px;">
 
+            <h1 class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">Opret Nyt Event</h1>
 
-    <div th:if="${errorMessage}"
-         style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb; border-radius: 5px;"
-         th:text="${errorMessage}">
+            <div th:if="${errorMessage}"
+                 style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 10px; margin-bottom: 20px; border-radius: 4px;"
+                 th:text="${errorMessage}">
+            </div>
+
+            <form th:action="@{/registerEvent}" method="post" th:object="${event}">
+
+                <div class="form-group">
+                    <label>Event Navn</label>
+                    <input type="text" class="form-control" th:field="*{eventName}" required placeholder="F.eks. FNM Commander Night">
+                </div>
+
+                <div class="form-group">
+                    <label>Beskrivelse</label>
+                    <textarea class="form-control" th:field="*{eventDescription}" rows="3" required placeholder="Hvad skal der ske til eventet?"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Start Dato & Tid</label>
+                        <input type="datetime-local" class="form-control" th:field="*{eventDate}" required>
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label>Slut Dato & Tid</label>
+                        <input type="datetime-local" class="form-control" th:field="*{eventEndDate}" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Format</label>
+                        <select class="form-control" th:field="*{eventFormat}" required>
+                            <option value="">Vælg format...</option>
+                            <option th:each="format : ${formats}"
+                                    th:value="${format.formatName}"
+                                    th:text="${format.formatName}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label>Max Deltagere</label>
+                        <select class="form-control" th:field="*{eventSize}" required>
+                            <option value="8">8</option>
+                            <option value="16">16</option>
+                            <option value="32">32</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Opret Event</button>
+                <a th:href="@{/}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller / Tilbage</a>
+
+            </form>
+        </div>
     </div>
-
-    <form action="/registerEvent" method="post" th:object="${event}" class="form-container">
-
-        <label>Event navn:</label><br>
-        <input type="text" th:field="*{eventName}" style="width: 250px"><br><br>
-
-        <label>Beskrivelse</label><br>
-        <input type="text" th:field="*{eventDescription}" style="width: 250px"><br><br>
-
-        <label>Dato</label><br>
-        <input type="datetime-local" th:field="*{eventDate}"><br><br>
-
-        <label>Format</label><br>
-        <select th:field="*{eventFormat}" style="width: 250px">
-            <option value="">Vælg et format...</option>
-            <option th:each="format : ${formats}"
-                    th:value="${format.formatName}"
-                    th:text="${format.formatName}">
-            </option>
-        </select><br><br>
-
-        <label>Status</label><br>
-        <select name="eventStatus" th:field="*{eventStatus}">
-            <option value="PLANNED">Planlagt</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="COMPLETED">Afsluttet</option>
-            <option value="CANCELLED">Aflyst</option>
-        </select><br><br>
-
-        <label>Størrelse</label><br>
-        <select th:field="*{eventSize}" style="width: 250px">
-            <option value="8">8</option>
-            <option value="16">16</option>
-            <option value="32">32</option>
-        </select><br><br>
-
-        <!--    <label>Billede:</label><br>-->
-        <!--    <input type="file" name="image" accept="image/*"><br><br>-->
-
-        <button type="submit">Opret</button>
-
-    </form>
-
-
-    <div style="display: flex; justify-content: center; gap: 10px;">
-        <button onclick="window.location.href='/profile'" style="margin-top: 10px; text-align: center">Gå til Min Profil</button>
-
-        <button onclick="window.location.href='/'" style="margin-top: 10px; text-align: center">Gå til Forsiden</button>
-    </div>
-
-
-    <section th:insert="parts/footer.html :: footer"></section>
 </main>
-</body>
 
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
 </html>

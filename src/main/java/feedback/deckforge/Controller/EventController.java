@@ -1,5 +1,7 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Exceptions.EventFullException;
+import feedback.deckforge.Exceptions.InvalidEventSizeException;
 import feedback.deckforge.Model.Enum.UserRole;
 import feedback.deckforge.Model.Event;
 import feedback.deckforge.Model.User;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,19 +53,33 @@ public class EventController {
 
     @PostMapping("/registerEvent")
     public String handleEventForm(@ModelAttribute Event newEvent, Model model, HttpSession httpSession){
-        if (httpSession.getAttribute("loggedInUser") == null){
+        User loggedInUser = (User) httpSession.getAttribute("loggedInUser");
+        if (loggedInUser == null){
             return "redirect:/login";
         }
 
-        ValidationResult result = eventService.createEvent(newEvent);
+        newEvent.setOrganizerId(loggedInUser.getUserID());
 
-        if(result.hasErrors()){
-            model.addAttribute("errorMessage", result.getErrors());
+        // Tvinger altid nye events til at være PLANNED fra start!
+        newEvent.setEventStatus(feedback.deckforge.Model.Enum.EventStatus.PLANNED);
+
+        try {
+            ValidationResult result = eventService.createEvent(newEvent);
+
+            if(result.hasErrors()){
+                model.addAttribute("errorMessage", result.getErrors());
+                model.addAttribute("event", newEvent);
+                model.addAttribute("formats", formatService.getAllFormats());
+                return "EventController/create-event";
+            }
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("event", newEvent);
+            model.addAttribute("formats", formatService.getAllFormats());
             return "EventController/create-event";
         }
 
-        return "redirect:/";
+        return "redirect:/events";
     }
 
     @GetMapping("/events/{id}")
@@ -70,6 +87,8 @@ public class EventController {
         if (httpSession.getAttribute("loggedInUser") == null){
             return "redirect:/login";
         }
+
+        eventService.updateEventStatuses();
 
         Optional<Event> eventOptional = eventService.getEventByID(id);
         if (eventOptional.isEmpty()){
@@ -98,17 +117,26 @@ public class EventController {
     }
 
     @PostMapping("/events/{id}/signup")
-    public String signUpUser(@PathVariable("id") int eventId, HttpSession session) {
+    public String signUpUser(@PathVariable("id") int eventID, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/login";
         }
 
-        // Securely use the ID from the session, not from the HTML form
-        eventService.signUpForEvent(eventId, loggedInUser.getUserID());
+        // NYT: Sikr at kun MEMBERs kan tilmelde sig som spillere
+        if (!loggedInUser.getUserRole().equals(UserRole.MEMBER)) {
+            return "redirect:/events/" + eventID + "?error=only_members";
+        }
 
-        // Redirect back to the event details page so it refreshes the attendee list
-        return "redirect:/events/" + eventId;
+        // NYT: Brug try-catch til at fange fejlen, hvis eventet er fuldt
+        try {
+            eventService.signUpForEvent(eventID, loggedInUser.getUserID());
+        } catch (EventFullException e) {
+            // Hvis Exception kastes, sendes brugeren tilbage med en fejl-besked i URL'en
+            return "redirect:/events/" + eventID + "?error=event_full";
+        }
+
+        return "redirect:/events/" + eventID;
     }
 
     @PostMapping("/events/{id}/leave")
@@ -123,6 +151,94 @@ public class EventController {
 
         // Redirect back to the event details page
         return "redirect:/events/" + eventId;
+    }
+
+    @GetMapping("/events/{id}/edit")
+    public String showEditEventForm(@PathVariable int id, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        // Tjek at brugeren er logget ind OG er en ORGANIZER
+        if (loggedInUser == null || !loggedInUser.getUserRole().equals(UserRole.ORGANIZER)) {
+            return "redirect:/login";
+        }
+
+        Optional<Event> eventOptional = eventService.getEventByID(id);
+        if (eventOptional.isEmpty()) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("event", eventOptional.get());
+        model.addAttribute("formats", formatService.getAllFormats());
+
+        // Vi sender deltagerlisten med, så Organizeren kan vælge en vinder blandt de tilmeldte
+        model.addAttribute("attendingUsers", eventService.getSignedUpUsersByEventID(id));
+
+        return "EventController/edit-event";
+    }
+
+
+    @PostMapping("/events/{id}/edit")
+    public String handleEditEvent(@PathVariable int id, @ModelAttribute Event updatedEvent, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !loggedInUser.getUserRole().equals(UserRole.ORGANIZER)) {
+            return "redirect:/login";
+        }
+
+        updatedEvent.setEventID(id);
+
+        try {
+            ValidationResult result = eventService.updateEvent(updatedEvent);
+
+            if(result.hasErrors()){
+                model.addAttribute("errorMessage", result.getErrors());
+                model.addAttribute("event", updatedEvent);
+                model.addAttribute("formats", formatService.getAllFormats());
+                model.addAttribute("attendingUsers", eventService.getSignedUpUsersByEventID(id));
+                return "EventController/edit-event";
+            }
+
+        } catch (InvalidEventSizeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("event", updatedEvent);
+            model.addAttribute("formats", formatService.getAllFormats());
+            model.addAttribute("attendingUsers", eventService.getSignedUpUsersByEventID(id));
+            return "EventController/edit-event";
+        }
+
+        return "redirect:/events/" + id;
+    }
+
+    @GetMapping("/events")
+    public String showAllEvents(@RequestParam(defaultValue = "future") String filter, Model model, HttpSession session) {
+        // 1. Opdater alle statusser efter uret
+        eventService.updateEventStatuses();
+
+        // 2. Hent den loggede bruger, så vi kan tjekke ID
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        List<Event> allEvents = eventService.getAllEvents();
+        List<Event> displayEvents = new ArrayList<>();
+
+        for (Event event : allEvents) {
+            boolean isPast = (event.getEventStatus() == feedback.deckforge.Model.Enum.EventStatus.COMPLETED ||
+                    event.getEventStatus() == feedback.deckforge.Model.Enum.EventStatus.CANCELLED);
+
+            // Filter: Gamle events
+            if (filter.equals("past") && isPast) {
+                displayEvents.add(event);
+            }
+            // Filter: Kommende/aktive events
+            else if (filter.equals("future") && !isPast) {
+                displayEvents.add(event);
+            }
+            // NYT: Filter til arrangørens egne events (viser både nye og gamle de har oprettet)
+            else if (filter.equals("mine") && loggedInUser != null && event.getOrganizerId() == loggedInUser.getUserID()) {
+                displayEvents.add(event);
+            }
+        }
+
+        model.addAttribute("events", displayEvents);
+        return "EventController/events";
     }
 
 

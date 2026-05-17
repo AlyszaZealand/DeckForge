@@ -127,7 +127,12 @@ CREATE TABLE events (
                         event_status ENUM('PLANNED', 'ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
                         event_size INT NOT NULL,
                         event_date DATETIME NOT NULL,
-                        event_description VARCHAR(500)
+                        event_end_date DATETIME NOT NULL,
+                        winner_id INT DEFAULT NULL,
+                        organizer_id INT NOT NULL,
+                        event_description VARCHAR(500),
+                        FOREIGN KEY (winner_id) REFERENCES users(user_id),
+                        FOREIGN KEY (organizer_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE event_registrations (

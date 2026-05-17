@@ -24,6 +24,7 @@
                     <th:block th:if="${session.loggedInUser != null}">
                         <li><a th:href="@{/profile}">Profil</a></li>
                         <li><a th:href="@{/collectionPage}">Collections</a></li>
+                        <li><a th:href="@{/events}">Events</a></li>
                     </th:block>
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">

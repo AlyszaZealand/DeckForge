@@ -25,47 +25,51 @@ public class MySqlEventRepository implements IEventRepository {
     private final RowMapper<Event> eventRowMapper = (rs,rowNum) -> {
         // 1. Create the event using your constructor
         Event event = new Event(
+                rs.getString("event_name"),
                 rs.getString("event_format"),
                 EventStatus.valueOf(rs.getString("event_status")),
                 rs.getInt("event_size"),
                 rs.getObject("event_date", LocalDateTime.class),
-                rs.getString("event_description"),
-                rs.getString("event_name")
+                rs.getObject("event_end_date", LocalDateTime.class),
+                rs.getObject("winner_id", Integer.class),
+                rs.getInt("organizer_id"),
+                rs.getString("event_description")
         );
-
-        // 2. THIS IS THE MISSING PIECE! Manually set the ID:
         event.setEventID(rs.getInt("event_id"));
 
-        // 3. Return the fully built event
         return event;
     };
 
-    @Override
     public void createEvent(Event event){
-        String sql = "Insert into events (event_format, event_status, event_size, event_date, event_description, event_name) values (?,?,?,?,?,?)";
+        // Tilføjet event_end_date i SQL'en og et ekstra spørgsmålstegn
+        String sql = "INSERT INTO events (event_name, event_format, event_status, event_size, event_date, event_end_date, organizer_id, event_description) VALUES (?,?,?,?,?,?,?,?)";
 
         jdbcTemplate.update(sql,
+                event.getEventName(),
                 event.getEventFormat(),
-                event.getEventStatus().name(), // Convert Java Enum to String for DB
+                event.getEventStatus().name(),
                 event.getEventSize(),
                 event.getEventDate(),
-                event.getEventDescription(),
-                event.getEventName()
+                event.getEventEndDate(),
+                event.getOrganizerId(),
+                event.getEventDescription()
         );
     }
 
     @Override
     public void updateEvent(Event event){
-        String sql = "update events set event_format = ?, event_status = ?, event_size = ?, event_date = ?, event_description = ? where event_id = ?";
+        String sql = "UPDATE events SET event_format = ?, event_status = ?, event_size = ?, event_date = ?, event_end_date = ?, winner_id = ?, event_description = ? WHERE event_id = ?";
 
         jdbcTemplate.update(sql,
                 event.getEventFormat(),
-                event.getEventStatus().name(), // Convert Java Enum to String for DB
+                event.getEventStatus().name(),
                 event.getEventSize(),
                 event.getEventDate(),
+                event.getEventEndDate(),
+                event.getWinnerId(),
                 event.getEventDescription(),
                 event.getEventID()
-                );
+        );
     }
 
     @Override
