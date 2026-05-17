@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deck Forge - Rediger Event</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<section th:insert="~{Parts/header :: header}"></section>
+
+<main class="container">
+    <div class="auth-wrapper">
+
+        <div th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}"
+             class="auth-box" style="max-width: 650px;">
+
+            <h1 class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">Rediger Event</h1>
+
+            <div th:if="${errorMessage}"
+                 style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 10px; margin-bottom: 20px; border-radius: 4px;"
+                 th:text="${errorMessage}">
+            </div>
+
+            <form th:action="@{/events/{id}/edit(id=${event.eventID})}" method="post" th:object="${event}">
+
+                <div class="form-group">
+                    <label>Event Navn</label>
+                    <input type="text" class="form-control" th:field="*{eventName}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Beskrivelse</label>
+                    <textarea class="form-control" th:field="*{eventDescription}" rows="4" required></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Start Dato & Tid</label>
+                        <input type="datetime-local" class="form-control" th:field="*{eventDate}" required>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Slut Dato & Tid</label>
+                        <input type="datetime-local" class="form-control" th:field="*{eventEndDate}" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Format</label>
+                        <select class="form-control" th:field="*{eventFormat}" required>
+                            <option th:each="format : ${formats}"
+                                    th:value="${format.formatName}"
+                                    th:text="${format.formatName}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label>Max Deltagere</label>
+                        <select class="form-control" th:field="*{eventSize}" required>
+                            <option value="8">8</option>
+                            <option value="16">16</option>
+                            <option value="32">32</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Status</label>
+                    <select class="form-control" th:field="*{eventStatus}">
+                        <option value="PLANNED">Planlagt (PLANNED)</option>
+                        <option value="ACTIVE">Aktiv (ACTIVE)</option>
+                        <option value="COMPLETED">Afsluttet (COMPLETED)</option>
+                        <option value="CANCELLED">Aflyst (CANCELLED)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="border: 1px dashed rgba(255, 215, 0, 0.4); padding: 15px; border-radius: 4px; background-color: rgba(0,0,0,0.2);">
+                    <label style="color: gold; text-shadow: 0 0 5px rgba(255,215,0,0.2);">🏆 Vælg vinder af eventet</label>
+                    <select class="form-control" th:field="*{winnerId}" style="border-color: rgba(255,215,0,0.3);">
+                        <option value="">-- Ingen vinder kåret endnu --</option>
+                        <option th:each="user : ${attendingUsers}"
+                                th:value="${user.userID}"
+                                th:text="${user.username}">
+                        </option>
+                    </select>
+                    <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 6px; margin-bottom: 0; font-style: italic;">
+                        Info: Listen viser kun de brugere, der har tilmeldt sig dette event.
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 25px;">Gem Ændringer</button>
+                <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller</a>
+
+            </form>
+        </div>
+
+        <div th:unless="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}"
+             class="auth-box" style="text-align: center;">
+            <h2 style="color: #ff4444; margin-bottom: 10px;">Adgang Nægtet</h2>
+            <p style="color: var(--text-gray); margin-bottom: 25px;">Du skal have rollen som ORGANIZER for at kunne redigere og administrere events.</p>
+            <a th:href="@{/}" class="btn btn-primary">Gå til Forsiden</a>
+        </div>
+
+    </div>
+</main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
+</html>
