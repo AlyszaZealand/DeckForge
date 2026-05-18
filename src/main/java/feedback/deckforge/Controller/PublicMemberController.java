@@ -1,5 +1,6 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Model.Deck;
 import feedback.deckforge.Model.User;
 import feedback.deckforge.Service.DeckService;
 import feedback.deckforge.Service.TradeCollectionService;
@@ -90,6 +91,28 @@ public class PublicMemberController {
             // Henter den andens offentlige decks og tilføjer til modellen
             model.addAttribute("decks", deckService.findAllDecksByUserId(id));
             return "MemberController/public-decks";
+        } catch (Exception e) {
+            return "redirect:/members";
+        }
+    }
+
+    @GetMapping("/public-deck/{deckId}")
+    public String showPublicDeckDetails(@PathVariable int deckId, Model model, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Deck deck = deckService.getDeck(deckId);
+            model.addAttribute("deck", deck);
+
+            // Tæller antal kort i decket for at vise "60 kort"
+            int totalCardsInDeck = deck.getDeckItems().stream()
+                    .mapToInt(item -> item.getQuantity())
+                    .sum();
+            model.addAttribute("totalCardsInDeck", totalCardsInDeck);
+
+            return "MemberController/public-deck-details";
         } catch (Exception e) {
             return "redirect:/members";
         }

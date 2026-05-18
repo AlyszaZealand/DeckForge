@@ -142,4 +142,9 @@ public class DeckService {
     public void deleteDeck(int deckID){
         deckRepository.deleteDeck(deckID);
     }
+
+    public Deck getDeck(int deckID) {
+        return deckRepository.findDeckByID(deckID)
+                .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
+    }
 }
