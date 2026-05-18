@@ -1,30 +1,41 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Outgoing Trades - DeckForge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-    <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
+<section th:insert="~{parts/header.html :: header}"></section>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<main class="container">
+    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
+        <div class="auth-box" style="max-width: 800px; width: 100%; padding: 40px;">
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+            <div th:if="${success != null}" style="background-color: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; padding: 15px; margin-bottom: 20px;">
+                <p th:text="${success}" style="color: #4caf50; margin: 0; font-weight: bold;"></p>
+            </div>
 
+            <a th:href="@{/trades}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Back to Dashboard</a>
 
-    <!-- FIT WITH CONTROLLER -->
+            <h1 style="color: var(--text-white); border-bottom: 1px solid var(--text-gray); padding-bottom: 10px; margin-bottom: 20px;">📤 Outgoing Proposals</h1>
 
+            <p th:if="${outgoingTrades.isEmpty()}" style="color: var(--text-gray); font-style: italic;">You have no pending outgoing trades.</p>
 
-    <section th:insert="parts/footer.html :: footer"></section>
+            <div th:each="trade : ${outgoingTrades}" style="background: var(--bg-darkest); padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--text-gray); border-radius: 4px;">
+                <h3 style="margin: 0 0 10px 0; color: white;">To: <span th:text="${trade.receiver.username}">User</span></h3>
+                <span th:text="${trade.tradeStatus}" style="font-size: 0.85rem; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; color: var(--text-gray); display: inline-block; margin-bottom: 20px;">Status</span>
+
+                <form th:action="@{/cancel}" method="post" style="margin: 0;">
+                    <input type="hidden" name="redirectPath" value="/trades/outgoing" />
+                    <input type="hidden" name="tradeId" th:value="${trade.tradeId}" />
+                    <button type="submit" class="btn btn-outline">Cancel Proposal</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
 </main>
-</body>
 
+<section th:insert="~{parts/footer.html :: footer}"></section>
+</body>
 </html>

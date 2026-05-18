@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deck Forge - 404 Siden Blev Ikke Fundet</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<section th:insert="~{Parts/header :: header}"></section>
+
+<main>
+    <section style="text-align: center; padding: 100px 20px; background: linear-gradient(180deg, var(--bg-darkest) 0%, var(--bg-card) 100%); border-bottom: 1px solid var(--border-red); min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+        <div th:if="${errorMessage}" style="background-color: rgba(179, 0, 0, 0.1); border: 1px solid var(--primary-red); padding: 15px 30px; border-radius: 8px; margin-bottom: 30px; box-shadow: var(--red-glow); max-width: 600px;">
+            <ul style="list-style-type: none; padding: 0; margin: 0; color: var(--text-white);">
+                <li th:each="err : ${errorMessage}" th:text="${err}" style="font-weight: bold;">Fejlbesked</li>
+            </ul>
+        </div>
+
+        <h1 style="font-size: 4rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(179,0,0,0.5);">
+            404 - <span style="color: var(--primary-red);">KORTET BLEV IKKE FUNDET</span>
+        </h1>
+
+        <p style="color: var(--text-gray); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto;">
+            Hovsa! Det ser ud til, at dette link ikke findes i databasen, eller også har du tastet en forkert URL.
+        </p>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a th:href="@{/}" class="btn btn-primary">Vend Tilbage Til Forsiden</a>
+        </div>
+
+    </section>
+</main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
+</body>
+</html>

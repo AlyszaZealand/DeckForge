@@ -1,30 +1,52 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Ongoing Trades - DeckForge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-    <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
+<section th:insert="~{parts/header.html :: header}"></section>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<main class="container">
+    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
+        <div class="auth-box" style="max-width: 800px; width: 100%; padding: 40px;">
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+            <a th:href="@{/trades}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Back to Dashboard</a>
 
+            <h1 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px; margin-bottom: 20px; text-shadow: var(--red-glow);">🤝 Ongoing Trades (IRL)</h1>
 
-    <!-- FIT WITH CONTROLLER -->
+            <p th:if="${ongoingTrades.isEmpty()}" style="color: var(--text-gray); font-style: italic;">No ongoing trades at the moment.</p>
 
+            <div th:each="trade : ${ongoingTrades}" style="background: var(--bg-darkest); padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--primary-red); border-radius: 4px;">
+                <h3 style="margin: 0 0 10px 0; color: white;">Partner: <span th:text="${trade.initiator.userID == currentUserId ? trade.receiver.username : trade.initiator.username}">Partner</span></h3>
+                <p style="margin: 0 0 20px 0; font-size: 1rem; color: var(--primary-red); font-weight: bold;" th:text="${trade.tradeStatus}">Status</p>
 
-    <section th:insert="parts/footer.html :: footer"></section>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <form th:action="@{/trades/finalize}" method="post" style="margin: 0; flex: 1;">
+                        <input type="hidden" name="redirectPath" value="/trades/ongoing" />
+                        <input type="hidden" name="tradeId" th:value="${trade.tradeId}" />
+
+                        <div th:if="${(trade.initiator.userID == currentUserId and !trade.initiatorConfirmed) or (trade.receiver.userID == currentUserId and !trade.receiverConfirmed)}">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm IRL Trade Completed</button>
+                        </div>
+
+                        <div th:if="${(trade.initiator.userID == currentUserId and trade.initiatorConfirmed) or (trade.receiver.userID == currentUserId and trade.receiverConfirmed)}" style="background: rgba(255,255,255,0.05); padding: 10px; text-align: center; border-radius: 4px; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <p style="margin: 0; color: var(--text-gray); font-size: 0.9rem; font-style: italic;">Waiting for partner to confirm...</p>
+                        </div>
+                    </form>
+
+                    <form th:action="@{/trades/cancel}" method="post" style="margin: 0;">
+                        <input type="hidden" name="redirectPath" value="/trades/ongoing" />
+                        <input type="hidden" name="tradeId" th:value="${trade.tradeId}" />
+                        <button type="submit" class="btn btn-danger" style="height: 100%;">Cancel Trade</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </main>
-</body>
 
+<section th:insert="~{parts/footer.html :: footer}"></section>
+</body>
 </html>

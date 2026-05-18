@@ -30,9 +30,7 @@ public class DeckValidation {
         return result;
     }
 
- /**
-     * Hovedmetode til validering af kort-tilføjelse.
-     */
+
     public ValidationResult validateAddCard(Deck currentDeck, Card newCard, int quantityToAdd) {
         ValidationResult result = new ValidationResult();
         Format format = currentDeck.getFormat();
@@ -103,6 +101,79 @@ public class DeckValidation {
         // Tjek den samlede størrelse på decket (gælder også lande!)
         if (totalDeckQty + quantityToAdd > format.getMaxDeckSize()) {
             result.addError("Decket bliver for stort. Maksimum for " + format.getFormatName() + " er " + format.getMaxDeckSize() + " kort.");
+        }
+
+        return result;
+    }
+
+    public ValidationResult validateEntireDeck(Deck deck) {
+        ValidationResult result = new ValidationResult();
+        Format format = deck.getFormat();
+
+        if (format == null) {
+            result.addError("Decket mangler et gyldigt format.");
+            return result;
+        }
+
+        // 1. Tjek Commander reglen
+        boolean hasCommander = deck.getCommander() != null;
+        if (format.isRequiresCommander() && !hasCommander) {
+            result.addError("Advarsel: Formatet '" + format.getFormatName() + "' kræver nu en Commander! Dit deck er ikke længere lovligt, før du vælger en.");
+        } else if (!format.isRequiresCommander() && hasCommander) {
+            result.addError("Advarsel: Formatet '" + format.getFormatName() + "' bruger ikke længere Commanders. Fjern din Commander for at gøre decket lovligt.");
+        }
+
+        // Hent den (potentielt nye) commanders farver til brug i tjekket
+        String cmdClean = "";
+        if (format.isRequiresCommander() && hasCommander) {
+            String colors = deck.getCommander().getColorIdentity();
+            cmdClean = (colors != null) ? colors.toUpperCase().replaceAll("[\\s,]", "") : "";
+        }
+
+        int totalDeckQty = 0;
+
+        // 2. Tjek alle kortene igennem
+        if (deck.getDeckItems() != null) {
+            for (DeckItem item : deck.getDeckItems()) {
+                Card card = item.getCard();
+                int qty = item.getQuantity();
+                totalDeckQty += qty;
+
+                // --- NYT: Tjek om eksisterende kort bryder den nye Commanders farver ---
+                if (format.isRequiresCommander() && hasCommander) {
+                    String cardColors = card.getColorIdentity();
+                    if (cardColors != null && !cardColors.equalsIgnoreCase("C") && !cardColors.isBlank()) {
+                        String cardClean = cardColors.toUpperCase().replaceAll("[\\s,]", "");
+                        for (char color : cardClean.toCharArray()) {
+                            if (cmdClean.indexOf(color) == -1) {
+                                result.addError("Advarsel: Kortet '" + card.getCardName() + "' bryder den nye Commanders farveidentitet (" + cmdClean + "). Det skal fjernes.");
+                                break; // Kun én besked pr. kort, så vi ikke spammer brugeren
+                            }
+                        }
+                    }
+                }
+
+                // Rarity-tjek
+                String allowed = format.getAllowedRarities();
+                if (allowed != null && !allowed.equalsIgnoreCase("ALL")) {
+                    if (!allowed.toUpperCase().contains(card.getCardRarity().name().toUpperCase())) {
+                        result.addError("Advarsel: Kortet '" + card.getCardName() + "' (" + card.getCardRarity() + ") er ikke længere tilladt i dette format.");
+                    }
+                }
+
+                // Max kopier-tjek (Undtagen lande)
+                String typeStr = (card.getCardType() != null) ? card.getCardType().name().toUpperCase() : "";
+                boolean isLand = typeStr.contains("LAND");
+
+                if (!isLand && qty > format.getMaxCopiesOfCard()) {
+                    result.addError("Advarsel: Du har " + qty + " kopier af '" + card.getCardName() + "', men formatet tillader nu maksimalt " + format.getMaxCopiesOfCard() + ".");
+                }
+            }
+        }
+
+        // 3. Tjek total Deck Size (FJERNET MINIMUMS-KRAVET SÅ DEN IKKE SPAMMER!)
+        if (totalDeckQty > format.getMaxDeckSize()) {
+            result.addError("Advarsel: Formatets maksimumsgrænse er faldet. Decket må nu max være " + format.getMaxDeckSize() + " kort.");
         }
 
         return result;

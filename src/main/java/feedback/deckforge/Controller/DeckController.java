@@ -6,6 +6,8 @@ import feedback.deckforge.Model.User;
 import feedback.deckforge.Model.Enum.CollectionType;
 import feedback.deckforge.Service.CardService;
 import feedback.deckforge.Service.DeckService;
+import feedback.deckforge.Service.Validation.DeckValidation;
+import feedback.deckforge.Service.Validation.ValidationResult;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +20,12 @@ public class DeckController {
 
     private final DeckService deckService;
     private final CardService cardService;
+    private final DeckValidation deckValidation;
 
-    public DeckController(DeckService deckService, CardService cardService) {
+    public DeckController(DeckService deckService, CardService cardService, DeckValidation deckValidation) {
         this.deckService = deckService;
         this.cardService = cardService;
+        this.deckValidation = deckValidation;
     }
 
     // --- SIDE 1: OVERSIGT OVER MINE DECKS ---
@@ -69,6 +73,12 @@ public class DeckController {
         // 1. Hent decket (Service sørger for Commander, Items og Ejerskabstjek)
         Deck deck = deckService.getDeckForBuilder(deckID, loggedInUser.getUserID());
         model.addAttribute("deck", deck);
+
+        ValidationResult entireDeckResult = deckValidation.validateEntireDeck(deck);
+        if (entireDeckResult.hasErrors()) {
+            // Vi sender listen af advarsler ud til Thymeleaf som en liste
+            model.addAttribute("deckWarnings", entireDeckResult.getErrors());
+        }
 
         // 2. Beregn total mængde kort til tælleren (X / 100)
         // Dette sikrer at din HTML altid har et korrekt tal uanset Thymeleaf-version
@@ -130,5 +140,11 @@ public class DeckController {
 
         deckService.deleteDeck(deckID);
         return "redirect:/myDecks";
+    }
+
+    @PostMapping("/deckBuilder/{deckID}/removeCommander")
+    public String removeCommander(@PathVariable int deckID) {
+        deckService.removeCommander(deckID);
+        return "redirect:/deckBuilder/" + deckID;
     }
 }

@@ -33,6 +33,10 @@ public class CardService {
         return cardRepository.findAllCards();
     }
 
+    public void deleteCard(int cardId) {
+        cardRepository.deleteCard(cardId);
+    }
+
     public List<Card> searchCards(String name, String rarity, String color, String cardType, CollectionType type, Integer userId) {
 
         if (type == CollectionType.CATALOG) {

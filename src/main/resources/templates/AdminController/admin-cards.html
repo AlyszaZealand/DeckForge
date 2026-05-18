@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deck Forge - Database Kort Katalog</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<section th:insert="~{Parts/header :: header}"></section>
+
+<main class="container" style="max-width: 1500px;">
+    <h1 class="page-header">Globalt Kort Katalog (Admin)</h1>
+
+    <form th:action="@{/admin/cards}" method="get" class="search-filter-box">
+        <div class="form-group">
+            <label>Kortnavn</label>
+            <input type="text" name="search" th:value="${currentSearch}" placeholder="Søg..." class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Type</label>
+            <select name="cardType" class="form-control">
+                <option value="">Alle</option>
+                <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
+                        th:value="${enumType}" th:text="${enumType}"
+                        th:selected="${currentCardType == enumType.name()}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Raritet</label>
+            <select name="rarity" class="form-control">
+                <option value="">Alle</option>
+                <option value="COMMON" th:selected="${currentRarity == 'COMMON'}">Common</option>
+                <option value="UNCOMMON" th:selected="${currentRarity == 'UNCOMMON'}">Uncommon</option>
+                <option value="RARE" th:selected="${currentRarity == 'RARE'}">Rare</option>
+                <option value="MYTHICRARE" th:selected="${currentRarity == 'MYTHICRARE'}">Mythic</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="height: 42px;">Søg</button>
+    </form>
+
+    <div class="scrollable-container" style="max-height: 700px;">
+        <div class="card-grid">
+            <div class="tcg-card" th:each="card : ${searchResults}">
+                <div class="tcg-card-header">
+                    <span th:text="${card.cardName}">Kort Navn</span>
+                    <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${card.manaCost}"></span>
+                </div>
+                <div class="tcg-card-type">
+                    <span th:text="${card.cardType}"></span> - <span th:text="${card.cardRarity}"></span>
+                </div>
+                <div class="tcg-card-desc" th:text="${card.description}"></div>
+
+                <div style="margin-top: 15px;">
+                    <form th:action="@{/admin/deleteCard}" method="post" onsubmit="return confirm('ADVARSEL: Sletning af dette kort fjerner det permanent fra hele databasen, alle brugeres samlinger samt alle decks! Vil du fortsætte?');">
+                        <input type="hidden" name="cardID" th:value="${card.cardID}">
+                        <button type="submit" class="btn btn-danger btn-block">Slet Kort Globalt</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
+</html>

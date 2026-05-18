@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Deck Forge - Administrer Formater</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<section th:insert="~{Parts/header :: header}"></section>
+
+<main class="container">
+    <h1 class="page-header">Administrer Formater</h1>
+
+    <div th:if="${errorMessage}" style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 15px; margin-bottom: 20px; border-radius: 4px;" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" style="background-color: rgba(0,179,0,0.2); border: 1px solid #00b300; color: white; padding: 15px; margin-bottom: 20px; border-radius: 4px;" th:text="${successMessage}"></div>
+
+    <div style="margin-bottom: 20px;">
+        <a th:href="@{/createFormat}" class="btn btn-primary">Opret Nyt Format</a>
+    </div>
+
+    <div class="scrollable-container" style="max-height: none;">
+        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+            <thead>
+            <tr style="border-bottom: 2px solid var(--border-red); color: var(--primary-red); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                <th style="padding: 12px 10px;">ID</th>
+                <th style="padding: 12px 10px;">Format Navn</th>
+                <th style="padding: 12px 10px;">Min/Max Deck</th>
+                <th style="padding: 12px 10px;">Max Kopier</th>
+                <th style="padding: 12px 10px;">Commander</th>
+                <th style="padding: 12px 10px;">Rariteter</th>
+                <th style="padding: 12px 10px; text-align: right;">Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="format : ${formats}" style="border-bottom: 1px solid var(--accent-gray); background-color: rgba(22,22,22,0.5);">
+                <td style="padding: 15px 10px;" th:text="${format.formatID}"></td>
+                <td style="padding: 15px 10px; font-weight: bold; color: white;" th:text="${format.formatName}"></td>
+                <td style="padding: 15px 10px;" th:text="${format.minDeckSize + ' - ' + format.maxDeckSize}"></td>
+                <td style="padding: 15px 10px;" th:text="${format.maxCopiesOfCard}"></td>
+                <td style="padding: 15px 10px;">
+                        <span th:text="${format.requiresCommander ? 'Ja ♛' : 'Nej'}"
+                              th:style="${format.requiresCommander ? 'color: var(--primary-red); font-weight:bold;' : 'color: var(--text-gray);'}"></span>
+                </td>
+                <td style="padding: 15px 10px; font-size: 0.9rem; color: var(--text-gray);" th:text="${format.allowedRarities}"></td>
+                <td style="padding: 15px 10px; text-align: right; display: flex; justify-content: flex-end; gap: 10px; align-items: center;">
+
+                    <a th:href="@{/updateFormat(formatID=${format.formatID})}" class="btn btn-outline" style="padding: 6px 15px; font-size: 0.8rem;">Rediger</a>
+
+                    <form th:action="@{/deleteFormat}" method="post" onsubmit="return confirm('Er du sikker på, at du vil slette dette format? Alle tilhørende decks vil enten blive påvirket eller slettet.');" style="margin:0;">
+                        <input type="hidden" name="formatID" th:value="${format.formatID}">
+                        <button type="submit" class="btn btn-danger" style="padding: 6px 15px; font-size: 0.8rem;">Slet</button>
+                    </form>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<section th:insert="~{Parts/footer :: footer}"></section>
+
+</body>
+</html>

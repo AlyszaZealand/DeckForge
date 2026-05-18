@@ -12,4 +12,5 @@ public interface ICardRepository {
     List<Card> searchCollectionCards(int userId, String name, String rarity, String color, String cardType);
     List<Card> searchTradeCards(int userId, String name, String rarity, String color, String cardType);
     List<Card> searchWishlistCards(int userId, String name, String rarity, String color, String cardType);
+    void deleteCard(int cardId);
 }

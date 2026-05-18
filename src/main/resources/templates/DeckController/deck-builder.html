@@ -16,6 +16,13 @@
     <strong th:text="${errorMessage}"></strong>
   </div>
 
+  <div th:if="${deckWarnings}" style="background-color: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 15px; border: 1px solid #ffa500; border-radius: 4px; margin-bottom: 20px;">
+    <h4 style="margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">⚠️ Deck Regelbrud fundet:</h4>
+    <ul style="margin: 0; padding-left: 20px; font-size: 0.95rem;">
+      <li th:each="warning : ${deckWarnings}" th:text="${warning}">Advarselsbesked</li>
+    </ul>
+  </div>
+
   <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
     <div>
       <a th:href="@{/myDecks}" style="color: var(--text-gray); text-decoration: none; font-size: 0.9rem; text-transform: uppercase;">&larr; Tilbage til oversigt</a>
@@ -33,6 +40,9 @@
     <div th:if="${deck.commander != null}" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;">
       <div style="flex: 1;">
         <strong th:text="${deck.commander.cardName}" style="font-size: 1.4rem; color: white;">Commander Navn</strong>
+        <form th:action="@{/deckBuilder/{id}/removeCommander(id=${deck.deckID})}" method="post" style="display:inline-block; margin-left: 15px;">
+          <button type="submit" class="btn btn-danger" style="padding: 3px 10px; font-size: 0.75rem;">Fjern / Skift</button>
+        </form>
         <span style="color: var(--text-gray); font-size: 0.9em; margin-left: 10px;" th:text="${deck.commander.manaCost}"></span>
         <br>
         <span style="color: var(--text-gray); font-size: 0.95rem;">
@@ -75,6 +85,19 @@
         <option value="UNCOMMON" th:selected="${currentRarity == 'UNCOMMON'}">Uncommon</option>
         <option value="RARE" th:selected="${currentRarity == 'RARE'}">Rare</option>
         <option value="MYTHICRARE" th:selected="${currentRarity == 'MYTHICRARE'}">Mythic</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Farve</label>
+      <select name="color" class="form-control">
+        <option value="">Alle Farver</option>
+        <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+        <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+        <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+        <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+        <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+        <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
       </select>
     </div>
 

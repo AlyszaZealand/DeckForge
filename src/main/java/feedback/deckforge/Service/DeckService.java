@@ -147,4 +147,12 @@ public class DeckService {
         return deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
     }
+
+    public void removeCommander(int deckID) {
+        Deck deck = deckRepository.findDeckByID(deckID)
+                .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
+
+        deck.setCommander(null); // Sætter feltet til null
+        deckRepository.updateDeck(deck); // Gemmer ændringen i databasen
+    }
 }

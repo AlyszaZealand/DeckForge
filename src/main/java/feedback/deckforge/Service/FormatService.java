@@ -20,6 +20,10 @@ public class FormatService {
     }
 
     public ValidationResult createNewFormat(Format format){
+        if (format.getAllowedRarities() == null || format.getAllowedRarities().trim().isEmpty()) {
+            format.setAllowedRarities("ALL");
+        }
+
         ValidationResult result = formatValidation.validateFormat(format);
         if (!result.hasErrors()) {
             formatRepository.saveFormat(format);
@@ -35,7 +39,7 @@ public class FormatService {
         return result;
     }
 
-    public void deleteExitingFormat(int formatID){
+    public void deleteExistingFormat(int formatID){
         formatRepository.deleteFormat(formatID);
     }
 

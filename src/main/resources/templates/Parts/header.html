@@ -26,10 +26,11 @@
                         <li><a th:href="@{/collectionPage}">Collections</a></li>
                         <li><a th:href="@{/events}">Events</a></li>
                         <li><a th:href="@{/members}">Members</a></li>
+                        <li><a th:href="@{/trades}">Trade</a></li>
                     </th:block>
 
                     <th:block th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ADMIN'}">
-                        <li><a th:href="@{/addCard}" style="color: var(--text-gray);">Tilføj Kort</a></li>
+                        <li><a th:href="@{/createCard}" style="color: var(--text-gray);">Tilføj Kort</a></li>
                         <li><a th:href="@{/createFormat}" style="color: var(--text-gray);">Tilføj Format</a></li>
                     </th:block>
 

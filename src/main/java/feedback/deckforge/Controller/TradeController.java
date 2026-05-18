@@ -1,7 +1,195 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Model.Enum.TradeStatus;
+import feedback.deckforge.Model.Trade;
+import feedback.deckforge.Model.TradeCollection;
+import feedback.deckforge.Model.User;
+import feedback.deckforge.Service.CardService;
+import feedback.deckforge.Service.TradeCollectionService;
+import feedback.deckforge.Service.TradeService;
+import feedback.deckforge.Service.UserService;
+import feedback.deckforge.Service.Validation.ValidationResult;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class TradeController {
+
+    private final TradeService tradeService;
+    private final UserService userService;
+    private TradeCollectionService tradeCollectionService;
+    private CardService cardService;
+
+    public TradeController(TradeService tradeService, UserService userService, TradeCollectionService tradeCollectionService, CardService cardService){
+        this.tradeService = tradeService;
+        this.userService = userService;
+        this.tradeCollectionService = tradeCollectionService;
+        this.cardService = cardService;
+    }
+
+    @GetMapping("/trades")
+    public String showTradeDashboard(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        List<Trade> userTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID());
+
+        List<Trade> tradeHistory = userTrades.stream().filter(t -> t.getTradeStatus() == TradeStatus.COMPLETED ||
+                t.getTradeStatus() == TradeStatus.CANCELLED ||
+                t.getTradeStatus() == TradeStatus.DECLINED).collect(Collectors.toList());
+
+        model.addAttribute("tradeHistory", tradeHistory);
+        model.addAttribute("currentUserId", loggedInUser.getUserID());
+
+        return "TradeController/trade-dashboard";
+    }
+
+    @GetMapping("/incoming")
+    public String showIncomingTrades(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        List<Trade> incomingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID())
+                .stream().filter(t -> t.getTradeStatus() == TradeStatus.PENDING && t.getReceiver()
+                        .getUserID() == loggedInUser.getUserID()).collect(Collectors.toList());
+
+        model.addAttribute("incomingTrades", incomingTrades);
+        return "TradeController/trade-incoming";
+    }
+
+    @GetMapping("/outgoing")
+    public String showOutgoingTrades(HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        // Find all pending trades where the logged-in user is the initiator
+        List<Trade> outgoingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID())
+                .stream()
+                .filter(t -> t.getTradeStatus() == TradeStatus.PENDING &&
+                        t.getInitiator().getUserID() == loggedInUser.getUserID())
+                .collect(Collectors.toList());
+
+        model.addAttribute("outgoingTrades", outgoingTrades);
+
+        // Make sure this matches the exact name and folder of your outgoing HTML file
+        return "TradeController/trade-outgoing";
+    }
+
+    @GetMapping("/ongoing")
+    public String showOngoingTrades(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        List<Trade> ongoingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID()).stream()
+                .filter(t-> t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)
+                .collect(Collectors.toList());
+
+        model.addAttribute("ongoingTrades", ongoingTrades);
+        model.addAttribute("currentUserId", loggedInUser.getUserID());
+
+        return "TradeController/trade-ongoing";
+    }
+
+    @GetMapping("/propose")
+    public String showProposeTradeForm(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+// Unwrap the Optional. If no collection is found, it will return null.
+        TradeCollection myTradeCollection = tradeCollectionService
+                .getTradeCollectionByUserID(loggedInUser.getUserID())
+                .orElse(null);
+
+        // 2. Get all other members to populate the "Select Partner" dropdown
+        List<User> allOtherUsers = userService.getAllUsers().stream()
+                .filter(u -> u.getUserID() != loggedInUser.getUserID())
+                .collect(Collectors.toList());
+
+        model.addAttribute("newTrade", new Trade());
+        model.addAttribute("myTradeCollection", myTradeCollection);
+        model.addAttribute("allOtherUsers", allOtherUsers);
+
+        return "TradeController/trade-propose";
+    }
+
+    @PostMapping("/propose")
+    public String submitTradeProposal(@ModelAttribute("newTrade") Trade trade,
+                                      @RequestParam(value = "offeredCardIds", required = false) List<Integer> offeredCardIds,
+                                      @RequestParam(value = "requestedCardIds", required = false) List<Integer> requestedCardIds,
+                                      @RequestParam("receiverId") int receiverId,
+                                      HttpSession session, RedirectAttributes redirectAttributes){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        trade.setInitiator(loggedInUser);
+
+        User receiver = userService.getUserByID(receiverId);
+        trade.setReceiver(receiver);
+
+        trade.setTradeDate(LocalDateTime.now());
+
+        // 2. Process Offered Cards
+        // We check for null because if the user checks 0 boxes, the list will be null
+        if (offeredCardIds != null){
+            for (Integer cardId : offeredCardIds){
+                cardService.getCardById(cardId).ifPresent(card ->{
+                    trade.getOfferedCards().add(card);
+                });
+            }
+        }
+
+        if(requestedCardIds != null){
+            for (Integer cardId : requestedCardIds){
+                cardService.getCardById(cardId).ifPresent(card -> {
+                    trade.getRequestedCards().add(card);
+                });
+            }
+        }
+
+        // 4. Validate and Save
+        ValidationResult result = tradeService.proposeTrade(trade);
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error", result.getErrors().get(0));
+            return "redirect:/trades/propose";
+        }
+
+        redirectAttributes.addFlashAttribute("success", "Trade proposal sent successfully!");
+
+        return "redirect:/outgoing";
+    }
+
+
+    @PostMapping("/respond")
+    public String respondToTrade(@RequestParam("tradeId") int tradeId,
+                                 @RequestParam("isAccepted") boolean isAccepted,
+                                 @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath){
+        tradeService.respondToTrade(tradeId, isAccepted);
+        return "redirect:" + redirectPath;
+    }
+
+    @PostMapping("/cancel")
+    public String cancelTrade(@RequestParam("tradeId") int tradeId,
+                              @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath){
+        tradeService.cancelTrade(tradeId);
+        return "redirect:" + redirectPath;
+    }
+
+    @PostMapping("/finalize")
+    public String finalizeTrade(@RequestParam("tradeId") int tradeId,
+                                HttpSession session,
+                                @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        tradeService.finalizeTrade(tradeId, loggedInUser.getUserID());
+        return "redirect:" + redirectPath;
+    }
+
+
+
+
+
+
+
+
+
 }

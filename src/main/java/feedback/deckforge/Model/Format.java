@@ -45,6 +45,12 @@ public class Format {
     public void setRequiresCommander(boolean requiresCommander) { this.requiresCommander = requiresCommander; }
 
     public String getAllowedRarities() { return allowedRarities; }
-    public void setAllowedRarities(String allowedRarities) { this.allowedRarities = allowedRarities; }
+    public void setAllowedRarities(String allowedRarities) {
+        if (allowedRarities == null || allowedRarities.trim().isEmpty()) {
+            this.allowedRarities = "ALL";
+        } else {
+            this.allowedRarities = allowedRarities;
+        }
+    }
 }
 

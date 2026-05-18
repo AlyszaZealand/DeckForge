@@ -55,7 +55,7 @@ CREATE TABLE collection_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (collection_id) REFERENCES collections(collection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE,
                         UNIQUE(collection_id, card_id)
 );
 
@@ -70,7 +70,7 @@ CREATE TABLE wishcollection_items (
                         wishcollection_id INT NOT NULL,
                         card_id INT NOT NULL,
                         FOREIGN KEY (wishcollection_id) REFERENCES wishcollections(wishcollection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE,
                         UNIQUE(wishcollection_id, card_id)
 );
 
@@ -86,7 +86,7 @@ CREATE TABLE tradecollection_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (tradecollection_id) REFERENCES tradecollections(tradecollection_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE,
                         UNIQUE(tradecollection_id, card_id)
 );
 
@@ -102,8 +102,8 @@ CREATE TABLE decks (
                        deck_format VARCHAR(50) NOT NULL,
                        commander_card_id INT NULL, -- Kun relevant hvis format = COMMANDER
                        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-                       FOREIGN KEY (format_id) REFERENCES formats(format_id),
-                       FOREIGN KEY (commander_card_id) REFERENCES cards(card_id)
+                       FOREIGN KEY (format_id) REFERENCES formats(format_id) ON DELETE CASCADE,
+                       FOREIGN KEY (commander_card_id) REFERENCES cards(card_id) ON DELETE SET NULL
 );
 
 CREATE TABLE deck_items (
@@ -112,7 +112,7 @@ CREATE TABLE deck_items (
                         card_id INT NOT NULL,
                         quantity INT DEFAULT 1,
                         FOREIGN KEY (deck_id) REFERENCES decks(deck_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id),
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE,
                         UNIQUE(deck_id, card_id)
 );
 
@@ -161,6 +161,6 @@ CREATE TABLE trade_items (
                         quantity INT DEFAULT 1,
                         is_offered_by_initiator BOOLEAN NOT NULL, -- True = Initiator giver, False = Receiver giver
                         FOREIGN KEY (trade_id) REFERENCES trades(trade_id) ON DELETE CASCADE,
-                        FOREIGN KEY (card_id) REFERENCES cards(card_id)
+                        FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE
 );
 

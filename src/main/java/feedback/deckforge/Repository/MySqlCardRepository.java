@@ -42,8 +42,13 @@ public class MySqlCardRepository implements ICardRepository {
         );
     }
 
+    @Override
+    public void deleteCard(int cardId) {
+        String sql = "DELETE FROM cards WHERE card_id = ?";
+        jdbcTemplate.update(sql, cardId);
+    }
 
-
+    
     @Override
     public Optional<Card> findCardByID(int cardID) {
         String sql = "select * from cards where card_id = ?";
