@@ -3,12 +3,15 @@ package feedback.deckforge.Service;
 import feedback.deckforge.Exceptions.CardNotOwnedException;
 import feedback.deckforge.Exceptions.CollectionNotFoundException;
 import feedback.deckforge.Model.Collection;
+import feedback.deckforge.Model.CollectionItem;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.Validation.CollectionValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CollectionService {
@@ -76,5 +79,30 @@ public class CollectionService {
         } else {
             collectionRepository.removeCardFromCollection(collectionId, cardID);
         }
+    }
+
+    public List<CollectionItem> getFilteredCollectionItems(
+            int userId, String search, String rarity, String type) {
+
+        Collection collection = collectionRepository.findCollectionByUserId(userId).orElse(null);
+        if (collection == null) {
+            return List.of();
+        }
+
+        return collection.getCollectionItems().stream()
+                .filter(item -> search == null || search.isEmpty() ||
+                        item.getCard().getCardName().toLowerCase().contains(search.toLowerCase()))
+                .filter(item -> rarity == null || rarity.isEmpty() ||
+                        item.getCard().getCardRarity().name().equalsIgnoreCase(rarity))
+                .filter(item -> type == null || type.isEmpty() ||
+                        item.getCard().getCardType().name().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
+
+    public int getTotalOwnedQuantity(int userId, int cardId) {
+        return getFilteredCollectionItems(userId, null, null, null).stream()
+                .filter(item -> item.getCard().getCardID() == cardId)
+                .mapToInt(item -> item.getQuantity())
+                .sum();
     }
 }

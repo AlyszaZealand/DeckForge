@@ -33,7 +33,7 @@ public class TradeCollectionController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String rarity,
             @RequestParam(required = false) String color,
-            @RequestParam(required = false) String type, // <-- NY PARAMETER TILFØJET HER
+            @RequestParam(required = false) String type, //
             @RequestParam(required = false, defaultValue = "COLLECTION") String searchTarget,
             HttpSession session, Model model){
 
@@ -46,8 +46,6 @@ public class TradeCollectionController {
         Optional<TradeCollection> tradeCollectionOptional = tradeCollectionService.getTradeCollectionByUserID(loggedInUser.getUserID());
 
         if ("TRADELIST".equals(searchTarget)) {
-            // --- SØG I TRADELIST (Venstre Side) ---
-            // 'type' parameteren sendes med ind som 4. parameter
             List<Card> filteredTradeCards = cardService.searchCards(name, rarity, color, type, CollectionType.TRADE, loggedInUser.getUserID());
 
             tradeCollectionOptional.ifPresent(tc -> {

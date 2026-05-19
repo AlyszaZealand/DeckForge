@@ -1,13 +1,10 @@
 package feedback.deckforge.Controller;
 
+import feedback.deckforge.Model.*;
+import feedback.deckforge.Model.DTO.TradeCardDTO;
+import feedback.deckforge.Model.DTO.TradeViewDTO;
 import feedback.deckforge.Model.Enum.TradeStatus;
-import feedback.deckforge.Model.Trade;
-import feedback.deckforge.Model.TradeCollection;
-import feedback.deckforge.Model.User;
-import feedback.deckforge.Service.CardService;
-import feedback.deckforge.Service.TradeCollectionService;
-import feedback.deckforge.Service.TradeService;
-import feedback.deckforge.Service.UserService;
+import feedback.deckforge.Service.*;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -91,73 +88,6 @@ public class TradeController {
         return "TradeController/trade-ongoing";
     }
 
-    @GetMapping("/propose")
-    public String showProposeTradeForm(HttpSession session, Model model){
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-
-// Unwrap the Optional. If no collection is found, it will return null.
-        TradeCollection myTradeCollection = tradeCollectionService
-                .getTradeCollectionByUserID(loggedInUser.getUserID())
-                .orElse(null);
-
-        // 2. Get all other members to populate the "Select Partner" dropdown
-        List<User> allOtherUsers = userService.getAllUsers().stream()
-                .filter(u -> u.getUserID() != loggedInUser.getUserID())
-                .collect(Collectors.toList());
-
-        model.addAttribute("newTrade", new Trade());
-        model.addAttribute("myTradeCollection", myTradeCollection);
-        model.addAttribute("allOtherUsers", allOtherUsers);
-
-        return "TradeController/trade-propose";
-    }
-
-    @PostMapping("/propose")
-    public String submitTradeProposal(@ModelAttribute("newTrade") Trade trade,
-                                      @RequestParam(value = "offeredCardIds", required = false) List<Integer> offeredCardIds,
-                                      @RequestParam(value = "requestedCardIds", required = false) List<Integer> requestedCardIds,
-                                      @RequestParam("receiverId") int receiverId,
-                                      HttpSession session, RedirectAttributes redirectAttributes){
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-
-        trade.setInitiator(loggedInUser);
-
-        User receiver = userService.getUserByID(receiverId);
-        trade.setReceiver(receiver);
-
-        trade.setTradeDate(LocalDateTime.now());
-
-        // 2. Process Offered Cards
-        // We check for null because if the user checks 0 boxes, the list will be null
-        if (offeredCardIds != null){
-            for (Integer cardId : offeredCardIds){
-                cardService.getCardById(cardId).ifPresent(card ->{
-                    trade.getOfferedCards().add(card);
-                });
-            }
-        }
-
-        if(requestedCardIds != null){
-            for (Integer cardId : requestedCardIds){
-                cardService.getCardById(cardId).ifPresent(card -> {
-                    trade.getRequestedCards().add(card);
-                });
-            }
-        }
-
-        // 4. Validate and Save
-        ValidationResult result = tradeService.proposeTrade(trade);
-
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", result.getErrors().get(0));
-            return "redirect:/trades/propose";
-        }
-
-        redirectAttributes.addFlashAttribute("success", "Trade proposal sent successfully!");
-
-        return "redirect:/outgoing";
-    }
-
 
     @PostMapping("/respond")
     public String respondToTrade(@RequestParam("tradeId") int tradeId,
@@ -182,6 +112,87 @@ public class TradeController {
 
         tradeService.finalizeTrade(tradeId, loggedInUser.getUserID());
         return "redirect:" + redirectPath;
+    }
+
+    // ==========================================
+    // TRIN 1: GET - Søgning og Filtrering
+    // ==========================================
+    @GetMapping("/propose")
+    public String showProposeTradeForm(
+            @RequestParam(value = "receiverId", required = false) Integer receiverId,
+            @RequestParam(value = "searchOffered", required = false) String searchOffered,
+            @RequestParam(value = "rarityOffered", required = false) String rarityOffered,
+            @RequestParam(value = "typeOffered", required = false) String typeOffered,
+            @RequestParam(value = "searchRequested", required = false) String searchRequested,
+            @RequestParam(value = "rarityRequested", required = false) String rarityRequested,
+            @RequestParam(value = "typeRequested", required = false) String typeRequested,
+            HttpSession session, Model model) {
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        // 1. Hent færdigbehandlede DTO'er for INITIATOR direkte fra TradeService
+        List<TradeCardDTO> myAvailableItems = tradeService.getAvailableInitiatorCards(
+                loggedInUser.getUserID(), searchOffered, rarityOffered, typeOffered, collectionService);
+
+        model.addAttribute("myItems", myAvailableItems);
+        model.addAttribute("searchOffered", searchOffered);
+        model.addAttribute("rarityOffered", rarityOffered);
+        model.addAttribute("typeOffered", typeOffered);
+
+        // 2. Hent færdigbehandlede DTO'er for RECEIVER direkte fra TradeService
+        List<TradeCardDTO> partnerAvailableItems = List.of();
+        if (receiverId != null) {
+            partnerAvailableItems = tradeService.getAvailableReceiverCards(
+                    receiverId, searchRequested, rarityRequested, typeRequested, tradeCollectionService);
+            model.addAttribute("selectedReceiverId", receiverId);
+        }
+
+        model.addAttribute("partnerItems", partnerAvailableItems);
+        model.addAttribute("searchRequested", searchRequested);
+        model.addAttribute("rarityRequested", rarityRequested);
+        model.addAttribute("typeRequested", typeRequested);
+
+        // 3. Dropdown-liste over andre brugere
+        List<User> allOtherUsers = userService.getAllUsers().stream()
+                .filter(u -> u.getUserID() != loggedInUser.getUserID())
+                .collect(Collectors.toList());
+
+        model.addAttribute("newTrade", new Trade());
+        model.addAttribute("allOtherUsers", allOtherUsers);
+
+        return "TradeController/trade-propose";
+    }
+
+    @PostMapping("/propose")
+    public String submitTradeProposal(@ModelAttribute("newTrade") Trade trade,
+                                      @RequestParam(value = "offeredCardId", required = false) List<Integer> offeredCardIds,
+                                      @RequestParam(value = "offeredQuantity", required = false) List<Integer> offeredQuantities,
+                                      @RequestParam(value = "requestedCardId", required = false) List<Integer> requestedCardIds,
+                                      @RequestParam(value = "requestedQuantity", required = false) List<Integer> requestedQuantities,
+                                      @RequestParam(value = "receiverId", required = false) Integer receiverId,
+                                      HttpSession session, RedirectAttributes redirectAttributes) {
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        trade.setInitiator(loggedInUser);
+        trade.setTradeDate(LocalDateTime.now());
+
+        if (receiverId != null) {
+            trade.setReceiver(userService.getUserByID(receiverId));
+        }
+
+        // DELEGATION: Lad servicelaget pakke kort-mængderne ud
+        tradeService.populateTradeCards(trade, offeredCardIds, offeredQuantities, requestedCardIds, requestedQuantities, cardService);
+
+        // Validering og lagring
+        ValidationResult result = tradeService.proposeTrade(trade);
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", result.getErrors().get(0));
+            return receiverId != null ? "redirect:/propose?receiverId=" + receiverId : "redirect:/propose";
+        }
+
+        redirectAttributes.addFlashAttribute("success", "Handelsforslag sendt!");
+        return "redirect:/outgoing";
     }
 
 

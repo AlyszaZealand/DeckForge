@@ -296,3 +296,45 @@ h1, h2, h3 {
         align-items: stretch;
     }
 }
+
+/* ========================================= */
+/* TRADE PROPOSAL & SELECTION BOXES          */
+/* ========================================= */
+
+.card-selection-box {
+    background-color: var(--bg-darkest);
+    border: 1px solid var(--accent-gray);
+    border-radius: 4px;
+    padding: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.card-checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-checkbox-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-box {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}

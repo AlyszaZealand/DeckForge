@@ -4,13 +4,16 @@ import feedback.deckforge.Exceptions.CollectionNotFoundException;
 import feedback.deckforge.Exceptions.InsufficientCardsException;
 import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Model.TradeCollection;
+import feedback.deckforge.Model.TradeCollectionItem;
 import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
 import feedback.deckforge.Service.Validation.TradeCollectionValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TradeCollectionService {
@@ -137,6 +140,31 @@ public class TradeCollectionService {
 
         // Vi kører en auto-sync til sidst for at sikre, at vi ikke har lagt flere tilbage, end de ejer!
         syncTradeCollectionWithPrivateCollection(userID, cardID);
+    }
+
+    public List<TradeCollectionItem> getFilteredTradeCollectionItems(
+            int userId, String search, String rarity, String type) {
+
+        TradeCollection collection = getTradeCollectionByUserID(userId).orElse(null);
+        if (collection == null) {
+            return List.of();
+        }
+
+        return collection.getTradeCollectionItems().stream()
+                .filter(item -> search == null || search.isEmpty() ||
+                        item.getCard().getCardName().toLowerCase().contains(search.toLowerCase()))
+                .filter(item -> rarity == null || rarity.isEmpty() ||
+                        item.getCard().getCardRarity().name().equalsIgnoreCase(rarity))
+                .filter(item -> type == null || type.isEmpty() ||
+                        item.getCard().getCardType().name().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
+
+    public int getTotalTradelistQuantity(int userId, int cardId) {
+        return getFilteredTradeCollectionItems(userId, null, null, null).stream()
+                .filter(item -> item.getCard().getCardID() == cardId)
+                .mapToInt(item -> item.getQuantity())
+                .sum();
     }
 
 
