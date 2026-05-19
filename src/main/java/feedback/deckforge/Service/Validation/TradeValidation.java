@@ -69,31 +69,32 @@ public class TradeValidation {
     public ValidationResult validateInventory(Trade trade) {
         ValidationResult result = new ValidationResult();
 
+        // Sikkerhed hvis tradeId ikke findes endnu (f.eks. ved nyt propose)
+        int currentTradeId = trade.getTradeId() > 0 ? trade.getTradeId() : -1;
+
         // ==========================================
         // 1. Tjek INITIATOR's kort (Trækkes fra deres Private Collection)
         // ==========================================
         List<Card> offeredCards = trade.getOfferedCards();
-
-        // Lav en liste med kun de unikke kort, så vi ikke tjekker det samme kort flere gange
         List<Card> distinctOffered = offeredCards.stream()
                 .distinct()
                 .collect(Collectors.toList());
 
         for (Card card : distinctOffered) {
-            // Tæl hvor mange kopier af DITTE specifikke kort initiatoren prøver at bytte
             long neededAmount = offeredCards.stream()
                     .filter(c -> c.getCardID() == card.getCardID())
                     .count();
 
-            // Slå op i databasen: Hvor mange har de, og hvor mange er reserveret?
             long totalOwned = collectionService.getTotalOwnedQuantity(trade.getInitiator().getUserID(), card.getCardID());
-            long lockedAmount = getLockedQuantity(trade.getInitiator().getUserID(), card.getCardID());
+
+            // FIX: Vi beder metoden om at ignorere den handel vi p.t. validerer!
+            long lockedAmount = getLockedQuantity(trade.getInitiator().getUserID(), card.getCardID(), currentTradeId);
 
             long available = totalOwned - lockedAmount;
 
             if (available < neededAmount) {
                 result.addError("Du har ikke nok ledige kopier af kortet: " + card.getCardName() + " (inkl. reserverede i andre handler).");
-                break; // Vi stopper loopet, da fejlen allerede er fundet
+                break;
             }
         }
 
@@ -101,7 +102,6 @@ public class TradeValidation {
         // 2. Tjek RECEIVER's kort (Trækkes fra deres Tradelist)
         // ==========================================
         List<Card> requestedCards = trade.getRequestedCards();
-
         List<Card> distinctRequested = requestedCards.stream()
                 .distinct()
                 .collect(Collectors.toList());
@@ -112,7 +112,9 @@ public class TradeValidation {
                     .count();
 
             long totalOwned = tradeCollectionService.getTotalTradelistQuantity(trade.getReceiver().getUserID(), card.getCardID());
-            long lockedAmount = getLockedQuantity(trade.getReceiver().getUserID(), card.getCardID());
+
+            // FIX: Vi beder metoden om at ignorere den handel vi p.t. validerer!
+            long lockedAmount = getLockedQuantity(trade.getReceiver().getUserID(), card.getCardID(), currentTradeId);
 
             long available = totalOwned - lockedAmount;
 
@@ -125,9 +127,13 @@ public class TradeValidation {
         return result;
     }
 
-    public long getLockedQuantity(int userId, int cardId) {
+
+    // NY METODE der tillader os at ekskludere et TradeID
+    public long getLockedQuantity(int userId, int cardId, int excludeTradeId) {
         List<Trade> activeTrades = tradeRepository.findAllTradesByUserId(userId).stream()
                 .filter(t -> t.getTradeStatus() == TradeStatus.ACCEPTED || t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)
+                // FIX: Vi filtrerer den specifikke handel ud, så den ikke låser sine egne kort!
+                .filter(t -> t.getTradeId() != excludeTradeId)
                 .collect(Collectors.toList());
 
         long locked = 0;
@@ -141,8 +147,6 @@ public class TradeValidation {
         }
         return locked;
     }
-
-
 
 }
 

@@ -235,7 +235,7 @@ public class TradeService {
 
         // 2. Map til DTO og filtrer de låste kort fra (Forretningslogik)
         return rawMyItems.stream().map(item -> {
-                    int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID());
+                    int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID(), -1);
                     return new TradeCardDTO(item.getCard(), item.getQuantity(), item.getQuantity() - locked);
                 })
                 .filter(dto -> dto.getAvailableQuantity() > 0)
@@ -250,7 +250,7 @@ public class TradeService {
 
         // 2. Map til DTO og filtrer de låste kort fra (Forretningslogik)
         return rawPartnerItems.stream().map(item -> {
-                    int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID());
+                    int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID(), -1);
                     return new TradeCardDTO(item.getCard(), item.getQuantity(), item.getQuantity() - locked);
                 })
                 .filter(dto -> dto.getAvailableQuantity() > 0)
