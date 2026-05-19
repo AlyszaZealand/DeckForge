@@ -147,9 +147,11 @@ CREATE TABLE trades (
                         trade_id INT AUTO_INCREMENT PRIMARY KEY,
                         initiator_user_id INT NOT NULL,
                         receiver_user_id INT NOT NULL,
-                        trade_status ENUM('PENDING', 'ACCEPTED', 'DECLINED', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
+                        trade_status ENUM('PENDING', 'ACCEPTED','WAITING_FOR_PARTNER','DECLINED', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
                         trade_date DATETIME DEFAULT CURRENT_TIMESTAMP,
                         completed_date DATETIME NULL,
+                        initiator_confirmed BOOLEAN DEFAULT FALSE, -- ADDED
+                        receiver_confirmed BOOLEAN DEFAULT FALSE,  -- ADDED
                         FOREIGN KEY (initiator_user_id) REFERENCES users(user_id),
                         FOREIGN KEY (receiver_user_id) REFERENCES users(user_id)
 );

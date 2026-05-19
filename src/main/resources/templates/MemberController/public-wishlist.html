@@ -31,7 +31,7 @@
                     <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Rarity: ' + ${item.card.cardRarity}">Rarity</p>
                     <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
 
-                    <a th:href="@{/trade/propose(targetUserId=${profileUser.userID})}" class="btn btn-primary btn-block" style="font-size: 0.8rem; padding: 8px;">
+                    <a th:href="@{/propose(targetUserId=${profileUser.userID})}" class="btn btn-primary btn-block" style="font-size: 0.8rem; padding: 8px;">
                         🤝 Tilbyd Bytte
                     </a>
                 </div>

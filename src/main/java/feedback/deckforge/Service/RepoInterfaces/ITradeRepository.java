@@ -13,4 +13,6 @@ public interface ITradeRepository {
     List<Trade> findTradesByInitiatorId(int initiatorID);
     List<Trade> findTradesByReceiverId(int receiverID);
     List<Trade> findAllTradesByUserId(int userID);
+    void updateTradeStatusAndConfirmations(int tradeId, TradeStatus status, boolean initiatorConfirmed, boolean receiverConfirmed);
+
 }

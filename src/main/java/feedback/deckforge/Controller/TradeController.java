@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -24,35 +23,52 @@ public class TradeController {
     private final UserService userService;
     private TradeCollectionService tradeCollectionService;
     private CardService cardService;
+    private CollectionService collectionService;
 
-    public TradeController(TradeService tradeService, UserService userService, TradeCollectionService tradeCollectionService, CardService cardService){
+    public TradeController(TradeService tradeService, UserService userService,
+                           TradeCollectionService tradeCollectionService, CardService cardService,
+                           CollectionService collectionService){
         this.tradeService = tradeService;
         this.userService = userService;
         this.tradeCollectionService = tradeCollectionService;
         this.cardService = cardService;
+        this.collectionService = collectionService;
     }
+
 
     @GetMapping("/trades")
     public String showTradeDashboard(HttpSession session, Model model){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        // Fetch ALL trades for this user once
         List<Trade> userTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID());
 
-        List<Trade> tradeHistory = userTrades.stream().filter(t -> t.getTradeStatus() == TradeStatus.COMPLETED ||
-                t.getTradeStatus() == TradeStatus.CANCELLED ||
-                t.getTradeStatus() == TradeStatus.DECLINED).collect(Collectors.toList());
+        // Count Incoming Proposals (Pending & User is the Receiver)
+        long incomingTradeCount = userTrades.stream()
+                .filter(t -> t.getTradeStatus() == TradeStatus.PENDING && t.getReceiver().getUserID() == loggedInUser.getUserID())
+                .count();
 
-        model.addAttribute("tradeHistory", tradeHistory);
+        // Count Ongoing Trades (Accepted OR waiting for the second confirmation)
+        long ongoingTradeCount = userTrades.stream()
+                .filter(t -> t.getTradeStatus() == TradeStatus.ACCEPTED ||
+                        t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)
+                .count();
+
+        // Add to the model
         model.addAttribute("currentUserId", loggedInUser.getUserID());
+        model.addAttribute("incomingTradeCount", incomingTradeCount);
+        model.addAttribute("ongoingTradeCount", ongoingTradeCount);
 
         return "TradeController/trade-dashboard";
     }
 
+
     @GetMapping("/incoming")
     public String showIncomingTrades(HttpSession session, Model model){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        List<Trade> incomingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID())
-                .stream().filter(t -> t.getTradeStatus() == TradeStatus.PENDING && t.getReceiver()
-                        .getUserID() == loggedInUser.getUserID()).collect(Collectors.toList());
+
+        // Let the service handle the logic and mapping
+        List<TradeViewDTO> incomingTrades = tradeService.getIncomingTradesForUser(loggedInUser.getUserID());
 
         model.addAttribute("incomingTrades", incomingTrades);
         return "TradeController/trade-incoming";
@@ -62,31 +78,63 @@ public class TradeController {
     public String showOutgoingTrades(HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
-        // Find all pending trades where the logged-in user is the initiator
-        List<Trade> outgoingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID())
-                .stream()
-                .filter(t -> t.getTradeStatus() == TradeStatus.PENDING &&
-                        t.getInitiator().getUserID() == loggedInUser.getUserID())
-                .collect(Collectors.toList());
+        List<TradeViewDTO> outgoingTrades = tradeService.getOutgoingTradesForUser(loggedInUser.getUserID());
 
         model.addAttribute("outgoingTrades", outgoingTrades);
-
-        // Make sure this matches the exact name and folder of your outgoing HTML file
         return "TradeController/trade-outgoing";
     }
 
     @GetMapping("/ongoing")
     public String showOngoingTrades(HttpSession session, Model model){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        List<Trade> ongoingTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID()).stream()
-                .filter(t-> t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)
-                .collect(Collectors.toList());
+
+        List<TradeViewDTO> ongoingTrades = tradeService.getOngoingTradesForUser(loggedInUser.getUserID());
 
         model.addAttribute("ongoingTrades", ongoingTrades);
-        model.addAttribute("currentUserId", loggedInUser.getUserID());
-
         return "TradeController/trade-ongoing";
     }
+
+    @GetMapping("/trade_history")
+    public String showTradeHistory(
+            @RequestParam(name = "sort", defaultValue = "desc") String sort,
+            HttpSession session, Model model){
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        // Pass the sort parameter into your service method
+        List<TradeViewDTO> tradeHistory = tradeService.getTradeHistoryForUser(loggedInUser.getUserID(), sort);
+
+        model.addAttribute("tradeHistory", tradeHistory);
+        model.addAttribute("currentUserId", loggedInUser.getUserID());
+
+        // Pass the current sort string to Thymeleaf so the dropdown remembers what is selected
+        model.addAttribute("currentSort", sort);
+
+        return "TradeController/trade-history";
+    }
+
+    /*@GetMapping("/trade_history")
+    public String showTradeHistory(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        List<Trade> userTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID());
+
+        List<Trade> tradeHistory = userTrades.stream()
+                .filter(t -> t.getTradeStatus() == TradeStatus.COMPLETED ||
+                        t.getTradeStatus() == TradeStatus.CANCELLED)
+                .collect(Collectors.toList());
+
+        // FIX: Fetch BOTH users since we need to dynamically check who the partner is
+        for (Trade trade : tradeHistory) {
+            trade.setInitiator(userService.getUserByID(trade.getInitiator().getUserID()));
+            trade.setReceiver(userService.getUserByID(trade.getReceiver().getUserID()));
+        }
+
+        model.addAttribute("tradeHistory", tradeHistory);
+        model.addAttribute("currentUserId", loggedInUser.getUserID());
+
+        return "TradeController/trade-history";
+    }*/
 
 
     @PostMapping("/respond")

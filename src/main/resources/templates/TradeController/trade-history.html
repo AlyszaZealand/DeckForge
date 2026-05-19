@@ -1,30 +1,77 @@
-<!DOCTYPE html> <!-- TEMPLATE -->
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Trade History - DeckForge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
-    <meta charset="UTF-8">
-    <meta name="description" content="Login">
-    <meta name="keywords" content="HTML, CSS">
-    <meta name="author" content="Bug Busters">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
+<section th:insert="~{parts/header.html :: header}"></section>
 
-<div th:if="${error != null}">
-    <p th:text="${error}" style="color: red; text-align: center"></p>
-</div>
+<main class="container">
+    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
+        <div class="auth-box" style="max-width: 800px; width: 100%; padding: 40px;">
 
-<main>
-    <section th:insert="parts/header.html :: header"></section>
+            <a th:href="@{/trades}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Back to Dashboard</a>
 
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--text-gray); padding-bottom: 10px; margin-bottom: 20px;">
+                <h1 style="color: var(--text-white); margin: 0;">📜 Trade History</h1>
 
-    <!-- FIT WITH CONTROLLER -->
+                <form th:action="@{/trade_history}" method="get" style="margin: 0;">
+                    <label for="sort" style="color: var(--text-gray); font-size: 0.9rem; margin-right: 5px;">Sort by:</label>
+                    <select name="sort" id="sort" onchange="this.form.submit()" style="background: var(--bg-darkest); color: white; border: 1px solid var(--text-gray); padding: 5px; border-radius: 4px; cursor: pointer;">
+                        <option value="desc" th:selected="${currentSort == 'desc'}">Newest First</option>
+                        <option value="asc" th:selected="${currentSort == 'asc'}">Oldest First</option>
+                    </select>
+                </form>
+            </div>
+            <p th:if="${tradeHistory.isEmpty()}" style="color: var(--text-gray); font-style: italic;">Your trade history is empty.</p>
 
+            <div th:each="trade : ${tradeHistory}" style="background: var(--bg-darkest); padding: 20px; margin-bottom: 15px; border-left: 4px solid var(--text-gray); border-radius: 4px;">
 
-    <section th:insert="parts/footer.html :: footer"></section>
+                <h3 style="margin: 0 0 10px 0; color: white;">Partner:
+                    <span th:text="${trade.partnerUsername}">Partner</span>
+                </h3>
+
+                <p style="margin: 0 0 10px 0; font-size: 1rem; font-weight: bold;"
+                   th:styleappend="${trade.tradeStatus.name() == 'COMPLETED'} ? 'color: #4caf50;' : 'color: var(--primary-red);'"
+                   th:text="${trade.tradeStatus}">Status</p>
+
+                <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: var(--text-gray);">
+                    Proposed: <span th:text="${#temporals.format(trade.tradeDate, 'dd-MM-yyyy HH:mm')}">Date</span>
+                </p>
+
+                <div style="display: flex; gap: 20px; margin-top: 15px; margin-bottom: 10px;">
+                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px;">
+                        <h4 style="color: var(--primary-red); margin-top: 0; margin-bottom: 10px;">You Offered:</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-gray); font-size: 0.9rem;">
+                            <li th:each="item : ${trade.cardsYouGive}" style="margin-bottom: 5px;">
+                                🃏 <span th:text="${item.totalQuantity} + 'x '" style="color: white; font-weight: bold;"></span>
+                                <span th:text="${item.card.cardName}" style="color: white;"></span>
+                                <span style="font-size: 0.8rem; opacity: 0.7;" th:text="'(' + ${item.card.cardSet} + ')'"></span>
+                            </li>
+                            <li th:if="${#lists.isEmpty(trade.cardsYouGive)}"><em>Nothing</em></li>
+                        </ul>
+                    </div>
+
+                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px;">
+                        <h4 style="color: #4caf50; margin-top: 0; margin-bottom: 10px;">You Wanted:</h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-gray); font-size: 0.9rem;">
+                            <li th:each="item : ${trade.cardsYouGet}" style="margin-bottom: 5px;">
+                                🃏 <span th:text="${item.totalQuantity} + 'x '" style="color: white; font-weight: bold;"></span>
+                                <span th:text="${item.card.cardName}" style="color: white;"></span>
+                                <span style="font-size: 0.8rem; opacity: 0.7;" th:text="'(' + ${item.card.cardSet} + ')'"></span>
+                            </li>
+                            <li th:if="${#lists.isEmpty(trade.cardsYouGet)}"><em>Nothing</em></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 </main>
-</body>
 
+<section th:insert="~{parts/footer.html :: footer}"></section>
+</body>
 </html>

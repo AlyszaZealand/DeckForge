@@ -13,6 +13,8 @@ import feedback.deckforge.Service.Validation.ValidationResult;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,15 +26,17 @@ public class TradeService {
     private final CollectionService collectionService;
     private final TradeCollectionService tradeCollectionService;
     private final TradeValidation tradeValidation;
+    private final UserService userService;
 
     public TradeService(ITradeRepository tradeRepository,
                         CollectionService collectionService,
                         TradeCollectionService tradeCollectionService,
-                        TradeValidation tradeValidation) {
+                        TradeValidation tradeValidation, UserService userService){
         this.tradeRepository = tradeRepository;
         this.collectionService = collectionService;
         this.tradeCollectionService = tradeCollectionService;
         this.tradeValidation = tradeValidation;
+        this.userService = userService;
     }
 
     // ==========================================

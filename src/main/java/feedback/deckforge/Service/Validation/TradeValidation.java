@@ -15,6 +15,17 @@ import java.util.stream.Collectors;
 @Component
 public class TradeValidation {
 
+    private final TradeCollectionService tradeCollectionService;
+    private final CollectionService collectionService;
+    private final ITradeRepository tradeRepository;
+
+
+    public TradeValidation(TradeCollectionService tradeCollectionService, CollectionService collectionService, ITradeRepository tradeRepository) {
+        this.tradeCollectionService = tradeCollectionService;
+        this.collectionService = collectionService;
+        this.tradeRepository = tradeRepository;
+    }
+
     public ValidationResult validateProposal(Trade trade) {
         ValidationResult result = new ValidationResult();
 

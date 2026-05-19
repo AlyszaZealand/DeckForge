@@ -180,4 +180,11 @@ public class MySqlTradeRepository implements ITradeRepository {
             }
         }, trade.getTradeId());
     }
+
+    @Override
+    public void updateTradeStatusAndConfirmations(int tradeId, TradeStatus status, boolean initiatorConfirmed, boolean receiverConfirmed) {
+        String sql = "UPDATE trades SET trade_status = ?, initiator_confirmed = ?, receiver_confirmed = ? WHERE trade_id = ?";
+
+        jdbcTemplate.update(sql, status.name(), initiatorConfirmed, receiverConfirmed, tradeId);
+    }
 }

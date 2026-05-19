@@ -19,6 +19,23 @@
                 <h2 style="color: var(--text-white); margin: 10px 0 0 0; font-size: 1.2rem;">Manage your card exchanges</h2>
             </div>
 
+            <div th:if="${incomingTradeCount > 0 or ongoingTradeCount > 0}" style="margin-bottom: 30px;">
+                <h3 style="color: var(--text-white); border-bottom: 1px solid var(--accent-gray); padding-bottom: 10px; margin-bottom: 15px;">🔔 Action Required</h3>
+
+                <div th:if="${incomingTradeCount > 0}" style="background-color: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                    <p style="margin: 0; color: #4caf50;">
+                        📥 You have <strong th:text="${incomingTradeCount}"></strong> new trade proposal(s)!
+                        <a th:href="@{/incoming}" style="color: white; text-decoration: underline; margin-left: 10px; font-size: 0.9rem;">View Incoming</a>
+                    </p>
+                </div>
+
+                <div th:if="${ongoingTradeCount > 0}" style="background-color: rgba(255, 165, 0, 0.1); border-left: 4px solid orange; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
+                    <p style="margin: 0; color: orange;">
+                        🤝 You have <strong th:text="${ongoingTradeCount}"></strong> trade(s) awaiting your action.
+                        <a th:href="@{/ongoing}" style="color: white; text-decoration: underline; margin-left: 10px; font-size: 0.9rem;">View Ongoing</a>
+                    </p>
+                </div>
+            </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
                 <a th:href="@{/propose}" class="btn btn-primary" style="padding: 15px; font-size: 1rem; box-shadow: var(--red-glow);">
                     ➕ Propose New Trade
@@ -32,34 +49,6 @@
                 <a th:href="@{/ongoing}" class="btn btn-outline" style="padding: 15px; font-size: 1rem;">
                     🤝 Ongoing Trades (IRL)
                 </a>
-            </div>
-
-            <div>
-                <h3 style="color: var(--text-gray); border-bottom: 1px solid var(--accent-gray); padding-bottom: 10px;">Trade History</h3>
-                <p th:if="${tradeHistory.isEmpty()}" style="color: var(--text-gray); font-style: italic;">Your trade history is empty.</p>
-
-                <div th:unless="${tradeHistory.isEmpty()}" class="scrollable-container" style="max-height: 400px; padding-right: 10px;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 5px; color: var(--text-white);">
-                        <thead>
-                        <tr style="border-bottom: 1px solid var(--accent-gray); text-align: left;">
-                            <th style="padding: 10px; color: var(--primary-red);">Partner</th>
-                            <th style="padding: 10px; color: var(--primary-red);">Status</th>
-                            <th style="padding: 10px; text-align: right; color: var(--primary-red);">Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="trade : ${tradeHistory}" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td style="padding: 15px 10px; font-weight: bold;" th:text="${trade.initiator.userID == currentUserId ? trade.receiver.username : trade.initiator.username}">Partner</td>
-                            <td style="padding: 15px 10px;">
-                                    <span th:text="${trade.tradeStatus}"
-                                          th:style="${trade.tradeStatus.name() == 'COMPLETED'} ? 'color: #4caf50;' : 'color: var(--text-gray);'">Status</span>
-                            </td>
-                            <td style="padding: 15px 10px; text-align: right; color: var(--text-gray); font-size: 0.9rem;"
-                                th:text="${trade.completedDate != null ? #temporals.format(trade.completedDate, 'dd-MM-yyyy HH:mm') : 'N/A'}">Date</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
         </div>
