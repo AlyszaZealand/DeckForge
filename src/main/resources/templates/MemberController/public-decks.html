@@ -25,19 +25,19 @@
 
             <div th:unless="${#lists.isEmpty(decks)}" style="display: flex; flex-direction: column; gap: 12px;">
 
-                <div th:each="deck : ${decks}"
-                     style="background-color: var(--bg-card); border-left: 4px solid var(--primary-red); padding: 20px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <a th:each="deck : ${decks}"
+                   th:href="@{/public-deck/{deckId}(deckId=${deck.deckID})}"
+                   style="background-color: var(--bg-card); border-left: 4px solid var(--primary-red); padding: 20px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; cursor: pointer; transition: transform 0.2s;">
 
                     <div>
                         <h3 th:text="${deck.deckName}" style="color: var(--text-white); margin: 0 0 5px 0;">Deck Navn</h3>
-                        <p style="color: var(--text-gray); font-size: 0.85rem; margin: 0;" th:text="'Format: ' + ${deck.format}">Format</p>
+                       <!-- <p style="color: var(--text-gray); font-size: 0.85rem; margin: 0;" th:text="'Format: ' + ${deck.format}">Format</p> -->
                     </div>
 
                     <div>
-                        <span style="color: var(--text-gray); font-size: 0.9rem; font-style: italic;">Offentligt Deck</span>
+                        <span style="color: var(--text-gray); font-size: 0.9rem; font-style: italic;">Offentligt Deck &rarr;</span>
                     </div>
-
-                </div>
+                </a>
 
             </div>
 

@@ -113,29 +113,6 @@ public class TradeController {
         return "TradeController/trade-history";
     }
 
-    /*@GetMapping("/trade_history")
-    public String showTradeHistory(HttpSession session, Model model){
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-
-        List<Trade> userTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID());
-
-        List<Trade> tradeHistory = userTrades.stream()
-                .filter(t -> t.getTradeStatus() == TradeStatus.COMPLETED ||
-                        t.getTradeStatus() == TradeStatus.CANCELLED)
-                .collect(Collectors.toList());
-
-        // FIX: Fetch BOTH users since we need to dynamically check who the partner is
-        for (Trade trade : tradeHistory) {
-            trade.setInitiator(userService.getUserByID(trade.getInitiator().getUserID()));
-            trade.setReceiver(userService.getUserByID(trade.getReceiver().getUserID()));
-        }
-
-        model.addAttribute("tradeHistory", tradeHistory);
-        model.addAttribute("currentUserId", loggedInUser.getUserID());
-
-        return "TradeController/trade-history";
-    }*/
-
 
     @PostMapping("/respond")
     public String respondToTrade(@RequestParam("tradeId") int tradeId,
@@ -169,6 +146,7 @@ public class TradeController {
     public String showProposeTradeForm(
             @RequestParam(value = "receiverId", required = false) Integer receiverId,
             @RequestParam(value = "searchOffered", required = false) String searchOffered,
+            @RequestParam(value = "searchUser", required = false) String searchUser,
             @RequestParam(value = "rarityOffered", required = false) String rarityOffered,
             @RequestParam(value = "typeOffered", required = false) String typeOffered,
             @RequestParam(value = "searchRequested", required = false) String searchRequested,
@@ -203,10 +181,12 @@ public class TradeController {
         // 3. Dropdown-liste over andre brugere
         List<User> allOtherUsers = userService.getAllUsers().stream()
                 .filter(u -> u.getUserID() != loggedInUser.getUserID())
+                .filter(u -> searchUser == null || searchUser.isEmpty() || u.getUsername().toLowerCase().contains(searchUser.toLowerCase()))
                 .collect(Collectors.toList());
 
         model.addAttribute("newTrade", new Trade());
         model.addAttribute("allOtherUsers", allOtherUsers);
+        model.addAttribute("searchUser", searchUser);
 
         return "TradeController/trade-propose";
     }
