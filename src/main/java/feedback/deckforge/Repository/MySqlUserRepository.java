@@ -116,6 +116,15 @@ public class MySqlUserRepository implements IUserRepository {
         jdbcTemplate.update(sql, newRole.name(), userId);
     }
 
+    @Override
+    public List<User> findUsersByEventID(int eventID) {
+        String sql = "SELECT u.* FROM users u " +
+                "INNER JOIN event_registrations er ON u.user_id = er.user_id " +
+                "WHERE er.event_id = ?";
+
+        return jdbcTemplate.query(sql, userRowMapper, eventID);
+    }
+
 
 
 }

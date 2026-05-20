@@ -96,19 +96,8 @@ public class EventService {
     }
 
 
-    public List<User> getSignedUpUsersByEventID(int eventID){
-         List<Integer> userIDs = eventRepository.findSignedUpUsersByEventID(eventID);
-
-         List<User> signedUpUsers = new ArrayList<>();
-
-         for (Integer userID : userIDs){
-             Optional<User> userOptional = userRepository.findUserByID(userID);
-
-             if(userOptional.isPresent()){
-                 signedUpUsers.add(userOptional.get());
-             }
-         }
-         return signedUpUsers;
+    public List<User> getSignedUpUsersByEventID(int eventID) {
+        return userRepository.findUsersByEventID(eventID);
     }
 
     public void signUpForEvent(int eventID, int userID) {

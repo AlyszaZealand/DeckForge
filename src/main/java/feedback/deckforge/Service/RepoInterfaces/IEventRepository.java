@@ -12,7 +12,6 @@ public interface IEventRepository {
     void deleteEvent(int eventID);
     Optional<Event> findEventByID(int eventID);
     List<Event> findAllEvents();
-    List<Integer> findSignedUpUsersByEventID(int eventID);
     void signUp(int eventID, int userID);
     void removeSignUp(int eventID, int userID);
     List<Event> getEventsByOrganizerId(int organizerId);

@@ -6,7 +6,6 @@ import feedback.deckforge.Model.*;
 import feedback.deckforge.Model.DTO.TradeCardDTO;
 import feedback.deckforge.Model.DTO.TradeViewDTO;
 import feedback.deckforge.Model.Enum.TradeStatus;
-import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.ITradeRepository;
 import feedback.deckforge.Service.Validation.TradeValidation;
 import feedback.deckforge.Service.Validation.ValidationResult;
@@ -89,10 +88,10 @@ public class TradeService {
         // Hvis handlen var Accepteret, skal kortene lægges tilbage (reservation ophæves)
         if (trade.getTradeStatus() == TradeStatus.ACCEPTED || trade.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER) {
             for (Card card : trade.getOfferedCards()) {
-                tradeCollectionService.addOne(trade.getInitiator().getUserID(), card.getCardID());
+                tradeCollectionService.addCardsToTradeCollection(trade.getInitiator().getUserID(),card.getCardID(),1);
             }
             for (Card card : trade.getRequestedCards()) {
-                tradeCollectionService.addOne(trade.getReceiver().getUserID(), card.getCardID());
+                tradeCollectionService.addCardsToTradeCollection(trade.getReceiver().getUserID(),card.getCardID(),1);
             }
         }
 
@@ -148,14 +147,16 @@ public class TradeService {
 
             // DEN STORE UDVEKSLING mellem personlige samlinger
             for (Card card : trade.getOfferedCards()) {
-                collectionService.removeOne(trade.getInitiator().getUserID(), card.getCardID());
-                collectionService.addOne(trade.getReceiver().getUserID(), card.getCardID());
+                collectionService.removeCards(trade.getInitiator().getUserID(), card.getCardID(), 1);
+                tradeCollectionService.removeCardsFromTradeCollection(trade.getInitiator().getUserID(),card.getCardID(),1);
+                collectionService.addCards(trade.getReceiver().getUserID(), card.getCardID(), 1);
                 tradeCollectionService.syncTradeCollectionWithPrivateCollection(trade.getInitiator().getUserID(), card.getCardID());
             }
 
             for (Card card : trade.getRequestedCards()) {
-                collectionService.removeOne(trade.getReceiver().getUserID(), card.getCardID());
-                collectionService.addOne(trade.getInitiator().getUserID(), card.getCardID());
+                collectionService.removeCards(trade.getReceiver().getUserID(), card.getCardID(), 1);
+                tradeCollectionService.removeCardsFromTradeCollection(trade.getInitiator().getUserID(),card.getCardID(),1);
+                collectionService.addCards(trade.getInitiator().getUserID(), card.getCardID(), 1);
                 tradeCollectionService.syncTradeCollectionWithPrivateCollection(trade.getReceiver().getUserID(), card.getCardID());
             }
 

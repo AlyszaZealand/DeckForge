@@ -73,7 +73,7 @@ public class MyCardCollectionController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
         int collectionID = collectionOpt.get().getCollectionId();
-        collectionService.addCardToCollection(collectionID,cardID,1);
+        collectionService.addCards(collectionID,cardID,1);
         return "redirect:/myCards";
     }
 
@@ -84,7 +84,7 @@ public class MyCardCollectionController {
 
         Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
         int collectionID = collectionOpt.get().getCollectionId();
-        collectionService.removeOne(collectionID, cardID);
+        collectionService.removeCards(loggedInUser.getUserID(),cardID,1);
         return "redirect:/myCards";
     }
 
@@ -95,7 +95,7 @@ public class MyCardCollectionController {
 
         Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
         int collectionID = collectionOpt.get().getCollectionId();
-        collectionService.addCardToCollection(collectionID, cardID, 1);
+        collectionService.addCards(loggedInUser.getUserID(),cardID,1);
         return "redirect:/myCards";
     }
 }

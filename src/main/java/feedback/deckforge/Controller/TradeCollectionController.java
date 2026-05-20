@@ -80,8 +80,7 @@ public class TradeCollectionController {
         int tradeCollectionID = tradeCollectionOptional.get().getTradeCollectionId();
 
         // Vi kalder bare servicen. Hvis den fejler, tager GlobalExceptionHandler over!
-        tradeCollectionService.addCardToTradeCollection(loggedInUser.getUserID(), tradeCollectionID, cardID, 1);
-
+        tradeCollectionService.addCardsToTradeCollection(loggedInUser.getUserID(), cardID,1);
         return "redirect:/myTradeList";
     }
 
@@ -93,7 +92,7 @@ public class TradeCollectionController {
         Optional<TradeCollection> tradeCollectionOptional = tradeCollectionService.getTradeCollectionByUserID(loggedInUser.getUserID());
         int tradeCollectionID = tradeCollectionOptional.get().getTradeCollectionId();
 
-        tradeCollectionService.removeCardFromTradeCollection(tradeCollectionID, cardID);
+        tradeCollectionService.removeCardsFromTradeCollection(loggedInUser.getUserID(),cardID,1);
 
         return "redirect:/myTradeList";
     }
@@ -104,7 +103,7 @@ public class TradeCollectionController {
         if (loggedInUser == null) return "redirect:/login";
 
         // Bruger din eksisterende removeOne logik fra TradeCollectionService
-        tradeCollectionService.removeOne(loggedInUser.getUserID(), cardID);
+        tradeCollectionService.removeCardsFromTradeCollection(loggedInUser.getUserID(),cardID,1);
 
         return "redirect:/myTradeList";
     }

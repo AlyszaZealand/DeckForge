@@ -32,56 +32,58 @@ public class TradeCollectionService {
         return tradeCollectionRepository.findTradeCollectionByUserId(userID);
     }
 
-    public void addCardToTradeCollection(int userID, int tradeCollectionID, int cardID, int quantityToAdd) {
+    public void addCardsToTradeCollection(int userID, int cardID, int quantityToAdd) {
+        // 1. Find samlingen ud fra UserID (Controlleren slipper for dette arbejde nu!)
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Bytteliste ikke fundet")).getTradeCollectionId();
+
         Collection privateCol = collectionRepository.findCollectionByUserId(userID).orElse(null);
 
-        // 1. Find ud af, hvor mange der allerede ligger på byttelisten
-        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeCollectionID, cardID);
-
-        // 2. Regn den nye total ud
+        // 2. Find nuværende antal
+        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
         int newTotalQuantity = currentTradeQty + quantityToAdd;
 
-        // 3. Valider med den NYE total for at sikre, at brugeren faktisk har nok
+        // 3. Validering (Har de faktisk nok kort i deres private samling til at sætte dem til bytte?)
         ValidationResult result = tradeCollectionValidation.validateAddCardToTradeCollection(cardID, newTotalQuantity, privateCol);
-
-        // 4. Hvis der er fejl, KAST exception, så din GlobalExceptionHandler griber den!
         if (result.hasErrors()) {
             throw new InsufficientCardsException(result.getErrors().get(0));
         }
 
-        // 5. Hvis ingen fejl, opdater databasen
-        tradeCollectionRepository.addCardToTradeCollection(tradeCollectionID, cardID, quantityToAdd);
-    }
-
-    public void removeCardFromTradeCollection(int tradeCollectionID, int cardID){
-        tradeCollectionRepository.removeCardFromTradeCollection(tradeCollectionID, cardID);
-    }
-
-    public void setCardQuantity(int tradeCollectionID, int cardID, int newQuantity){
-        tradeCollectionRepository.setCardQuantity(tradeCollectionID, cardID, newQuantity);
-    }
-
-    public void addOne(int userID, int cardID) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID).orElseThrow().getTradeCollectionId();
-        int qty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
-
-        if (qty > 0) {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, qty + 1);
+        // 4. Gem i databasen
+        if (currentTradeQty > 0) {
+            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, newTotalQuantity);
         } else {
-            tradeCollectionRepository.addCardToTradeCollection(tradeColId, cardID, 1);
+            tradeCollectionRepository.addCardToTradeCollection(tradeColId, cardID, quantityToAdd);
         }
     }
 
-    public void removeOne(int userID, int cardID) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID).orElseThrow().getTradeCollectionId();
-        int qty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
 
-        if (qty > 1) {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, qty - 1);
-        } else {
+    public void removeCardsFromTradeCollection(int userID, int cardID, int quantityToRemove) {
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Bytteliste ikke fundet")).getTradeCollectionId();
+
+        int currentQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
+        int newQty = currentQty - quantityToRemove;
+
+        if (newQty <= 0) {
             tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
+        } else {
+            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, newQty);
         }
     }
+
+
+    public int getTotalTradelistQuantity(int userId, int cardId) {
+
+        // Find brugerens bytteliste-ID
+        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userId)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde byttelisten for bruger ID: " + userId))
+                .getTradeCollectionId();
+
+        return tradeCollectionRepository.getCardQuantity(tradeColId, cardId);
+    }
+
+
 
     public void syncTradeCollectionWithPrivateCollection(int userID, int cardID) {
         // Hent ID'er for brugerens lister
@@ -108,42 +110,9 @@ public class TradeCollectionService {
         }
     }
 
-   //reservation
-    public void reserveCardsFromTradeCollection(int userID, int cardID, int quantityToReserve) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
-                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke reservere kort: Bytteliste ikke fundet for bruger ID: " + userID))
-                .getTradeCollectionId();
-        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
 
-        // Regner ud hvor mange der skal være tilbage (Sikrer at vi ikke går i minus)
-        int newTradeQty = Math.max(0, currentTradeQty - quantityToReserve);
 
-        if (newTradeQty == 0) {
-            tradeCollectionRepository.removeCardFromTradeCollection(tradeColId, cardID);
-        } else {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, newTradeQty);
-        }
-    }
-
-    // Annullering
-    public void returnCardsToTradeCollection(int userID, int cardID, int quantityToReturn) {
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
-                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke returnere kort: Bytteliste ikke fundet for bruger ID: " + userID))
-                .getTradeCollectionId();
-        int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
-
-        if (currentTradeQty > 0) {
-            tradeCollectionRepository.setCardQuantity(tradeColId, cardID, currentTradeQty + quantityToReturn);
-        } else {
-            tradeCollectionRepository.addCardToTradeCollection(tradeColId, cardID, quantityToReturn);
-        }
-
-        // Vi kører en auto-sync til sidst for at sikre, at vi ikke har lagt flere tilbage, end de ejer!
-        syncTradeCollectionWithPrivateCollection(userID, cardID);
-    }
-
-    public List<TradeCollectionItem> getFilteredTradeCollectionItems(
-            int userId, String search, String rarity, String type) {
+    public List<TradeCollectionItem> getFilteredTradeCollectionItems(int userId, String search, String rarity, String type) {
 
         TradeCollection collection = getTradeCollectionByUserID(userId).orElse(null);
         if (collection == null) {
@@ -158,13 +127,6 @@ public class TradeCollectionService {
                 .filter(item -> type == null || type.isEmpty() ||
                         item.getCard().getCardType().name().equalsIgnoreCase(type))
                 .collect(Collectors.toList());
-    }
-
-    public int getTotalTradelistQuantity(int userId, int cardId) {
-        return getFilteredTradeCollectionItems(userId, null, null, null).stream()
-                .filter(item -> item.getCard().getCardID() == cardId)
-                .mapToInt(item -> item.getQuantity())
-                .sum();
     }
 
 

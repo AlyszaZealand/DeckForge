@@ -98,12 +98,6 @@ public class MySqlEventRepository implements IEventRepository {
         return jdbcTemplate.query(sql, eventRowMapper);
     }
 
-    @Override
-    public List<Integer> findSignedUpUsersByEventID(int eventID){
-        String sql = "select user_id from event_registrations where event_id = ?";
-
-        return jdbcTemplate.queryForList(sql, Integer.class, eventID);
-    }
 
     @Override
     public void signUp(int eventID, int userID){

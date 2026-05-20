@@ -15,6 +15,7 @@
   <div class="page-header">
     <h1>Min Tradelist</h1>
     <p style="color: var(--text-gray);">Administrer hvilke af dine kort, du ønsker at tilbyde i bytte til andre spillere.</p>
+    <a th:href="@{/collectionPage}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Tilbage til Collection Hub</a>
   </div>
 
   <div th:if="${errorMessage}" style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px;" th:text="${errorMessage}"></div>

@@ -29,57 +29,60 @@ public class CollectionService {
         return collectionRepository.findCollectionByUserId(userID);
     }
 
-    public ValidationResult addCardToCollection(int collectionID, int cardID, int quantity) {
-        ValidationResult result = collectionValidation.validateAddCard(cardID, quantity);
-        if (!result.hasErrors()) {
-            collectionRepository.addCardToCollection(collectionID, cardID, quantity);
+
+    public ValidationResult addCards(int userID, int cardID, int quantityToAdd) {
+        // 1. Find collection ID ud fra User ID
+        int collectionId = collectionRepository.findCollectionByUserId(userID)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
+                .getCollectionId();
+
+        // 2. Kør validering (Har de plads? Findes kortet?)
+        ValidationResult result = collectionValidation.validateAddCard(cardID, quantityToAdd);
+
+        if (result.hasErrors()) {
+            return result; // Afbryd hvis der er fejl
         }
+
+        // 3. Tjek hvor mange de allerede har i forvejen
+        int currentQty = collectionRepository.getCardQuantity(collectionId, cardID);
+
+        // 4. Hvis de allerede har kortet, opdaterer vi antallet. Ellers tilføjer vi en ny række.
+        if (currentQty > 0) {
+            collectionRepository.updateCardQuantity(collectionId, cardID, currentQty + quantityToAdd);
+        } else {
+            collectionRepository.addCardToCollection(collectionId, cardID, quantityToAdd);
+        }
+
         return result;
     }
 
-    public void removeCardFromCollection(int collectionID, int cardID) {
-        collectionRepository.removeCardFromCollection(collectionID, cardID);
-    }
 
-    //hvis man har 4 kopier, men fjerner en fra sin collection
-    public void updateCardQuantity(int collectionID, int cardID, int newQuantity) {
-        if (newQuantity <= 0) {
-            collectionRepository.removeCardFromCollection(collectionID, cardID);
-        } else {
-            collectionRepository.updateCardQuantity(collectionID, cardID, newQuantity);
-        }
-    }
-
-    public void addOne(int userID, int cardID) {
-        int collectionId = collectionRepository.findCollectionByUserId(userID)
-                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
-                .getCollectionId();
-        int qty = collectionRepository.getCardQuantity(collectionId, cardID);
-
-        if (qty > 0) {
-            collectionRepository.updateCardQuantity(collectionId, cardID, qty + 1);
-        } else {
-            collectionRepository.addCardToCollection(collectionId, cardID, 1);
-        }
-    }
-
-    public void removeOne(int userID, int cardID) {
+    public void removeCards(int userID, int cardID, int quantityToRemove) {
+        // 1. Find collection ID ud fra User ID
         int collectionId = collectionRepository.findCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
                 .getCollectionId();
 
-        int qty = collectionRepository.getCardQuantity(collectionId, cardID);
+        // 2. Find ud af hvor mange kopier de har i forvejen
+        int currentQty = collectionRepository.getCardQuantity(collectionId, cardID);
 
-        if (qty <= 0) {
+        if (currentQty <= 0) {
             throw new CardNotOwnedException("Du kan ikke fjerne et kort, du ikke har i din samling.");
         }
 
-        if (qty > 1) {
-            collectionRepository.updateCardQuantity(collectionId, cardID, qty - 1);
-        } else {
+        // 3. Udregn det nye antal
+        int newQty = currentQty - quantityToRemove;
+
+        // 4. Hvis det nye antal er 0 eller derunder, sletter vi kortet helt fra samlingen
+        if (newQty <= 0) {
             collectionRepository.removeCardFromCollection(collectionId, cardID);
+        } else {
+            // Ellers sænker vi bare antallet
+            collectionRepository.updateCardQuantity(collectionId, cardID, newQty);
         }
     }
+
+
 
     public List<CollectionItem> getFilteredCollectionItems(
             int userId, String search, String rarity, String type) {
@@ -100,9 +103,12 @@ public class CollectionService {
     }
 
     public int getTotalOwnedQuantity(int userId, int cardId) {
-        return getFilteredCollectionItems(userId, null, null, null).stream()
-                .filter(item -> item.getCard().getCardID() == cardId)
-                .mapToInt(item -> item.getQuantity())
-                .sum();
+
+        // Find brugerens samlings-ID (Collection ID)
+        int collectionId = collectionRepository.findCollectionByUserId(userId)
+                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userId))
+                .getCollectionId();
+
+        return collectionRepository.getCardQuantity(collectionId, cardId);
     }
 }

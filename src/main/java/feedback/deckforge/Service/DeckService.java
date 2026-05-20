@@ -64,15 +64,15 @@ public class DeckService {
         return deck;
     }
 
-    public void addCardToDeck(int deckID, int cardID, int quantity) {
-        // findDeckByID henter nu automatisk Commanderen med farver, så valideringen virker!
+    public void addCardsToDeck(int deckID, int cardID, int quantityToAdd) {
         Deck deck = deckRepository.findDeckByID(deckID)
                 .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
         Card card = cardRepository.findCardByID(cardID)
                 .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
 
-        ValidationResult result = deckValidation.validateAddCard(deck, card, quantity);
+        // Validering tjekker automatisk om der er plads i formatet, max kopier tilladt, osv.
+        ValidationResult result = deckValidation.validateAddCard(deck, card, quantityToAdd);
 
         if (result.hasErrors()) {
             throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
@@ -80,37 +80,25 @@ public class DeckService {
 
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
         if (currentQty > 0) {
-            deckRepository.updateCardQuantity(deckID, cardID, currentQty + quantity);
+            // Hvis kortet allerede er i decket, skruer vi bare antallet op
+            deckRepository.updateCardQuantity(deckID, cardID, currentQty + quantityToAdd);
         } else {
-            deckRepository.addCardToDeck(deckID, cardID, quantity);
+            // Ellers tilføjer vi det som en ny række
+            deckRepository.addCardToDeck(deckID, cardID, quantityToAdd);
         }
     }
 
-    public void addOneToDeck(int deckID, int cardID) {
-        // Igen, decket kommer nu med fuld Commander-info direkte fra Repo
-        Deck deck = deckRepository.findDeckByID(deckID)
-                .orElseThrow(() -> new DeckNotFoundException("Deck ikke fundet"));
 
-        Card card = cardRepository.findCardByID(cardID)
-                .orElseThrow(() -> new CardNotFoundException("Kort ikke fundet"));
-
-        ValidationResult result = deckValidation.validateAddCard(deck, card, 1);
-
-        if (result.hasErrors()) {
-            throw new IllegalDeckCompositionException(String.join(", ", result.getErrors()));
-        }
-
-        int currentQty = deckRepository.getCardQuantity(deckID, cardID);
-        deckRepository.updateCardQuantity(deckID, cardID, currentQty + 1);
-    }
-
-    public void removeOneFromDeck(int deckID, int cardID) {
+    public void removeCardsFromDeck(int deckID, int cardID, int quantityToRemove) {
         int currentQty = deckRepository.getCardQuantity(deckID, cardID);
 
-        if (currentQty > 1) {
-            deckRepository.updateCardQuantity(deckID, cardID, currentQty - 1);
-        } else {
+        int newQty = currentQty - quantityToRemove;
+
+        if (newQty <= 0) {
             deckRepository.removeCardFromDeck(deckID, cardID);
+        } else {
+            // Ellers opdaterer vi bare mængden til det nye, lavere tal
+            deckRepository.updateCardQuantity(deckID, cardID, newQty);
         }
     }
 

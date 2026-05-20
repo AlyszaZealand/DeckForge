@@ -13,6 +13,7 @@
 <main class="container" style="max-width: 1500px;"> <div class="page-header">
     <h1>Min Samling & Database</h1>
     <p style="color: var(--text-gray);">Brug søgefunktionen til at finde nye kort, eller sortér i din egen samling.</p>
+    <a th:href="@{/collectionPage}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Tilbage til Collection Hub</a>
 </div>
 
     <div th:if="${errorMessage}" style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px;" th:text="${errorMessage}"></div>

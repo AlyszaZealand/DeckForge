@@ -27,20 +27,30 @@ public class WishCollectionService {
 
         return wishCollectionRepository.findWishCollectionByUserId(userID);
     }
-    
-    public ValidationResult addCardToWishCollection(int wishCollectionID, int cardID){
+
+    public ValidationResult addCardToWishlist(int userID, int cardID) {
+        int wishCollectionID = wishCollectionRepository.findWishCollectionByUserId(userID)
+                .orElseThrow(() -> new RuntimeException("Ønskeliste ikke fundet")).getWishCollectionId();
+
         ValidationResult result = wishCollectionValidation.validateAddCardToWishlist(cardID);
+
         if (!result.hasErrors()) {
-            try{
+            try {
                 wishCollectionRepository.addCardToWishCollection(wishCollectionID, cardID);
-            } catch (DuplicateKeyException e){
+            } catch (DuplicateKeyException e) {
                 throw new CardAlreadyInWishListException("Dette kort findes allerede i din ønskeliste!");
             }
         }
         return result;
     }
-    
-    public void removeCardFromWishCollection(int wishCollectionID, int cardID){
+
+    // -----------------------------------------------------
+    // 2. FJERN FRA ØNSKELISTE
+    // -----------------------------------------------------
+    public void removeCardFromWishlist(int userID, int cardID) {
+        int wishCollectionID = wishCollectionRepository.findWishCollectionByUserId(userID)
+                .orElseThrow(() -> new RuntimeException("Ønskeliste ikke fundet")).getWishCollectionId();
+
         wishCollectionRepository.removeCardFromWishCollection(wishCollectionID, cardID);
     }
 

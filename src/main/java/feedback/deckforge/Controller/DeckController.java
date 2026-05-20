@@ -111,19 +111,19 @@ public class DeckController {
                                 @RequestParam int cardID,
                                 @RequestParam int quantity) {
 
-        deckService.addCardToDeck(deckID, cardID, quantity);
+        deckService.addCardsToDeck(deckID,cardID,quantity);
         return "redirect:/deckBuilder/" + deckID;
     }
 
     @PostMapping("/deckBuilder/{deckID}/addOne")
     public String addOne(@PathVariable int deckID, @RequestParam int cardID) {
-        deckService.addOneToDeck(deckID, cardID);
+        deckService.addCardsToDeck(deckID,cardID,1);
         return "redirect:/deckBuilder/" + deckID;
     }
 
     @PostMapping("/deckBuilder/{deckID}/removeOne")
     public String removeOne(@PathVariable int deckID, @RequestParam int cardID) {
-        deckService.removeOneFromDeck(deckID, cardID);
+        deckService.removeCardsFromDeck(deckID,cardID,1);
         return "redirect:/deckBuilder/" + deckID;
     }
 

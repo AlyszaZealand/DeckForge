@@ -57,13 +57,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CollectionNotFoundException.class)
     public String handleCollectionNotFound(CollectionNotFoundException ex, RedirectAttributes redirectAttributes){
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        return "redirect/profile";
+        return "redirect:/myCards";
     }
 
     @ExceptionHandler(DeckNotFoundException.class)
     public String handleDeckNotFound(DeckNotFoundException ex, RedirectAttributes redirectAttributes){
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        return "redirect/myDecks";
+        return "redirect:/myDecks";
     }
 
     @ExceptionHandler(EventFullException.class)

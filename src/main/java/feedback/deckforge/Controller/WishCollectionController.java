@@ -89,7 +89,7 @@ public class WishCollectionController {
         int wishCollectionID = wishCollectionOptional.get().getWishCollectionId();
 
 
-        wishCollectionService.addCardToWishCollection(wishCollectionID, cardID);
+        wishCollectionService.addCardToWishlist(loggedInUser.getUserID(), cardID);
 
         return "redirect:/myWishCollection";
     }
@@ -103,7 +103,7 @@ public class WishCollectionController {
 
         Optional<WishCollection> wishCollectionOpt = wishCollectionService.getWishCollectionByUserID(loggedInUser.getUserID());
         int wishCollectionID = wishCollectionOpt.get().getWishCollectionId();
-        wishCollectionService.removeCardFromWishCollection(wishCollectionID,cardID);
+        wishCollectionService.removeCardFromWishlist(loggedInUser.getUserID(), cardID);
 
         return "redirect:/myWishCollection";
     }
