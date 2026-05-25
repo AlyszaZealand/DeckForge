@@ -73,18 +73,6 @@ public class TradeCollectionService {
     }
 
 
-    public int getTotalTradelistQuantity(int userId, int cardId) {
-
-        // Find brugerens bytteliste-ID
-        int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userId)
-                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde byttelisten for bruger ID: " + userId))
-                .getTradeCollectionId();
-
-        return tradeCollectionRepository.getCardQuantity(tradeColId, cardId);
-    }
-
-
-
     public void syncTradeCollectionWithPrivateCollection(int userID, int cardID) {
         // Hent ID'er for brugerens lister
         int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)

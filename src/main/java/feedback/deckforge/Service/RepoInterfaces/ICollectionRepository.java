@@ -12,7 +12,6 @@ public interface ICollectionRepository {
 
     void removeCardFromCollection(int collectionID, int cardID);
 
-    //hvis man har 4 kopier, men fjerner en fra sin collection
     void updateCardQuantity(int collectionID, int cardID, int newQuantity);
 
     int getCardQuantity(int collectionID, int cardID);

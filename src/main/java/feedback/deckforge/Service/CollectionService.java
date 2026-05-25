@@ -101,14 +101,4 @@ public class CollectionService {
                         item.getCard().getCardType().name().equalsIgnoreCase(type))
                 .collect(Collectors.toList());
     }
-
-    public int getTotalOwnedQuantity(int userId, int cardId) {
-
-        // Find brugerens samlings-ID (Collection ID)
-        int collectionId = collectionRepository.findCollectionByUserId(userId)
-                .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userId))
-                .getCollectionId();
-
-        return collectionRepository.getCardQuantity(collectionId, cardId);
-    }
 }

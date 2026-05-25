@@ -139,7 +139,7 @@ public class DeckValidation {
                 int qty = item.getQuantity();
                 totalDeckQty += qty;
 
-                // --- NYT: Tjek om eksisterende kort bryder den nye Commanders farver ---
+                // Tjek om eksisterende kort bryder den nye Commanders farver ---
                 if (format.isRequiresCommander() && hasCommander) {
                     String cardColors = card.getColorIdentity();
                     if (cardColors != null && !cardColors.equalsIgnoreCase("C") && !cardColors.isBlank()) {

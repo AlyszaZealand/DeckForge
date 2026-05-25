@@ -1,28 +1,33 @@
 package feedback.deckforge.Service.Validation;
 
 import feedback.deckforge.Model.Card;
+import feedback.deckforge.Model.Collection;
 import feedback.deckforge.Model.Enum.TradeStatus;
 import feedback.deckforge.Model.Trade;
+import feedback.deckforge.Model.TradeCollection;
 import feedback.deckforge.Service.CollectionService;
+import feedback.deckforge.Service.RepoInterfaces.ICollectionRepository;
+import feedback.deckforge.Service.RepoInterfaces.ITradeCollectionRepository;
 import feedback.deckforge.Service.RepoInterfaces.ITradeRepository;
 import feedback.deckforge.Service.TradeCollectionService;
 import feedback.deckforge.Service.TradeService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class TradeValidation {
 
-    private final TradeCollectionService tradeCollectionService;
-    private final CollectionService collectionService;
+    private final ITradeCollectionRepository tradeCollectionRepository;
+    private final ICollectionRepository collectionRepository;
     private final ITradeRepository tradeRepository;
 
 
-    public TradeValidation(TradeCollectionService tradeCollectionService, CollectionService collectionService, ITradeRepository tradeRepository) {
-        this.tradeCollectionService = tradeCollectionService;
-        this.collectionService = collectionService;
+    public TradeValidation(ITradeCollectionRepository tradeCollectionRepository, ICollectionRepository collectionRepository, ITradeRepository tradeRepository) {
+        this.tradeCollectionRepository = tradeCollectionRepository;
+        this.collectionRepository = collectionRepository;
         this.tradeRepository = tradeRepository;
     }
 
@@ -85,7 +90,14 @@ public class TradeValidation {
                     .filter(c -> c.getCardID() == card.getCardID())
                     .count();
 
-            long totalOwned = collectionService.getTotalOwnedQuantity(trade.getInitiator().getUserID(), card.getCardID());
+            long totalOwned = 0;
+            Optional<Collection> cOpt = collectionRepository.findCollectionByUserId(trade.getInitiator().getUserID());
+
+            // 2. Hvis modtageren HAR en tradelist, slår vi mængden af kortet op
+            if (cOpt.isPresent()) {
+                totalOwned = tradeCollectionRepository.getCardQuantity(cOpt.get().getCollectionId(), card.getCardID());
+            }
+
 
             // FIX: Vi beder metoden om at ignorere den handel vi p.t. validerer!
             long lockedAmount = getLockedQuantity(trade.getInitiator().getUserID(), card.getCardID(), currentTradeId);
@@ -111,7 +123,14 @@ public class TradeValidation {
                     .filter(c -> c.getCardID() == card.getCardID())
                     .count();
 
-            long totalOwned = tradeCollectionService.getTotalTradelistQuantity(trade.getReceiver().getUserID(), card.getCardID());
+            long totalOwned = 0;
+            Optional<TradeCollection> tcOpt = tradeCollectionRepository.findTradeCollectionByUserId(trade.getReceiver().getUserID());
+
+            // 2. Hvis modtageren HAR en tradelist, slår vi mængden af kortet op
+            if (tcOpt.isPresent()) {
+                totalOwned = tradeCollectionRepository.getCardQuantity(tcOpt.get().getTradeCollectionId(), card.getCardID());
+            }
+
 
             // FIX: Vi beder metoden om at ignorere den handel vi p.t. validerer!
             long lockedAmount = getLockedQuantity(trade.getReceiver().getUserID(), card.getCardID(), currentTradeId);

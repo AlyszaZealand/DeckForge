@@ -58,4 +58,5 @@ public class Trade {
 
     public List<Card> getRequestedCards() { return requestedCards; }
     public void setRequestedCards(List<Card> requestedCards) { this.requestedCards = requestedCards; }
+
 }
