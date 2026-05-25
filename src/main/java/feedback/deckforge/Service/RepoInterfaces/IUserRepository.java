@@ -16,6 +16,7 @@ public interface IUserRepository {
     List<User> findMembersByTradelistCard(String cardName);
     void changeUserRole(int userId, feedback.deckforge.Model.Enum.UserRole newRole);
     List<User> findUsersByEventID(int eventID);
+    Optional<User> findUserByUsername(String username);
 
 
 }

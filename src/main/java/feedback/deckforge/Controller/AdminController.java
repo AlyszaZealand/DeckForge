@@ -155,6 +155,29 @@ public class AdminController {
         return "AdminController/admin-cards";
     }
 
+    @GetMapping("/createCard")
+    public String showCardCreation(HttpSession session, Model model){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !loggedInUser.getUserRole().equals(UserRole.ADMIN)){
+            return "redirect:/login";
+        }
+
+        model.addAttribute("card", new Card());
+        return "AdminController/create-card";
+    }
+
+    @PostMapping("/createCard")
+    public String handleCardCreation(@ModelAttribute("card") Card card, Model model, HttpSession session){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null || !loggedInUser.getUserRole().equals(UserRole.ADMIN)){
+            return "redirect:/login";
+        }
+
+        cardService.saveCard(card);
+
+        return "redirect:/admin/cards";
+    }
+
     @PostMapping("/admin/deleteCard")
     public String deleteCardFromDatabase(@RequestParam int cardID, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");

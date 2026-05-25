@@ -2,6 +2,7 @@ package feedback.deckforge.Service;
 
 import feedback.deckforge.Exceptions.InsufficientCardsException;
 import feedback.deckforge.Exceptions.TradeNotFoundException;
+import feedback.deckforge.Exceptions.UnauthorizedException;
 import feedback.deckforge.Model.*;
 import feedback.deckforge.Model.DTO.TradeCardDTO;
 import feedback.deckforge.Model.DTO.TradeViewDTO;
@@ -55,10 +56,13 @@ public class TradeService {
     // ==========================================
     // 2. ACCEPTER ELLER AFVIS
     // ==========================================
-    public void respondToTrade(int tradeId, boolean isAccepted) {
+    public void respondToTrade(int tradeId, boolean isAccepted, int currentUserId) {
         Trade trade = tradeRepository.findTradeById(tradeId)
                 .orElseThrow(() -> new TradeNotFoundException("Handlen blev ikke fundet."));
 
+        if (trade.getReceiver().getUserID() != currentUserId){
+            throw new SecurityException("Du har ikke tilladelse til at besvare dette bytte forslag");
+        }
         if (isAccepted) {
             trade.setTradeStatus(TradeStatus.ACCEPTED);
 
@@ -77,8 +81,12 @@ public class TradeService {
     // ==========================================
     // 3. ANNULLER BYTTE
     // ==========================================
-    public void cancelTrade(int tradeID) {
+    public void cancelTrade(int tradeID, int currentUserId) {
         Trade trade = tradeRepository.findTradeById(tradeID).orElseThrow(() -> new TradeNotFoundException("Byttehandlen kunne ikke findes"));
+
+        if (trade.getInitiator().getUserID() != currentUserId){
+            throw new UnauthorizedException("Du kan kun annullere dine egne handler.");
+        }
 
         // Validering: Man kan ikke annullere et bytte, der er afvist eller allerede færdigt
         if (trade.getTradeStatus() == TradeStatus.DECLINED || trade.getTradeStatus() == TradeStatus.COMPLETED) {

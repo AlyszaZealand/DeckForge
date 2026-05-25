@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<section th:insert="~{Parts/header.html :: header}"></section>
+<section th:replace="~{Parts/header.html :: header}"></section>
 
 <main>
     <div class="auth-wrapper">
@@ -49,6 +49,6 @@
     </div>
 </main>
 
-<section th:insert="~{Parts/footer.html :: footer}"></section>
+<section th:replace="~{Parts/footer.html :: footer}"></section>
 </body>
 </html>

@@ -1,5 +1,7 @@
 package feedback.deckforge.Model;
 
+import feedback.deckforge.Exceptions.DeckNameNotValid;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,16 @@ public class Deck {
     public Deck() {}
 
     public Deck(String deckName, User user, Format format) {
+        validateDeckName(deckName);
         this.deckName = deckName;
         this.user = user;
         this.format = format;
+    }
+
+    public void validateDeckName(String deckName){
+        if (deckName == null || deckName.isEmpty()){
+            throw new DeckNameNotValid("Decknavnet må ikke være tomt");
+        }
     }
 
     // --- Getters og Setters ---

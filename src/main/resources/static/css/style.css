@@ -36,14 +36,21 @@ body {
     padding: 30px 20px;
 }
 
-/* --- HEADER & NAVIGATION --- */
-header {
+main.container {
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================================
+   HEADER & NAVIGATION
+   ========================================= */
+body > header {
     background-color: var(--bg-darkest);
     border-bottom: 2px solid var(--primary-red);
-    padding: 15px 0;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 9999;
+    padding: 15px 0;
 }
 
 .nav-container {
@@ -53,12 +60,31 @@ header {
     max-width: 1300px;
     margin: 0 auto;
     padding: 0 20px;
+    position: relative; /* Vigtigt for at mobil-menuen kan placeres korrekt */
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-white);
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: var(--primary-red);
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
 }
 
 .nav-links {
     display: flex;
     gap: 20px;
     list-style: none;
+    align-items: center;
 }
 
 .nav-links a {
@@ -74,19 +100,25 @@ header {
     color: var(--primary-red);
 }
 
-/* --- TYPOGRAFI & OVERSKRIFTER --- */
-h1, h2, h3 {
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-white);
-    margin-bottom: 15px;
+/* Skjul checkbox og burger-ikon på computer-skærme */
+.menu-checkbox {
+    display: none;
+    width: 30px;
+    height: 30px;
 }
 
-.page-header {
-    border-bottom: 2px solid var(--primary-red);
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 10px -5px var(--primary-red);
+.hamburger {
+    display: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.hamburger-line {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px 0;
+    background-color: var(--text-white);
 }
 
 /* --- AUTH (LOGIN / OPRET BRUGER) --- */
@@ -283,24 +315,226 @@ h1, h2, h3 {
 .scrollable-container::-webkit-scrollbar-thumb { background: var(--accent-gray); border-radius: 4px; }
 .scrollable-container::-webkit-scrollbar-thumb:hover { background: var(--primary-red); }
 
-/* --- RESPONSIVT DESIGN (Mobiler) --- */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none; /* Skjuler menu på små skærme, kan laves til burgermenu senere */
-    }
-    .card-grid {
-        grid-template-columns: 1fr; /* Én kolonne på mobil */
-    }
-    .search-filter-box {
-        flex-direction: column;
-        align-items: stretch;
-    }
+/* =========================================
+   FORSIDE (HERO & TABLES)
+   ========================================= */
+.hero-section {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(180deg, var(--bg-darkest) 0%, var(--bg-card) 100%);
+    border-bottom: 1px solid var(--border-red);
+    margin-bottom: 40px;
 }
 
-/* ========================================= */
-/* TRADE PROPOSAL & SELECTION BOXES          */
-/* ========================================= */
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-shadow: 0 0 15px rgba(179,0,0,0.5);
+}
 
+.hero-section h1 span {
+    color: var(--primary-red);
+}
+
+.hero-section p {
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.empty-state {
+    background-color: var(--bg-card);
+    padding: 30px;
+    text-align: center;
+    border: 1px dashed var(--border-red);
+    border-radius: 8px;
+}
+
+.table-responsive { width: 100%; overflow-x: auto; }
+.event-table { width: 100%; border-collapse: collapse; background-color: var(--bg-card); border-radius: 8px; overflow: hidden; }
+.event-table thead { background-color: var(--accent-gray); }
+.event-table th { padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red); color: var(--text-white); }
+.event-table td { padding: 15px; border-bottom: 1px solid var(--border-red); }
+
+.text-right { text-align: right; }
+.text-gray { color: var(--text-gray); }
+.font-bold { font-weight: bold; }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+/* =========================================
+   PROFIL & DASHBOARDS
+   ========================================= */
+.profile-wrapper { align-items: flex-start; padding-top: 40px; }
+.profile-box { max-width: 900px; padding: 40px; }
+
+.profile-header {
+    border-bottom: 2px solid var(--primary-red);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.profile-title-group h1 { color: var(--primary-red); margin: 0; text-shadow: var(--red-glow); }
+.profile-title-group h2 { color: var(--text-white); margin: 10px 0 0 0; }
+
+.role-badge {
+    background-color: rgba(179,0,0,0.2);
+    color: var(--primary-red);
+    border: 1px solid var(--primary-red);
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.dashboard-highlight {
+    margin-bottom: 40px;
+    background-color: var(--bg-darkest);
+    border: 1px solid var(--accent-gray);
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+}
+
+.dashboard-highlight h3 { margin-top: 0; color: white; }
+.dashboard-highlight p { color: var(--text-gray); font-size: 0.9rem; margin-bottom: 15px; }
+.action-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
+.dashboard-grid {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.dashboard-column { flex: 1; min-width: 300px; }
+.column-title-active { color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px; }
+.column-title-inactive { color: var(--text-gray); border-bottom: 1px solid var(--text-gray); padding-bottom: 10px; }
+.empty-text { color: var(--text-gray); font-style: italic; }
+.intro-text { color: var(--text-gray); margin-bottom: 30px; }
+
+.event-card { background: var(--bg-darkest); padding: 15px; margin-bottom: 10px; border-radius: 4px; }
+.event-card h4 { margin: 0 0 5px 0; }
+.event-card p { margin: 0 0 10px 0; font-size: 0.85rem; color: var(--text-gray); }
+.card-success { border-left: 3px solid #4caf50; }
+.card-primary { border-left: 3px solid var(--primary-red); }
+.card-inactive { border-left: 3px solid var(--text-gray); }
+
+.card-actions { display: flex; gap: 10px; }
+.status-badge { font-size: 0.8rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: var(--text-gray); }
+.mt-10 { margin-top: 10px; display: inline-block; }
+
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: var(--text-white); }
+.admin-table thead tr { border-bottom: 1px solid var(--accent-gray); text-align: left; }
+.admin-table th { padding: 10px; }
+.admin-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.admin-table td { padding: 15px 10px; }
+.table-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.table-actions form { margin: 0; }
+
+.btn-success { border-color: #4caf50; color: #4caf50; }
+.btn-warning { border-color: #ff9800; color: #ff9800; }
+
+/* =========================================
+   TRADE & SEMANTIC UTILITIES
+   ========================================= */
+.mb-20 { margin-bottom: 20px; }
+.mt-20 { margin-top: 20px; }
+
+/* Alerts */
+.alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; border-left: 4px solid; }
+.alert p { margin: 0; font-weight: bold; }
+.alert a { text-decoration: underline; margin-left: 10px; font-size: 0.9rem; }
+.alert-success { background-color: rgba(76, 175, 80, 0.1); border-color: #4caf50; color: #4caf50; }
+.alert-success a { color: #ffffff; }
+.alert-warning { background-color: rgba(255, 165, 0, 0.1); border-color: orange; color: orange; }
+.alert-warning a { color: #ffffff; }
+.alert-danger { background-color: rgba(255,0,0,0.1); border-color: #ff4444; color: #ff4444; }
+
+/* Trade Cards & Layouts */
+.trade-card {
+    background: var(--bg-darkest);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-red);
+}
+.trade-card.success-border { border-color: #4caf50; }
+.trade-card.default-border { border-color: var(--text-gray); }
+.trade-card h3 { margin: 0 0 10px 0; color: white; }
+
+.trade-details {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.trade-side {
+    flex: 1;
+    min-width: 250px;
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 4px;
+}
+.trade-side h4 { margin-top: 0; margin-bottom: 10px; }
+.trade-side ul { list-style: none; padding: 0; margin: 0; color: var(--text-gray); font-size: 0.9rem; }
+.trade-side li { margin-bottom: 5px; color: white; }
+.trade-side small { font-size: 0.8rem; opacity: 0.7; }
+
+.trade-actions form { display: flex; gap: 15px; flex-wrap: wrap; margin: 0; }
+.waiting-box {
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Forms, Fieldsets & Search Bars */
+.trade-form-section {
+    background: var(--bg-darkest);
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid var(--accent-gray);
+}
+fieldset { border: none; padding: 0; margin: 0; }
+legend { color: white; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; width: 100%; }
+
+.search-action-group { display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+.search-action-group .form-control { width: auto; flex: 1; min-width: 150px; }
+
+/* Filter Grids */
+.filter-grid { display: flex; gap: 20px; flex-wrap: wrap; }
+.filter-grid > div, .filter-grid > section {
+    flex: 1;
+    min-width: 250px;
+    max-width: 100%;
+}
+.filter-box {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+}
+.filter-box header h4 { color: var(--primary-red); margin-top: 0; margin-bottom: 10px; }
+.filter-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.filter-row select { flex: 1; min-width: 120px; }
+
+/* Selection Boxes */
 .card-selection-box {
     background-color: var(--bg-darkest);
     border: 1px solid var(--accent-gray);
@@ -309,7 +543,6 @@ h1, h2, h3 {
     max-height: 320px;
     overflow-y: auto;
 }
-
 .card-checkbox-item {
     display: flex;
     align-items: center;
@@ -318,23 +551,48 @@ h1, h2, h3 {
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
+.card-checkbox-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.card-info { display: flex; flex-direction: column; }
+.card-info strong { color: white; font-weight: 500; }
+.card-info small { color: var(--text-gray); font-size: 0.75rem; }
+.card-action { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.quantity-input { width: 65px; padding: 4px; text-align: center; }
 
-.card-checkbox-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
+/* =========================================
+   RESPONSIVT DESIGN (Mobiler & Tablets)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Layout justeringer */
+    .card-grid { grid-template-columns: 1fr; }
+    .search-filter-box { flex-direction: column; align-items: stretch; }
+    .auth-box, .profile-box { padding: 20px; }
+    .filter-grid > div, .filter-grid > section { min-width: 100%; }
 
-.filter-box {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 15px;
-}
-
-.filter-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    /* Burger Menu Logik */
+    .hamburger { display: block; }
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-darkest);
+        border-bottom: 2px solid var(--primary-red);
+        z-index: 9999;
+    }
+    .menu-checkbox:checked ~ .main-nav { display: block; }
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+        gap: 0;
+    }
+    .nav-links li { width: 100%; }
+    .nav-links a {
+        display: block;
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
 }

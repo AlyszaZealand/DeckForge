@@ -3,190 +3,175 @@
 <head>
     <title>Propose Trade - DeckForge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<section th:insert="~{parts/header.html :: header}"></section>
+<header th:replace="~{parts/header.html :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
-        <div class="auth-box" style="max-width: 950px; width: 100%; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <div class="auth-box profile-box" style="max-width: 950px;">
 
-            <div th:if="${errorMessage != null}" style="background-color: rgba(255,0,0,0.1); border-left: 4px solid #ff4444; padding: 15px; margin-bottom: 20px;">
-                <p th:text="${errorMessage}" style="color: #ff4444; margin: 0; font-weight: bold;"></p>
+            <div th:if="${errorMessage != null}" class="alert alert-danger mb-20">
+                <p th:text="${errorMessage}"></p>
             </div>
 
-            <a th:href="@{/trades}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Tilbage til Dashboard</a>
+            <a th:href="@{/trades}" class="btn btn-outline btn-sm mb-20">&larr; Tilbage til Dashboard</a>
 
-            <h1 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px; margin-bottom: 20px; text-shadow: var(--red-glow);">➕ Propose New Trade</h1>
+            <header class="page-header">
+                <h1 style="color: var(--primary-red); margin: 0; text-shadow: var(--red-glow);">➕ Propose New Trade</h1>
+            </header>
 
-
-            <form th:action="@{/propose}" method="get" style="background: var(--bg-darkest); padding: 20px; border-radius: 4px; margin-bottom: 15px; border: 1px solid var(--accent-gray);">
-                <h3 style="color: white; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem;">1. Find handelspartner</h3>
-
-                <div class="form-group" style="max-width: 500px; margin-bottom: 0;">
-                    <label style="font-weight: bold; color: var(--text-gray);">Søg efter brugernavn</label>
-                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                        <input type="text" name="searchUser" class="form-control" placeholder="Indtast brugernavn..." th:value="${searchUser}">
-                        <button type="submit" class="btn btn-primary" style="padding: 0 20px;">Søg</button>
-
-                        <a th:href="@{/propose}" class="btn btn-outline" th:if="${searchUser != null and !searchUser.isEmpty()}"
-                           style="display: flex; align-items: center; justify-content: center; text-decoration: none; white-space: nowrap;">
-                            Vis alle brugere
-                        </a>
+            <form th:action="@{/propose}" method="get" class="trade-form-section">
+                <fieldset>
+                    <legend>1. Find handelspartner</legend>
+                    <div class="form-group" style="max-width: 500px; margin: 0;">
+                        <label>Søg efter brugernavn</label>
+                        <div class="search-action-group">
+                            <input type="text" name="searchUser" class="form-control" placeholder="Indtast brugernavn..." th:value="${searchUser}">
+                            <button type="submit" class="btn btn-primary">Søg</button>
+                            <a th:href="@{/propose}" class="btn btn-outline" th:if="${searchUser != null and !searchUser.isEmpty()}">
+                                Vis alle
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
             </form>
 
-
-            <form th:action="@{/propose}" method="get" style="background: var(--bg-darkest); padding: 20px; border-radius: 4px; margin-bottom: 30px; border: 1px solid var(--accent-gray);">
-
+            <form th:action="@{/propose}" method="get" class="trade-form-section">
                 <input type="hidden" name="searchUser" th:value="${searchUser}" />
+                <fieldset>
+                    <legend>2. Vælg partner & anvend kortfiltre</legend>
 
-                <h3 style="color: white; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem;">2. Vælg partner & anvend kortfiltre</h3>
-
-                <div class="form-group" style="max-width: 400px; margin-bottom: 20px;">
-                    <label style="font-weight: bold; color: white;">Vælg Medlem du vil bytte med</label>
-                    <select name="receiverId" class="form-control" required>
-                        <option value="" disabled th:selected="${selectedReceiverId == null}">-- Vælg en partner --</option>
-                        <option th:each="user : ${allOtherUsers}"
-                                th:value="${user.userID}"
-                                th:text="${user.username}"
-                                th:selected="${user.userID == selectedReceiverId}"></option>
-                    </select>
-                </div>
-
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-
-                    <div style="flex: 1; min-width: 300px;" class="filter-box">
-                        <h4 style="color: var(--primary-red); margin-top: 0; margin-bottom: 10px;">Søg i din personalige samling (my-cards)</h4>
-                        <input type="text" name="searchOffered" class="form-control" placeholder="Søg på kortnavn..." th:value="${searchOffered}">
-
-                        <div class="filter-row">
-                            <select name="rarityOffered" class="form-control">
-                                <option value="">Alle rariteter</option>
-                                <option value="COMMON" th:selected="${rarityOffered == 'COMMON'}">Common</option>
-                                <option value="UNCOMMON" th:selected="${rarityOffered == 'UNCOMMON'}">Uncommon</option>
-                                <option value="RARE" th:selected="${rarityOffered == 'RARE'}">Rare</option>
-                                <option value="MYTHICRARE" th:selected="${rarityOffered == 'MYTHICRARE'}">MythicRare</option>
-                            </select>
-
-                            <select name="typeOffered" class="form-control">
-                                <option value="">Alle typer</option>
-                                <option value="CREATURE" th:selected="${typeOffered == 'CREATURE'}">Creature</option>
-                                <option value="INSTANT" th:selected="${typeOffered == 'INSTANT'}">Instant</option>
-                                <option value="SORCERY" th:selected="${typeOffered == 'SORCERY'}">Sorcery</option>
-                                <option value="ENCHANTMENT" th:selected="${typeOffered == 'ENCHANTMENT'}">Enchantment</option>
-                                <option value="ARTIFACT" th:selected="${typeOffered == 'ARTIFACT'}">Artifact</option>
-                                <option value="LAND" th:selected="${typeOffered == 'LAND'}">Land</option>
-                                <option value="PLANESWALKER" th:selected="${typeOffered == 'PLANESWALKER'}">Planeswalker</option>
-                            </select>
-                        </div>
+                    <div class="form-group" style="max-width: 400px; margin-bottom: 20px;">
+                        <label style="color: white;">Vælg Medlem du vil bytte med</label>
+                        <select name="receiverId" class="form-control" required>
+                            <option value="" disabled th:selected="${selectedReceiverId == null}">-- Vælg en partner --</option>
+                            <option th:each="user : ${allOtherUsers}"
+                                    th:value="${user.userID}"
+                                    th:text="${user.username}"
+                                    th:selected="${user.userID == selectedReceiverId}"></option>
+                        </select>
                     </div>
 
-                    <div style="flex: 1; min-width: 300px;" class="filter-box">
-                        <h4 style="color: var(--primary-red); margin-top: 0; margin-bottom: 10px;">Søg i partners tradelist</h4>
-                        <input type="text" name="searchRequested" class="form-control" placeholder="Søg på kortnavn..." th:value="${searchRequested}" th:disabled="${selectedReceiverId == null}">
+                    <div class="filter-grid">
+                        <section class="filter-box">
+                            <header>
+                                <h4>Søg i din personlige samling (my-cards)</h4>
+                            </header>
+                            <input type="text" name="searchOffered" class="form-control" placeholder="Søg på kortnavn..." th:value="${searchOffered}">
+                            <div class="filter-row">
+                                <select name="rarityOffered" class="form-control">
+                                    <option value="">Alle rariteter</option>
+                                    <option value="COMMON" th:selected="${rarityOffered == 'COMMON'}">Common</option>
+                                    <option value="UNCOMMON" th:selected="${rarityOffered == 'UNCOMMON'}">Uncommon</option>
+                                    <option value="RARE" th:selected="${rarityOffered == 'RARE'}">Rare</option>
+                                    <option value="MYTHICRARE" th:selected="${rarityOffered == 'MYTHICRARE'}">MythicRare</option>
+                                </select>
+                                <select name="typeOffered" class="form-control">
+                                    <option value="">Alle typer</option>
+                                    <option value="CREATURE" th:selected="${typeOffered == 'CREATURE'}">Creature</option>
+                                    <option value="INSTANT" th:selected="${typeOffered == 'INSTANT'}">Instant</option>
+                                    <option value="SORCERY" th:selected="${typeOffered == 'SORCERY'}">Sorcery</option>
+                                    <option value="ENCHANTMENT" th:selected="${typeOffered == 'ENCHANTMENT'}">Enchantment</option>
+                                    <option value="ARTIFACT" th:selected="${typeOffered == 'ARTIFACT'}">Artifact</option>
+                                    <option value="LAND" th:selected="${typeOffered == 'LAND'}">Land</option>
+                                    <option value="PLANESWALKER" th:selected="${typeOffered == 'PLANESWALKER'}">Planeswalker</option>
+                                </select>
+                            </div>
+                        </section>
 
-                        <div class="filter-row">
-                            <select name="rarityRequested" class="form-control" th:disabled="${selectedReceiverId == null}">
-                                <option value="">Alle rariteter</option>
-                                <option value="COMMON" th:selected="${rarityRequested == 'COMMON'}">Common</option>
-                                <option value="UNCOMMON" th:selected="${rarityRequested == 'UNCOMMON'}">Uncommon</option>
-                                <option value="RARE" th:selected="${rarityRequested == 'RARE'}">Rare</option>
-                                <option value="MYTHICRARE" th:selected="${rarityRequested == 'MYTHICRARE'}">MythicRare</option>
-                            </select>
-
-                            <select name="typeRequested" class="form-control" th:disabled="${selectedReceiverId == null}">
-                                <option value="">Alle typer</option>
-                                <option value="CREATURE" th:selected="${typeRequested == 'CREATURE'}">Creature</option>
-                                <option value="INSTANT" th:selected="${typeRequested == 'INSTANT'}">Instant</option>
-                                <option value="SORCERY" th:selected="${typeRequested == 'SORCERY'}">Sorcery</option>
-                                <option value="ENCHANTMENT" th:selected="${typeRequested == 'ENCHANTMENT'}">Enchantment</option>
-                                <option value="ARTIFACT" th:selected="${typeRequested == 'ARTIFACT'}">Artifact</option>
-                                <option value="LAND" th:selected="${typeRequested == 'LAND'}">Land</option>
-                                <option value="PLANESWALKER" th:selected="${typeRequested == 'PLANESWALKER'}">Planeswalker</option>
-                            </select>
-                        </div>
+                        <section class="filter-box">
+                            <header>
+                                <h4>Søg i partners tradelist</h4>
+                            </header>
+                            <input type="text" name="searchRequested" class="form-control" placeholder="Søg på kortnavn..." th:value="${searchRequested}" th:disabled="${selectedReceiverId == null}">
+                            <div class="filter-row">
+                                <select name="rarityRequested" class="form-control" th:disabled="${selectedReceiverId == null}">
+                                    <option value="">Alle rariteter</option>
+                                    <option value="COMMON" th:selected="${rarityRequested == 'COMMON'}">Common</option>
+                                    <option value="UNCOMMON" th:selected="${rarityRequested == 'UNCOMMON'}">Uncommon</option>
+                                    <option value="RARE" th:selected="${rarityRequested == 'RARE'}">Rare</option>
+                                    <option value="MYTHICRARE" th:selected="${rarityRequested == 'MYTHICRARE'}">MythicRare</option>
+                                </select>
+                                <select name="typeRequested" class="form-control" th:disabled="${selectedReceiverId == null}">
+                                    <option value="">Alle typer</option>
+                                    <option value="CREATURE" th:selected="${typeRequested == 'CREATURE'}">Creature</option>
+                                    <option value="INSTANT" th:selected="${typeRequested == 'INSTANT'}">Instant</option>
+                                    <option value="SORCERY" th:selected="${typeRequested == 'SORCERY'}">Sorcery</option>
+                                    <option value="ENCHANTMENT" th:selected="${typeRequested == 'ENCHANTMENT'}">Enchantment</option>
+                                    <option value="ARTIFACT" th:selected="${typeRequested == 'ARTIFACT'}">Artifact</option>
+                                    <option value="LAND" th:selected="${typeRequested == 'LAND'}">Land</option>
+                                    <option value="PLANESWALKER" th:selected="${typeRequested == 'PLANESWALKER'}">Planeswalker</option>
+                                </select>
+                            </div>
+                        </section>
                     </div>
 
-                </div>
-
-                <button type="submit" class="btn btn-outline" style="margin-top: 15px; width: 100%;">🔍 Anvend filtre & indlæs kortlister</button>
+                    <button type="submit" class="btn btn-outline btn-block mt-20">🔍 Anvend filtre & indlæs kortlister</button>
+                </fieldset>
             </form>
-
 
             <form th:action="@{/propose}" th:object="${newTrade}" method="post">
-
                 <input type="hidden" name="receiverId" th:value="${selectedReceiverId}" />
+                <fieldset>
+                    <legend style="margin-bottom: 15px;">3. Angiv antal (Quantity) for de kort, der skal byttes</legend>
 
-                <h3 style="color: white; margin-bottom: 15px; font-size: 1.1rem;">3. Angiv antal (Quantity) for de kort, der skal byttes</h3>
+                    <div class="filter-grid mb-20">
+                        <div class="form-group">
+                            <label>Kort du vil give (Fra din samling)</label>
+                            <div class="card-selection-box scrollable-container">
+                                <p th:if="${myItems == null or myItems.isEmpty()}" class="empty-text">
+                                    Ingen ledige kort fundet i din samling med de valgte filtre.
+                                </p>
+                                <article th:each="item : ${myItems}" class="card-checkbox-item">
+                                    <input type="hidden" name="offeredCardId" th:value="${item.card.cardID}">
+                                    <div class="card-info">
+                                        <strong th:text="${item.card.cardName}">Card Name</strong>
+                                        <small th:text="${item.card.cardRarity} + ' - ' + ${item.card.cardType}">Rarity - Type</small>
+                                    </div>
+                                    <div class="card-action">
+                                        <small th:text="'(Ledig: ' + ${item.availableQuantity} + ' / Ejer: ' + ${item.totalQuantity} + ')'"></small>
+                                        <input type="number" name="offeredQuantity" value="0" min="0" th:max="${item.availableQuantity}" class="form-control quantity-input">
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
 
-                <div style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
-
-                    <div class="form-group" style="flex: 1; min-width: 300px;">
-                        <label style="color: var(--text-gray);">Kort du vil give (Fra din samling)</label>
-                        <div class="card-selection-box scrollable-container">
-                            <p th:if="${myItems == null or myItems.isEmpty()}" style="color: var(--text-gray); font-style: italic; font-size: 0.9rem;">
-                                Ingen ledige kort fundet i din samling med de valgte filtre.
-                            </p>
-
-                            <div th:each="item : ${myItems}" class="card-checkbox-item">
-                                <input type="hidden" name="offeredCardId" th:value="${item.card.cardID}">
-
-                                <div style="display: flex; flex-direction: column;">
-                                    <span th:text="${item.card.cardName}" style="color: white; font-weight: 500;">Card Name</span>
-                                    <span th:text="${item.card.cardRarity} + ' - ' + ${item.card.cardType}" style="color: var(--text-gray); font-size: 0.75rem;">Rarity - Type</span>
-                                </div>
-
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="color: var(--text-gray); font-size: 0.8rem;"
-                                          th:text="'(Ledig: ' + ${item.availableQuantity} + ' / Ejer: ' + ${item.totalQuantity} + ')'"></span>
-
-                                    <input type="number" name="offeredQuantity" value="0" min="0" th:max="${item.availableQuantity}" class="form-control" style="width: 65px; padding: 4px; text-align: center;">
-                                </div>
+                        <div class="form-group">
+                            <label>Kort du vil have (Fra partners tradelist)</label>
+                            <div class="card-selection-box scrollable-container">
+                                <p th:if="${selectedReceiverId == null}" class="empty-text">
+                                    Vælg en partner i toppen først for at se deres kortlister...
+                                </p>
+                                <p th:if="${selectedReceiverId != null and (partnerItems == null or partnerItems.isEmpty())}" class="empty-text">
+                                    Partneren har ikke ledige matchende kort i sin tradelist.
+                                </p>
+                                <article th:each="item : ${partnerItems}" class="card-checkbox-item">
+                                    <input type="hidden" name="requestedCardId" th:value="${item.card.cardID}">
+                                    <div class="card-info">
+                                        <strong th:text="${item.card.cardName}">Card Name</strong>
+                                        <small th:text="${item.card.cardRarity} + ' - ' + ${item.card.cardType}">Rarity - Type</small>
+                                    </div>
+                                    <div class="card-action">
+                                        <small th:text="'(Ledig: ' + ${item.availableQuantity} + ' / Tradelist: ' + ${item.totalQuantity} + ')'"></small>
+                                        <input type="number" name="requestedQuantity" value="0" min="0" th:max="${item.availableQuantity}" class="form-control quantity-input">
+                                    </div>
+                                </article>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group" style="flex: 1; min-width: 300px;">
-                        <label style="color: var(--text-gray);">Kort du vil have (Fra partners tradelist)</label>
-                        <div class="card-selection-box scrollable-container">
-                            <p th:if="${selectedReceiverId == null}" style="color: var(--text-gray); font-style: italic; font-size: 0.9rem;">
-                                Vælg en partner i toppen først for at se deres kortlister...
-                            </p>
-                            <p th:if="${selectedReceiverId != null and (partnerItems == null or partnerItems.isEmpty())}" style="color: var(--text-gray); font-style: italic; font-size: 0.9rem;">
-                                Partneren har ikke ledige matchende kort i sin tradelist.
-                            </p>
-
-                            <div th:each="item : ${partnerItems}" class="card-checkbox-item">
-                                <input type="hidden" name="requestedCardId" th:value="${item.card.cardID}">
-
-                                <div style="display: flex; flex-direction: column;">
-                                    <span th:text="${item.card.cardName}" style="color: white; font-weight: 500;">Card Name</span>
-                                    <span th:text="${item.card.cardRarity} + ' - ' + ${item.card.cardType}" style="color: var(--text-gray); font-size: 0.75rem;">Rarity - Type</span>
-                                </div>
-
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="color: var(--text-gray); font-size: 0.8rem;"
-                                          th:text="'(Ledig: ' + ${item.availableQuantity} + ' / Tradelist: ' + ${item.totalQuantity} + ')'"></span>
-
-                                    <input type="number" name="requestedQuantity" value="0" min="0" th:max="${item.availableQuantity}" class="form-control" style="width: 65px; padding: 4px; text-align: center;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" th:disabled="${selectedReceiverId == null}">
-                    🤝 Send Handelsforslag
-                </button>
+                    <button type="submit" class="btn btn-primary btn-block" th:disabled="${selectedReceiverId == null}">
+                        🤝 Send Handelsforslag
+                    </button>
+                </fieldset>
             </form>
 
         </div>
-    </div>
+    </section>
 </main>
 
-<section th:insert="~{parts/footer.html :: footer}"></section>
+<footer th:replace="~{parts/footer.html :: footer}"></footer>
 </body>
 </html>

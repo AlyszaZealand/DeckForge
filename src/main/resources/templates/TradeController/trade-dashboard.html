@@ -8,54 +8,55 @@
 </head>
 <body>
 
-<section th:insert="~{parts/header.html :: header}"></section>
+<header th:replace="~{parts/header.html :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
-        <div class="auth-box" style="max-width: 1000px; width: 100%; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <article class="auth-box profile-box" style="max-width: 1000px;">
 
-            <div style="border-bottom: 2px solid var(--primary-red); padding-bottom: 20px; margin-bottom: 30px;">
+            <header class="page-header">
                 <h1 style="color: var(--primary-red); margin: 0; text-shadow: var(--red-glow);">Trade Central</h1>
                 <h2 style="color: var(--text-white); margin: 10px 0 0 0; font-size: 1.2rem;">Manage your card exchanges</h2>
-            </div>
+            </header>
 
-            <div th:if="${incomingTradeCount > 0 or ongoingTradeCount > 0}" style="margin-bottom: 30px;">
-                <h3 style="color: var(--text-white); border-bottom: 1px solid var(--accent-gray); padding-bottom: 10px; margin-bottom: 15px;">🔔 Action Required</h3>
+            <section th:if="${incomingTradeCount > 0 or ongoingTradeCount > 0}" class="dashboard-highlight">
+                <h3 style="border-bottom: 1px solid var(--accent-gray); padding-bottom: 10px; margin-bottom: 15px;">🔔 Action Required</h3>
 
-                <div th:if="${incomingTradeCount > 0}" style="background-color: rgba(76, 175, 80, 0.1); border-left: 4px solid #4caf50; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
-                    <p style="margin: 0; color: #4caf50;">
+                <div th:if="${incomingTradeCount > 0}" class="alert alert-success">
+                    <p>
                         📥 You have <strong th:text="${incomingTradeCount}"></strong> new trade proposal(s)!
-                        <a th:href="@{/incoming}" style="color: white; text-decoration: underline; margin-left: 10px; font-size: 0.9rem;">View Incoming</a>
+                        <a th:href="@{/incoming}">View Incoming</a>
                     </p>
                 </div>
 
-                <div th:if="${ongoingTradeCount > 0}" style="background-color: rgba(255, 165, 0, 0.1); border-left: 4px solid orange; padding: 15px; margin-bottom: 10px; border-radius: 4px;">
-                    <p style="margin: 0; color: orange;">
+                <div th:if="${ongoingTradeCount > 0}" class="alert alert-warning">
+                    <p>
                         🤝 You have <strong th:text="${ongoingTradeCount}"></strong> trade(s) awaiting your action.
-                        <a th:href="@{/ongoing}" style="color: white; text-decoration: underline; margin-left: 10px; font-size: 0.9rem;">View Ongoing</a>
+                        <a th:href="@{/ongoing}">View Ongoing</a>
                     </p>
                 </div>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px;">
-                <a th:href="@{/propose}" class="btn btn-primary" style="padding: 15px; font-size: 1rem; box-shadow: var(--red-glow);">
+            </section>
+
+            <nav class="dashboard-grid">
+                <a th:href="@{/propose}" class="btn btn-primary" style="box-shadow: var(--red-glow); padding: 15px;">
                     ➕ Propose New Trade
                 </a>
-                <a th:href="@{/incoming}" class="btn btn-outline" style="padding: 15px; font-size: 1rem; border-color: #4caf50; color: #4caf50;">
+                <a th:href="@{/incoming}" class="btn btn-outline btn-success" style="padding: 15px;">
                     📥 Incoming Proposals
                 </a>
-                <a th:href="@{/outgoing}" class="btn btn-outline" style="padding: 15px; font-size: 1rem; border-color: var(--text-gray); color: var(--text-white);">
+                <a th:href="@{/outgoing}" class="btn btn-outline" style="border-color: var(--text-gray); color: var(--text-white); padding: 15px;">
                     📤 Outgoing Proposals
                 </a>
-                <a th:href="@{/ongoing}" class="btn btn-outline" style="padding: 15px; font-size: 1rem;">
+                <a th:href="@{/ongoing}" class="btn btn-outline" style="padding: 15px;">
                     🤝 Ongoing Trades (IRL)
                 </a>
-            </div>
+            </nav>
 
-        </div>
-    </div>
+        </article>
+    </section>
 </main>
 
-<section th:insert="~{parts/footer.html :: footer}"></section>
+<footer th:replace="~{parts/footer.html :: footer}"></footer>
 
 </body>
 </html>

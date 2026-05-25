@@ -85,6 +85,11 @@ public class UserService {
             throw new EmailAlreadyInUseException("Denne e-mail er allerede i brug");
         }
 
+        if (userRepository.findUserByUsername(newUser.getUsername()).isPresent()){
+            result.addError("Brugernavnet er allerede taget. Vælg venligst et andet");
+            return result;
+        }
+
         // 1. Hash password
         String hashedPassword = BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt());
         newUser.setPassword(hashedPassword);

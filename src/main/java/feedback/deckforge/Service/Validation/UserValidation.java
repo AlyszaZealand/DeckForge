@@ -12,6 +12,12 @@ public class UserValidation {
 
         ValidationResult result = new ValidationResult();
 
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+
+        if(user.getEmail() == null || !user.getEmail().matches(emailRegex)){
+            result.addError("Du skal indtaste en gyldig e-mailadresse (f.eks. navn@domæne.dk).");
+        }
+
         if(user.getUsername() == null || user.getUsername().trim().isEmpty()){
             result.addError("Du skal indtaste et navn");
         }

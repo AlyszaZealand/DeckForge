@@ -33,8 +33,12 @@ public class DeckService {
 
     // Opretter et helt nyt tomt deck
     public void createNewDeck(String name, int formatId, int userID) {
-        Format format = formatRepository.findFormatByID(formatId)
-                .orElseThrow(() -> new FormatNotFoundException("Format ikke fundet"));
+
+        if (name == null || name.trim().length() < 3 || name.trim().length() > 50){
+            throw new DeckNameNotValid("Decknavnet skal være mellem 3 og 50 tegn langt.");
+        }
+
+        Format format = formatRepository.findFormatByID(formatId).orElseThrow(() -> new FormatNotFoundException("Format ikke fundet"));
 
         Deck newDeck = new Deck();
         newDeck.setDeckName(name);

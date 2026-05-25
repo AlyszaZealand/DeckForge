@@ -117,15 +117,19 @@ public class TradeController {
     @PostMapping("/respond")
     public String respondToTrade(@RequestParam("tradeId") int tradeId,
                                  @RequestParam("isAccepted") boolean isAccepted,
-                                 @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath){
-        tradeService.respondToTrade(tradeId, isAccepted);
+                                 @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath, HttpSession session){
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        tradeService.respondToTrade(tradeId, isAccepted, loggedInUser.getUserID());
         return "redirect:" + redirectPath;
     }
 
     @PostMapping("/cancel")
     public String cancelTrade(@RequestParam("tradeId") int tradeId,
-                              @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath){
-        tradeService.cancelTrade(tradeId);
+                              @RequestParam(name = "redirectPath", defaultValue = "/trades") String redirectPath, HttpSession session){
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+
+        tradeService.cancelTrade(tradeId, loggedInUser.getUserID());
         return "redirect:" + redirectPath;
     }
 

@@ -23,6 +23,12 @@ public class GlobalExceptionHandler {
         return "redirect:/myTradeList";
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public String handleUnauthorizedUser(UnauthorizedException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/respond";
+    }
+
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public String handleInvalidCredentials(InvalidCredentialsException ex, RedirectAttributes redirectAttributes) {
@@ -35,6 +41,25 @@ public class GlobalExceptionHandler {
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/registerUser"; // Send tilbage til oprettelse
     }
+
+    @ExceptionHandler(UserNameNotValid.class)
+    public String handleUsernameNotValid(UserNameNotValid ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerUser"; // Send tilbage til oprettelse
+    }
+
+    @ExceptionHandler(UserEmailNotValid.class)
+    public String handleUserEmailNotValid(UserEmailNotValid ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerUser"; // Send tilbage til oprettelse
+    }
+
+    @ExceptionHandler(UserPasswordNotValid.class)
+    public String handleUserPaswordNotValid(UserPasswordNotValid ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerUser"; // Send tilbage til oprettelse
+    }
+
 
     @ExceptionHandler(UserNotFoundException.class)
     public String handleUserNotFound(UserNotFoundException ex, RedirectAttributes redirectAttributes) {
@@ -66,10 +91,34 @@ public class GlobalExceptionHandler {
         return "redirect:/myDecks";
     }
 
+    @ExceptionHandler(DeckNameNotValid.class)
+    public String handleDeckNameNotValid(DeckNameNotValid ex, RedirectAttributes redirectAttributes){
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/createDeck";
+    }
+
     @ExceptionHandler(EventFullException.class)
     public String handleEventFull(EventFullException ex, RedirectAttributes redirectAttributes){
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/events/{id}";
+    }
+
+    @ExceptionHandler(EventNameNotValid.class)
+    public String handleEventNameNotValid(EventNameNotValid ex, RedirectAttributes redirectAttributes){
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerEvent";
+    }
+
+    @ExceptionHandler(EventDateNotValid.class)
+    public String handleEventDateNotValid(EventDateNotValid ex, RedirectAttributes redirectAttributes){
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerEvent";
+    }
+
+    @ExceptionHandler(EventDescriptionNotValid.class)
+    public String handleEventDescriptionNotValid(EventDescriptionNotValid ex, RedirectAttributes redirectAttributes){
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/registerEvent";
     }
 
     @ExceptionHandler(InvalidEventSizeException.class)

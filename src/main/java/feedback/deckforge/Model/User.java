@@ -1,5 +1,8 @@
 package feedback.deckforge.Model;
 
+import feedback.deckforge.Exceptions.UserEmailNotValid;
+import feedback.deckforge.Exceptions.UserNameNotValid;
+import feedback.deckforge.Exceptions.UserPasswordNotValid;
 import feedback.deckforge.Model.Enum.UserRole;
 
 public class User {
@@ -14,10 +17,31 @@ public class User {
 
     public User (int userID,String username, String email, UserRole userRole, String password){
         this.userID = userID;
+        validateEmail(email);
         this.email = email;
+        validateUsername(username);
         this.username = username;
         this.userRole = userRole;
+        validatePassword(password);
         this.password = password;
+    }
+
+    public void validateUsername(String username){
+        if (username == null || username.isEmpty()){
+            throw new UserNameNotValid("Brugernavn må ikke være tom");
+        }
+    }
+
+    public void validateEmail(String email){
+        if (email == null || email.isEmpty()){
+            throw new UserEmailNotValid("Email'en må ikke være tom");
+        }
+    }
+
+    public void validatePassword(String password){
+        if (password == null || password.isEmpty()){
+            throw new UserPasswordNotValid("Password må ikke være tom");
+        }
     }
 
     public String getUsername(){

@@ -8,119 +8,120 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
-
+<section th:replace="~{Parts/header :: header}"></section>
 <main class="container">
-    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
-        <div class="auth-box" style="max-width: 900px; width: 100%; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <article class="auth-box profile-box">
 
-            <div style="border-bottom: 2px solid var(--primary-red); padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-                <div>
-                    <h1 style="color: var(--primary-red); margin: 0; text-shadow: var(--red-glow);">Min Profil</h1>
-                    <h2 th:text="${loggedInUser.username}" style="color: var(--text-white); margin: 10px 0 0 0;">Username</h2>
+            <header class="profile-header">
+                <div class="profile-title-group">
+                    <h1>Min Profil</h1>
+                    <h2 th:text="${loggedInUser.username}">Username</h2>
                 </div>
-                <span th:text="${loggedInUser.userRole}" style="background-color: rgba(179,0,0,0.2); color: var(--primary-red); border: 1px solid var(--primary-red); padding: 5px 15px; border-radius: 4px; font-weight: bold;">ROLLE</span>
-            </div>
+                <span class="role-badge" th:text="${loggedInUser.userRole}">ROLLE</span>
+            </header>
 
             <th:block th:if="${loggedInUser.userRole.name() == 'MEMBER'}">
+                <section class="dashboard-highlight">
+                    <h3>Dine Handler</h3>
+                    <p>Få overblik over dine igangværende og afsluttede byttehandler.</p>
+                    <a th:href="@{/trade_history}" class="btn btn-outline">📜 Se Byttehistorik</a>
+                </section>
 
-                <div style="margin-bottom: 40px; background-color: var(--bg-darkest); border: 1px solid var(--accent-gray); border-radius: 4px; padding: 20px; text-align: center;">
-                    <h3 style="color: white; margin-top: 0;">Dine Handler</h3>
-                    <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 15px;">Få overblik over dine igangværende og afsluttede byttehandler.</p>
-                    <a th:href="@{/trade_history}" class="btn btn-outline" style="padding: 10px 30px;">📜 Se Byttehistorik</a>
-                </div>
+                <section class="dashboard-grid">
+                    <section class="dashboard-column">
+                        <h3 class="column-title-active">Dine Kommende Events</h3>
+                        <p th:if="${#lists.isEmpty(upcomingEvents)}" class="empty-text">Du er ikke tilmeldt nogen kommende events.</p>
 
-                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 300px;">
-                        <h3 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px;">Dine Kommende Events</h3>
-                        <p th:if="${#lists.isEmpty(upcomingEvents)}" style="color: var(--text-gray); font-style: italic;">Du er ikke tilmeldt nogen kommende events.</p>
-                        <div th:each="event : ${upcomingEvents}" style="background: var(--bg-darkest); padding: 15px; margin-bottom: 10px; border-left: 3px solid #4caf50;">
-                            <h4 th:text="${event.eventName}" style="margin: 0 0 5px 0; color: white;">Event Navn</h4>
-                            <p th:text="${event.eventDate}" style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--text-gray);">Dato</p>
-                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-primary" style="font-size: 0.8rem; padding: 5px 10px;">Se Detaljer</a>
-                        </div>
-                    </div>
+                        <article th:each="event : ${upcomingEvents}" class="event-card card-success">
+                            <h4 th:text="${event.eventName}">Event Navn</h4>
+                            <p th:text="${event.eventDate}">Dato</p>
+                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-primary btn-sm">Se Detaljer</a>
+                        </article>
+                    </section>
 
-                    <div style="flex: 1; min-width: 300px;">
-                        <h3 style="color: var(--text-gray); border-bottom: 1px solid var(--text-gray); padding-bottom: 10px;">Dine Tidligere Events</h3>
-                        <p th:if="${#lists.isEmpty(pastEvents)}" style="color: var(--text-gray); font-style: italic;">Du har ingen tidligere events.</p>
-                        <div th:each="event : ${pastEvents}" style="background: var(--bg-darkest); padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--text-gray);">
-                            <h4 th:text="${event.eventName}" style="margin: 0 0 5px 0; color: var(--text-gray);">Event Navn</h4>
-                            <span th:text="${event.eventStatus}" style="font-size: 0.8rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: var(--text-gray);">Status</span>
-                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="font-size: 0.8rem; padding: 5px 10px; margin-top: 10px; display: inline-block;">Se Detaljer</a>
-                        </div>
-                    </div>
-                </div>
+                    <section class="dashboard-column">
+                        <h3 class="column-title-inactive">Dine Tidligere Events</h3>
+                        <p th:if="${#lists.isEmpty(pastEvents)}" class="empty-text">Du har ingen tidligere events.</p>
+
+                        <article th:each="event : ${pastEvents}" class="event-card card-inactive">
+                            <h4 th:text="${event.eventName}">Event Navn</h4>
+                            <span class="status-badge" th:text="${event.eventStatus}">Status</span>
+                            <br>
+                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-sm">Se Detaljer</a>
+                        </article>
+                    </section>
+                </section>
             </th:block>
 
             <th:block th:if="${loggedInUser.userRole.name() == 'ORGANIZER'}">
-                <p style="color: var(--text-gray); margin-bottom: 30px;">Velkommen til dit arrangør-dashboard. Her har du overblik over alle de turneringer, du har oprettet.</p>
+                <p class="intro-text">Velkommen til dit arrangør-dashboard. Her har du overblik over alle de turneringer, du har oprettet.</p>
 
-                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 300px;">
-                        <h3 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px;">Aktive/Planlagte Events</h3>
-                        <p th:if="${#lists.isEmpty(upcomingEvents)}" style="color: var(--text-gray); font-style: italic;">Du har ingen planlagte events.</p>
-                        <div th:each="event : ${upcomingEvents}" style="background: var(--bg-darkest); padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--primary-red);">
-                            <h4 th:text="${event.eventName}" style="margin: 0 0 5px 0; color: white;">Event Navn</h4>
-                            <p th:text="${event.eventDate}" style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--text-gray);">Dato</p>
-                            <div style="display: flex; gap: 10px;">
-                                <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="font-size: 0.8rem; padding: 5px 10px;">Vis</a>
-                                <a th:href="@{/events/{id}/edit(id=${event.eventID})}" class="btn btn-primary" style="font-size: 0.8rem; padding: 5px 10px;">Rediger</a>
+                <section class="dashboard-grid">
+                    <section class="dashboard-column">
+                        <h3 class="column-title-active">Aktive/Planlagte Events</h3>
+                        <p th:if="${#lists.isEmpty(upcomingEvents)}" class="empty-text">Du har ingen planlagte events.</p>
+
+                        <article th:each="event : ${upcomingEvents}" class="event-card card-primary">
+                            <h4 th:text="${event.eventName}">Event Navn</h4>
+                            <p th:text="${event.eventDate}">Dato</p>
+                            <div class="card-actions">
+                                <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-sm">Vis</a>
+                                <a th:href="@{/events/{id}/edit(id=${event.eventID})}" class="btn btn-primary btn-sm">Rediger</a>
                             </div>
-                        </div>
-                    </div>
+                        </article>
+                    </section>
 
-                    <div style="flex: 1; min-width: 300px;">
-                        <h3 style="color: var(--text-gray); border-bottom: 1px solid var(--text-gray); padding-bottom: 10px;">Afsluttede Events</h3>
-                        <p th:if="${#lists.isEmpty(pastEvents)}" style="color: var(--text-gray); font-style: italic;">Du har ingen afsluttede events.</p>
-                        <div th:each="event : ${pastEvents}" style="background: var(--bg-darkest); padding: 15px; margin-bottom: 10px; border-left: 3px solid var(--text-gray);">
-                            <h4 th:text="${event.eventName}" style="margin: 0 0 5px 0; color: var(--text-gray);">Event Navn</h4>
-                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="font-size: 0.8rem; padding: 5px 10px; margin-top: 10px; display: inline-block;">Se Resultat</a>
-                        </div>
-                    </div>
-                </div>
+                    <section class="dashboard-column">
+                        <h3 class="column-title-inactive">Afsluttede Events</h3>
+                        <p th:if="${#lists.isEmpty(pastEvents)}" class="empty-text">Du har ingen afsluttede events.</p>
+
+                        <article th:each="event : ${pastEvents}" class="event-card card-inactive">
+                            <h4 th:text="${event.eventName}">Event Navn</h4>
+                            <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-sm mt-10">Se Resultat</a>
+                        </article>
+                    </section>
+                </section>
             </th:block>
 
             <th:block th:if="${loggedInUser.userRole.name() == 'ADMIN'}">
-
-                <div style="margin-bottom: 40px; background-color: var(--bg-darkest); border: 1px solid var(--accent-gray); border-radius: 4px; padding: 20px; text-align: center;">
-                    <h3 style="color: white; margin-top: 0;">System Værktøjer</h3>
-                    <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 20px;">Administrer spillets formater og database-kort her.</p>
-                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                        <a th:href="@{/admin/formats}" class="btn btn-primary" style="padding: 10px 25px;">📜 Administrer Formater</a>
-                        <a th:href="@{/admin/cards}" class="btn btn-primary" style="padding: 10px 25px;">🃏 Globalt Kort Katalog</a>
+                <section class="dashboard-highlight">
+                    <h3>System Værktøjer</h3>
+                    <p>Administrer spillets formater og database-kort her.</p>
+                    <div class="action-group">
+                        <a th:href="@{/admin/formats}" class="btn btn-primary">📜 Administrer Formater</a>
+                        <a th:href="@{/admin/cards}" class="btn btn-primary">🃏 Globalt Kort Katalog</a>
                     </div>
-                </div>
+                </section>
 
-                <h3 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px;">Brugeradministration</h3>
+                <h3 class="column-title-active">Brugeradministration</h3>
 
-                <div class="scrollable-container" style="max-height: 600px; padding-right: 10px;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; color: var(--text-white);">
+                <div class="scrollable-container">
+                    <table class="admin-table">
                         <thead>
-                        <tr style="border-bottom: 1px solid var(--accent-gray); text-align: left;">
-                            <th style="padding: 10px;">Bruger ID</th>
-                            <th style="padding: 10px;">Brugernavn</th>
-                            <th style="padding: 10px;">Rolle</th>
-                            <th style="padding: 10px; text-align: right;">Handlinger</th>
+                        <tr>
+                            <th>Bruger ID</th>
+                            <th>Brugernavn</th>
+                            <th>Rolle</th>
+                            <th class="text-right">Handlinger</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="user : ${allUsers}" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td style="padding: 15px 10px;" th:text="${user.userID}">ID</td>
-                            <td style="padding: 15px 10px; font-weight: bold;" th:text="${user.username}">Navn</td>
-                            <td style="padding: 15px 10px;" th:text="${user.userRole}">Rolle</td>
-                            <td style="padding: 15px 10px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
-
-                                <form th:if="${user.userRole.name() == 'MEMBER'}" th:action="@{/admin/promote/{id}(id=${user.userID})}" method="post" style="margin:0;">
-                                    <button type="submit" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem; border-color: #4caf50; color: #4caf50;">Gør til Organizer</button>
+                        <tr th:each="user : ${allUsers}">
+                            <td data-label="Bruger ID" th:text="${user.userID}">ID</td>
+                            <td data-label="Brugernavn" class="font-bold" th:text="${user.username}">Navn</td>
+                            <td data-label="Rolle" th:text="${user.userRole}">Rolle</td>
+                            <td data-label="Handlinger" class="table-actions">
+                                <form th:if="${user.userRole.name() == 'MEMBER'}" th:action="@{/admin/promote/{id}(id=${user.userID})}" method="post">
+                                    <button type="submit" class="btn btn-outline btn-success btn-sm">Gør til Organizer</button>
                                 </form>
 
-                                <form th:if="${user.userRole.name() == 'ORGANIZER'}" th:action="@{/admin/demote/{id}(id=${user.userID})}" method="post" style="margin:0;">
-                                    <button type="submit" class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem; border-color: #ff9800; color: #ff9800;">Fjern Organizer</button>
+                                <form th:if="${user.userRole.name() == 'ORGANIZER'}" th:action="@{/admin/demote/{id}(id=${user.userID})}" method="post">
+                                    <button type="submit" class="btn btn-outline btn-warning btn-sm">Fjern Organizer</button>
                                 </form>
 
-                                <form th:if="${user.userRole.name() != 'ADMIN'}" th:action="@{/admin/deleteUser/{id}(id=${user.userID})}" method="post" style="margin:0;" onsubmit="return confirm('Er du sikker på at du vil slette denne bruger permanent?');">
-                                    <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">Slet</button>
+                                <form th:if="${user.userRole.name() != 'ADMIN'}" th:action="@{/admin/deleteUser/{id}(id=${user.userID})}" method="post" onsubmit="return confirm('Er du sikker på at du vil slette denne bruger permanent?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Slet</button>
                                 </form>
                             </td>
                         </tr>
@@ -129,11 +130,11 @@
                 </div>
             </th:block>
 
-        </div>
-    </div>
+        </article>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<section th:replace="~{Parts/footer :: footer}"></section>
 
 </body>
 </html>

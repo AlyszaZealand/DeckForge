@@ -1,5 +1,8 @@
 package feedback.deckforge.Model;
 
+import feedback.deckforge.Exceptions.EventDateNotValid;
+import feedback.deckforge.Exceptions.EventDescriptionNotValid;
+import feedback.deckforge.Exceptions.EventNameNotValid;
 import feedback.deckforge.Model.Enum.EventStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,15 +28,36 @@ public class Event {
     public Event() {}
 
     public Event(String eventName, String eventFormat, EventStatus eventStatus, int eventSize, LocalDateTime eventDate, LocalDateTime eventEndDate, Integer winnerID, int organizerID, String eventDescription) {
+        validateEventName(eventName);
         this.eventName = eventName;
         this.eventFormat = eventFormat;
         this.eventStatus = eventStatus;
         this.eventSize = eventSize;
+        validateEventDate(eventDate);
         this.eventDate = eventDate;
         this.eventEndDate = eventEndDate;
         this.winnerID = winnerID;
         this.organizerID = organizerID;
+        validateEventDescription(eventDescription);
         this.eventDescription = eventDescription;
+    }
+
+    public void validateEventName(String eventName){
+        if (eventName == null || eventName.isEmpty()){
+            throw new EventNameNotValid("Eventnavnet må ikke være tom");
+        }
+    }
+
+    public void validateEventDate(LocalDateTime eventDate){
+        if (eventDate.isBefore(LocalDateTime.now())){
+            throw new EventDateNotValid("Event må ikke sættes i fortiden");
+        }
+    }
+
+    public void validateEventDescription(String eventDescription){
+        if (eventDescription == null || eventDescription.isEmpty()){
+            throw new EventDescriptionNotValid("Event beskrivelsen må ikke være tom");
+        }
     }
 
     // Getters og Setters

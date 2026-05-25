@@ -3,66 +3,74 @@
 <head>
     <title>Incoming Trades - DeckForge</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<section th:insert="~{parts/header.html :: header}"></section>
+<header th:replace="~{parts/header.html :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
-        <div class="auth-box" style="max-width: 800px; width: 100%; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <div class="auth-box profile-box">
 
-            <a th:href="@{/trades}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Tilbage til Dashboard</a>
+            <a th:href="@{/trades}" class="btn btn-outline btn-sm mb-20">&larr; Tilbage til Dashboard</a>
 
-            <h1 style="color: #4caf50; border-bottom: 1px solid #4caf50; padding-bottom: 10px; margin-bottom: 20px;">📥 Incoming Proposals</h1>
+            <header class="page-header" style="border-color: #4caf50; box-shadow: 0 4px 10px -5px #4caf50;">
+                <h1 style="color: #4caf50; margin: 0;">📥 Incoming Proposals</h1>
+            </header>
 
-            <p th:if="${incomingTrades.isEmpty()}" style="color: var(--text-gray); font-style: italic;">You have no incoming trade requests.</p>
+            <p th:if="${incomingTrades.isEmpty()}" class="empty-text">You have no incoming trade requests.</p>
 
-            <div th:each="trade : ${incomingTrades}" style="background: var(--bg-darkest); padding: 20px; margin-bottom: 15px; border-left: 4px solid #4caf50; border-radius: 4px;">
-                <h3 style="margin: 0 0 10px 0; color: white;">From: <span th:text="${trade.partnerUsername}">User</span></h3>
+            <section class="trade-list">
+                <article th:each="trade : ${incomingTrades}" class="trade-card success-border">
+                    <header>
+                        <h3>From: <span th:text="${trade.partnerUsername}">User</span></h3>
+                        <p class="text-gray mb-20" style="font-size: 0.9rem;">
+                            Proposed: <time th:text="${#temporals.format(trade.tradeDate, 'dd-MM-yyyy HH:mm')}">Date</time>
+                        </p>
+                    </header>
 
-                <p style="margin: 0 0 20px 0; font-size: 0.9rem; color: var(--text-gray);">
-                    Proposed: <span th:text="${#temporals.format(trade.tradeDate, 'dd-MM-yyyy HH:mm')}">Date</span>
-                </p>
+                    <div class="trade-details">
+                        <section class="trade-side">
+                            <h4 style="color: var(--primary-red);">You Give:</h4>
+                            <ul>
+                                <li th:each="item : ${trade.cardsYouGive}">
+                                    🃏 <strong><span th:text="${item.totalQuantity} + 'x '"></span></strong>
+                                    <span th:text="${item.card.cardName}"></span>
+                                    <small th:text="'(' + ${item.card.cardSet} + ')'"></small>
+                                </li>
+                                <li th:if="${#lists.isEmpty(trade.cardsYouGive)}"><em>Nothing</em></li>
+                            </ul>
+                        </section>
 
-                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px;">
-                        <h4 style="color: var(--primary-red); margin-top: 0; margin-bottom: 10px;">You Give:</h4>
-                        <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-gray); font-size: 0.9rem;">
-                            <li th:each="item : ${trade.cardsYouGive}" style="margin-bottom: 5px;">
-                                🃏 <span th:text="${item.totalQuantity} + 'x '" style="color: white; font-weight: bold;"></span>
-                                <span th:text="${item.card.cardName}" style="color: white;"></span>
-                                <span style="font-size: 0.8rem; opacity: 0.7;" th:text="'(' + ${item.card.cardSet} + ')'"></span>
-                            </li>
-                            <li th:if="${#lists.isEmpty(trade.cardsYouGive)}"><em>Nothing</em></li>
-                        </ul>
+                        <section class="trade-side">
+                            <h4 style="color: #4caf50;">You Get:</h4>
+                            <ul>
+                                <li th:each="item : ${trade.cardsYouGet}">
+                                    🃏 <strong><span th:text="${item.totalQuantity} + 'x '"></span></strong>
+                                    <span th:text="${item.card.cardName}"></span>
+                                    <small th:text="'(' + ${item.card.cardSet} + ')'"></small>
+                                </li>
+                                <li th:if="${#lists.isEmpty(trade.cardsYouGet)}"><em>Nothing</em></li>
+                            </ul>
+                        </section>
                     </div>
 
-                    <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 4px;">
-                        <h4 style="color: #4caf50; margin-top: 0; margin-bottom: 10px;">You Get:</h4>
-                        <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-gray); font-size: 0.9rem;">
-                            <li th:each="item : ${trade.cardsYouGet}" style="margin-bottom: 5px;">
-                                🃏 <span th:text="${item.totalQuantity} + 'x '" style="color: white; font-weight: bold;"></span>
-                                <span th:text="${item.card.cardName}" style="color: white;"></span>
-                                <span style="font-size: 0.8rem; opacity: 0.7;" th:text="'(' + ${item.card.cardSet} + ')'"></span>
-                            </li>
-                            <li th:if="${#lists.isEmpty(trade.cardsYouGet)}"><em>Nothing</em></li>
-                        </ul>
-                    </div>
-                </div>
+                    <footer class="trade-actions mt-20">
+                        <form th:action="@{/respond}" method="post">
+                            <input type="hidden" name="redirectPath" value="/incoming" />
+                            <input type="hidden" name="tradeId" th:value="${trade.tradeId}" />
 
-                <form th:action="@{/respond}" method="post" style="display: flex; gap: 15px; margin: 0;">
-                    <input type="hidden" name="redirectPath" value="/incoming" />
-                    <input type="hidden" name="tradeId" th:value="${trade.tradeId}" />
-
-                    <button type="submit" name="isAccepted" value="true" class="btn btn-outline" style="border-color: #4caf50; color: #4caf50;">Accept Trade</button>
-                    <button type="submit" name="isAccepted" value="false" class="btn btn-danger">Decline Trade</button>
-                </form>
-            </div>
+                            <button type="submit" name="isAccepted" value="true" class="btn btn-outline btn-success">Accept Trade</button>
+                            <button type="submit" name="isAccepted" value="false" class="btn btn-danger">Decline Trade</button>
+                        </form>
+                    </footer>
+                </article>
+            </section>
 
         </div>
-    </div>
+    </section>
 </main>
 
-<section th:insert="~{parts/footer.html :: footer}"></section>
+<footer th:replace="~{parts/footer.html :: footer}"></footer>
 </body>
 </html>

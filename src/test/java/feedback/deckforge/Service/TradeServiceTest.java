@@ -70,7 +70,7 @@ class TradeServiceTest {
         when(tradeRepository.findTradeById(100)).thenReturn(Optional.of(trade));
 
         // Act - Vi annullerer handlen
-        tradeService.cancelTrade(100);
+        tradeService.cancelTrade(100,initiator.getUserID());
 
         // Assert
         // Tjek at status på selve objektet blev ændret

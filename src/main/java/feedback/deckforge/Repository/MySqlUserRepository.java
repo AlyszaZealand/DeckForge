@@ -125,6 +125,18 @@ public class MySqlUserRepository implements IUserRepository {
         return jdbcTemplate.query(sql, userRowMapper, eventID);
     }
 
+    @Override
+    public Optional<User> findUserByUsername(String username){
+        String sql = "Select username from users where username = ?";
+
+        try {
+            User user = jdbcTemplate.queryForObject(sql, userRowMapper, username);
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
 
 
 }

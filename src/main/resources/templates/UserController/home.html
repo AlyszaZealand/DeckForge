@@ -8,48 +8,41 @@
 </head>
 
 <body>
-<section th:insert="~{Parts/header :: header}"></section>
-
+<section th:replace="~{Parts/header :: header}"></section>
 <main>
-    <section style="text-align: center; padding: 60px 20px; background: linear-gradient(180deg, var(--bg-darkest) 0%, var(--bg-card) 100%); border-bottom: 1px solid var(--border-red); margin-bottom: 40px;">
-        <h1 style="font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(179,0,0,0.5);">
-            VELKOMMEN TIL <span style="color: var(--primary-red);">DECK FORGE</span>
-        </h1>
-        <p style="color: var(--text-gray); font-size: 1.2rem; max-width: 600px; margin: 0 auto 30px auto;">
-            Smed dine strategier, saml de stærkeste kort, og dominer i de nyeste events.
-        </p>
-        <div style="display: flex; gap: 15px; justify-content: center;">
+    <section class="hero-section">
+        <h1>VELKOMMEN TIL <span>DECK FORGE</span></h1>
+        <p>Smed dine strategier, saml de stærkeste kort, og dominer i de nyeste events.</p>
+        <div class="hero-buttons">
             <a th:href="@{/collectionPage}" class="btn btn-primary">Gå til Samling</a>
             <a th:href="@{/myDecks}" class="btn btn-outline">Mine Decks</a>
         </div>
     </section>
 
     <section class="container">
-        <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 10px; margin-bottom: 20px;">
-            Kommende Events
-        </h2>
+        <h2 class="page-header">Kommende Events</h2>
 
-        <div th:if="${events.isEmpty()}" style="background-color: var(--bg-card); padding: 30px; text-align: center; border: 1px dashed var(--border-red); border-radius: 8px;">
-            <p style="color: var(--text-gray); font-size: 1.1rem; margin: 0;">Der er i øjeblikket ingen planlagte events.</p>
+        <div th:if="${events.isEmpty()}" class="empty-state">
+            <p>Der er i øjeblikket ingen planlagte events.</p>
         </div>
 
-        <div th:unless="${events.isEmpty()}" style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; background-color: var(--bg-card); border-radius: 8px; overflow: hidden;">
-                <thead style="background-color: var(--accent-gray); color: var(--text-white);">
+        <div th:unless="${events.isEmpty()}" class="table-responsive">
+            <table class="event-table">
+                <thead>
                 <tr>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Event Navn</th>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Dato</th>
-                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Format</th>
-                    <th style="padding: 15px; text-align: right; border-bottom: 2px solid var(--primary-red);">Handling</th>
+                    <th>Event Navn</th>
+                    <th>Dato</th>
+                    <th>Format</th>
+                    <th class="text-right">Handling</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="event : ${events}" style="border-bottom: 1px solid var(--border-red);">
-                    <td th:text="${event.eventName}" style="padding: 15px; font-weight: bold;"></td>
-                    <td th:text="${event.eventDate}" style="padding: 15px; color: var(--text-gray);"></td>
-                    <td th:text="${event.eventFormat}" style="padding: 15px; color: var(--text-gray);"></td>
-                    <td style="padding: 15px; text-align: right;">
-                        <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">Se Event</a>
+                <tr th:each="event : ${events}">
+                    <td data-label="Event Navn" class="font-bold" th:text="${event.eventName}"></td>
+                    <td data-label="Dato" class="text-gray" th:text="${event.eventDate}"></td>
+                    <td data-label="Format" class="text-gray" th:text="${event.eventFormat}"></td>
+                    <td data-label="Handling" class="text-right">
+                        <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-sm">Se Event</a>
                     </td>
                 </tr>
                 </tbody>
@@ -58,6 +51,6 @@
     </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<section th:replace="~{Parts/footer :: footer}"></section>
 </body>
 </html>
