@@ -8,44 +8,44 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper">
-        <div class="auth-box" style="max-width: 800px; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <div class="auth-box profile-box">
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 30px;">
+            <header class="profile-header">
                 <h1 style="margin: 0; color: var(--text-white);"><span th:text="${profileUser.username}">Bruger</span>'s Decks</h1>
-                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline">Tilbage til Profil</a>
+                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline btn-sm">Tilbage til Profil</a>
+            </header>
+
+            <div th:if="${#lists.isEmpty(decks)}" class="empty-state">
+                <p class="empty-text">Denne bruger har ikke oprettet nogen decks endnu.</p>
             </div>
 
-            <div th:if="${#lists.isEmpty(decks)}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
-                <p style="color: var(--text-gray); font-style: italic;">Denne bruger har ikke oprettet nogen decks endnu.</p>
-            </div>
+            <section th:unless="${#lists.isEmpty(decks)}" style="display: flex; flex-direction: column; gap: 15px;">
 
-            <div th:unless="${#lists.isEmpty(decks)}" style="display: flex; flex-direction: column; gap: 12px;">
+                <a th:each="deck : ${decks}" th:href="@{/public-deck/{deckId}(deckId=${deck.deckID})}" style="text-decoration: none;">
+                    <article class="event-card card-primary" style="display: flex; justify-content: space-between; align-items: center; transition: 0.3s;">
 
-                <a th:each="deck : ${decks}"
-                   th:href="@{/public-deck/{deckId}(deckId=${deck.deckID})}"
-                   style="background-color: var(--bg-card); border-left: 4px solid var(--primary-red); padding: 20px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; cursor: pointer; transition: transform 0.2s;">
+                        <div>
+                            <h3 th:text="${deck.deckName}" style="color: var(--text-white); margin: 0 0 5px 0;">Deck Navn</h3>
+                        </div>
 
-                    <div>
-                        <h3 th:text="${deck.deckName}" style="color: var(--text-white); margin: 0 0 5px 0;">Deck Navn</h3>
-                       <!-- <p style="color: var(--text-gray); font-size: 0.85rem; margin: 0;" th:text="'Format: ' + ${deck.format}">Format</p> -->
-                    </div>
+                        <div>
+                            <span class="text-gray" style="font-size: 0.9rem; font-style: italic;">Offentligt Deck &rarr;</span>
+                        </div>
 
-                    <div>
-                        <span style="color: var(--text-gray); font-size: 0.9rem; font-style: italic;">Offentligt Deck &rarr;</span>
-                    </div>
+                    </article>
                 </a>
 
-            </div>
+            </section>
 
         </div>
-    </div>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

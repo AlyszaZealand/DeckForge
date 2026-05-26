@@ -163,7 +163,7 @@ public class TradeService {
 
             for (Card card : trade.getRequestedCards()) {
                 collectionService.removeCards(trade.getReceiver().getUserID(), card.getCardID(), 1);
-                tradeCollectionService.removeCardsFromTradeCollection(trade.getInitiator().getUserID(),card.getCardID(),1);
+                tradeCollectionService.removeCardsFromTradeCollection(trade.getReceiver().getUserID(),card.getCardID(),1);
                 collectionService.addCards(trade.getInitiator().getUserID(), card.getCardID(), 1);
                 tradeCollectionService.syncTradeCollectionWithPrivateCollection(trade.getReceiver().getUserID(), card.getCardID());
             }

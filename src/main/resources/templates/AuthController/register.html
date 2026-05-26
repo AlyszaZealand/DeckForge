@@ -8,50 +8,50 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header.html :: header}"></section>
+<header th:replace="~{Parts/header.html :: header}"></header>
 
 <main>
-    <div class="auth-wrapper">
-        <div class="auth-box">
+    <section class="auth-wrapper">
+        <article class="auth-box">
 
-            <h2 style="color: var(--primary-red);">OPRET PROFIL</h2>
-            <p style="color: var(--text-gray); margin-bottom: 25px;">Bliv en del af smedjen og begynd din samling.</p>
+            <header>
+                <h2 style="color: var(--primary-red);">OPRET PROFIL</h2>
+                <p class="text-gray class mb-20">Bliv en del af smedjen og begynd din samling.</p>
+            </header>
 
-            <div th:if="${errorMessage}"
-                 style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px; text-align: left;"
-                 th:text="${errorMessage}">
-            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
             <form th:action="@{/registerUser}" method="post" th:object="${user}">
+                <fieldset>
+                    <div class="form-group">
+                        <label>Navn:</label>
+                        <input type="text" th:field="*{username}" class="form-control" placeholder="Dit brugernavn..." required>
+                    </div>
 
-                <div class="form-group" style="text-align: left;">
-                    <label>Navn:</label>
-                    <input type="text" th:field="*{username}" class="form-control" placeholder="Dit brugernavn..." required>
-                </div>
+                    <div class="form-group">
+                        <label>E-mail:</label>
+                        <input type="email" th:field="*{email}" class="form-control" placeholder="din@email.dk" required>
+                    </div>
 
-                <div class="form-group" style="text-align: left;">
-                    <label>E-mail:</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="din@email.dk" required>
-                </div>
+                    <div class="form-group">
+                        <label>Adgangskode:</label>
+                        <input type="password" name="password" class="form-control" placeholder="Vælg en stærk kode..." required>
+                    </div>
 
-                <div class="form-group" style="text-align: left;">
-                    <label>Adgangskode:</label>
-                    <input type="password" name="password" class="form-control" placeholder="Vælg en stærk kode..." required>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Opret Profil</button>
+                    <button type="submit" class="btn btn-primary btn-block mt-20">Opret Profil</button>
+                </fieldset>
             </form>
 
-            <div style="margin-top: 15px;">
-                <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 10px;">Har du allerede en profil?</p>
+            <footer class="mt-20" style="text-align: center;">
+                <p class="text-gray mb-20" style="font-size: 0.9rem;">Har du allerede en profil?</p>
                 <a th:href="@{/login}" class="btn btn-outline btn-block">Gå til Login</a>
-            </div>
+            </footer>
 
-        </div>
-    </div>
+        </article>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer.html :: footer}"></section>
+<footer th:replace="~{Parts/footer.html :: footer}"></footer>
 
 </body>
 </html>

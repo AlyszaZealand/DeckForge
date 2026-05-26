@@ -8,13 +8,13 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-  <div class="auth-wrapper">
-    <div class="auth-box" style="max-width: 800px; padding: 40px;">
+  <section class="auth-wrapper profile-wrapper">
+    <div class="auth-box profile-box" style="max-width: 800px;">
 
-      <div style="text-align: center; border-bottom: 2px solid var(--primary-red); padding-bottom: 20px; margin-bottom: 30px;">
+      <header style="text-align: center; border-bottom: 2px solid var(--primary-red); padding-bottom: 20px; margin-bottom: 30px;">
         <h1 th:if="${session.loggedInUser.userID == profileUser.userID}" style="color: var(--primary-red); margin: 0; text-shadow: var(--red-glow);">
           Din Profil
         </h1>
@@ -23,36 +23,36 @@
           <span th:text="${profileUser.username}">Brugernavn</span>'s Profil
         </h1>
 
-        <p style="color: var(--text-gray); margin-top: 10px; font-size: 1.1rem;" th:text="'DeckForge ' + ${profileUser.userRole}">Rolle</p>
-      </div>
+        <p class="text-gray mt-20" style="font-size: 1.1rem;" th:text="'DeckForge ' + ${profileUser.userRole}">Rolle</p>
+      </header>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+      <nav class="dashboard-grid">
 
-        <a th:href="@{/decks/{id}(id=${profileUser.userID})}" class="btn btn-outline" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-color: var(--border-red);">
+        <a th:href="@{/decks/{id}(id=${profileUser.userID})}" class="btn btn-outline dashboard-column" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
           Se Decks
         </a>
 
-        <a th:href="@{/tradelist/{id}(id=${profileUser.userID})}" class="btn btn-outline" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-color: var(--border-red);">
+        <a th:href="@{/tradelist/{id}(id=${profileUser.userID})}" class="btn btn-outline dashboard-column" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
           Se Tradelist
         </a>
 
-        <a th:href="@{/wishlist/{id}(id=${profileUser.userID})}" class="btn btn-outline" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-color: var(--border-red);">
+        <a th:href="@{/wishlist/{id}(id=${profileUser.userID})}" class="btn btn-outline dashboard-column" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
           Se Wishlist
         </a>
 
         <th:block th:if="${session.loggedInUser.userID == profileUser.userID}">
-          <a th:href="@{/collectionPage}" class="btn btn-primary" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background-color: var(--primary-red);">
+          <a th:href="@{/collectionPage}" class="btn btn-primary dashboard-column" style="height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: var(--red-glow);">
             Min Private Samling
           </a>
         </th:block>
 
-      </div>
+      </nav>
 
     </div>
-  </div>
+  </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

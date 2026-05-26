@@ -8,66 +8,68 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-  <div class="auth-wrapper">
-    <div class="auth-box" style="max-width: 600px;">
+  <section class="auth-wrapper profile-wrapper">
+    <article class="auth-box profile-box" style="max-width: 600px;">
 
-      <h1 class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">Opret Nyt Format</h1>
+      <header class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">
+        <h1 style="margin: 0;">Opret Nyt Format</h1>
+      </header>
 
-      <div th:if="${errorMessage}"
-           style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-        <ul style="margin-left: 20px;">
+      <div th:if="${errorMessage}" class="alert alert-danger">
+        <ul style="margin-left: 20px; padding: 0;">
           <li th:each="error : ${errorMessage}" th:text="${error}">Fejlbesked</li>
         </ul>
       </div>
 
       <form th:action="@{/createFormat}" th:object="${format}" method="post">
-
-        <div class="form-group">
-          <label for="formatName">Formatnavn</label>
-          <input type="text" id="formatName" class="form-control" th:field="*{formatName}" placeholder="f.eks. Commander eller Standard" required>
-        </div>
-
-        <div style="display: flex; gap: 15px;">
-          <div class="form-group" style="flex: 1;">
-            <label for="minDeckSize">Minimum kort i decket</label>
-            <input type="number" id="minDeckSize" class="form-control" th:field="*{minDeckSize}" required>
+        <fieldset>
+          <div class="form-group">
+            <label for="formatName">Formatnavn</label>
+            <input type="text" id="formatName" class="form-control" th:field="*{formatName}" placeholder="f.eks. Commander eller Standard" required>
           </div>
 
-          <div class="form-group" style="flex: 1;">
-            <label for="maxDeckSize">Maximum kort i decket</label>
-            <input type="number" id="maxDeckSize" class="form-control" th:field="*{maxDeckSize}" required>
+          <div class="filter-grid">
+            <div class="form-group">
+              <label for="minDeckSize">Minimum kort i decket</label>
+              <input type="number" id="minDeckSize" class="form-control" th:field="*{minDeckSize}" required>
+            </div>
+
+            <div class="form-group">
+              <label for="maxDeckSize">Maximum kort i decket</label>
+              <input type="number" id="maxDeckSize" class="form-control" th:field="*{maxDeckSize}" required>
+            </div>
           </div>
-        </div>
 
-        <div style="display: flex; gap: 15px; align-items: flex-end;">
-          <div class="form-group" style="flex: 1;">
-            <label for="maxCopiesOfCard">Max antal kopier af samme kort</label>
-            <input type="number" id="maxCopiesOfCard" class="form-control" th:field="*{maxCopiesOfCard}" required>
+          <div class="filter-grid" style="align-items: center;">
+            <div class="form-group">
+              <label for="maxCopiesOfCard">Max antal kopier af samme kort</label>
+              <input type="number" id="maxCopiesOfCard" class="form-control" th:field="*{maxCopiesOfCard}" required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: row; align-items: center; gap: 10px; height: 42px;">
+              <input type="checkbox" id="requiresCommander" th:field="*{requiresCommander}" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-red); margin: 0;">
+              <label for="requiresCommander" style="margin-bottom: 0; cursor: pointer; color: var(--text-white);">Kræver en Commander?</label>
+            </div>
           </div>
 
-          <div class="form-group" style="flex: 1; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; height: 42px;">
-            <input type="checkbox" id="requiresCommander" th:field="*{requiresCommander}" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-red);">
-            <label for="requiresCommander" style="margin-bottom: 0; cursor: pointer; color: var(--text-white);">Kræver en Commander?</label>
+          <div class="form-group">
+            <label for="allowedRarities">Tilladte rariteter (kommasepareret)</label>
+            <input type="text" id="allowedRarities" class="form-control" th:field="*{allowedRarities}" placeholder="Common, Uncommon, Rare...">
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="allowedRarities">Tilladte rariteter (kommasepareret)</label>
-          <input type="text" id="allowedRarities" class="form-control" th:field="*{allowedRarities}" placeholder="Common, Uncommon, Rare...">
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Gem Format</button>
-        <a th:href="@{/}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller / Tilbage</a>
-
+          <button type="submit" class="btn btn-primary btn-block mt-20">Gem Format</button>
+          <a th:href="@{/}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller / Tilbage</a>
+        </fieldset>
       </form>
-    </div>
-  </div>
+
+    </article>
+  </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

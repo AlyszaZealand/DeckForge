@@ -8,17 +8,17 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-red); padding-bottom: 10px; margin-bottom: 20px;">
+    <header class="profile-header" style="align-items: center; flex-wrap: wrap; gap: 15px;">
         <h1 style="color: var(--primary-red); margin: 0;">Alle Events</h1>
 
         <a th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER'}"
            th:href="@{/registerEvent}" class="btn btn-primary">Opret Nyt Event</a>
-    </div>
+    </header>
 
-    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <nav style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
         <a th:href="@{/events(filter='future')}"
            th:classappend="${param.filter == null or param.filter[0] == 'future'} ? 'btn-primary' : 'btn-outline'"
            class="btn">Kommende Events</a>
@@ -31,42 +31,42 @@
            th:href="@{/events(filter='mine')}"
            th:classappend="${param.filter != null and param.filter[0] == 'mine'} ? 'btn-primary' : 'btn-outline'"
            class="btn">Mine Events</a>
+    </nav>
+
+    <div th:if="${events.isEmpty()}" class="empty-state">
+        <p class="empty-text" style="font-size: 1.1rem; margin: 0;">Der blev ikke fundet nogen events i denne kategori.</p>
     </div>
 
-    <div th:if="${events.isEmpty()}" style="background-color: var(--bg-card); padding: 30px; text-align: center; border: 1px dashed var(--border-red); border-radius: 8px;">
-        <p style="color: var(--text-gray); font-size: 1.1rem; margin: 0;">Der blev ikke fundet nogen events i denne kategori.</p>
-    </div>
-
-    <div th:unless="${events.isEmpty()}" style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; background-color: var(--bg-card); border-radius: 8px; overflow: hidden;">
-            <thead style="background-color: var(--accent-gray); color: var(--text-white);">
+    <section th:unless="${events.isEmpty()}" class="table-responsive">
+        <table class="event-table">
+            <thead>
             <tr>
-                <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Event Navn</th>
-                <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Status</th>
-                <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Dato</th>
-                <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--primary-red);">Format</th>
-                <th style="padding: 15px; text-align: right; border-bottom: 2px solid var(--primary-red);">Handling</th>
+                <th>Event Navn</th>
+                <th>Status</th>
+                <th>Dato</th>
+                <th>Format</th>
+                <th style="text-align: right;">Handling</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="event : ${events}" style="border-bottom: 1px solid var(--border-red);">
-                <td th:text="${event.eventName}" style="padding: 15px; font-weight: bold;"></td>
-                <td style="padding: 15px;">
+            <tr th:each="event : ${events}">
+                <td th:text="${event.eventName}" style="font-weight: bold;"></td>
+                <td>
                     <span th:text="${event.eventStatus}"
-                          th:style="${event.eventStatus.name() == 'CANCELLED' ? 'color: red;' : 'color: var(--text-gray);'}">Status</span>
+                          th:style="${event.eventStatus.name() == 'CANCELLED' ? 'color: #ff4444; font-weight: bold;' : 'color: var(--text-gray);'}">Status</span>
                 </td>
-                <td th:text="${event.eventDate}" style="padding: 15px; color: var(--text-gray);"></td>
-                <td th:text="${event.eventFormat}" style="padding: 15px; color: var(--text-gray);"></td>
-                <td style="padding: 15px; text-align: right;">
-                    <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">Se Event</a>
+                <td th:text="${event.eventDate}" class="text-gray"></td>
+                <td th:text="${event.eventFormat}" class="text-gray"></td>
+                <td style="text-align: right;">
+                    <a th:href="@{/events/{id}(id=${event.eventID})}" class="btn btn-outline btn-sm">Se Event</a>
                 </td>
             </tr>
             </tbody>
         </table>
-    </div>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

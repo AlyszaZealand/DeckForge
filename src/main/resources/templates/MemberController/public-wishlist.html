@@ -8,41 +8,47 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper">
-        <div class="auth-box" style="max-width: 900px; padding: 40px;">
+    <section class="auth-wrapper profile-wrapper">
+        <div class="auth-box profile-box">
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 30px;">
+            <header class="profile-header">
                 <h1 style="margin: 0; color: var(--text-white);"><span th:text="${profileUser.username}">Bruger</span>'s Wishlist</h1>
-                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline">Tilbage til Profil</a>
+                <a th:href="@{/profile/{id}(id=${profileUser.userID})}" class="btn btn-outline btn-sm">Tilbage til Profil</a>
+            </header>
+
+            <div th:if="${wishCollection == null or #lists.isEmpty(wishCollection?.wishCollectionItems)}" class="empty-state">
+                <p class="empty-text">Denne bruger har i øjeblikket ingen kort i sin ønskeliste.</p>
             </div>
 
-            <div th:if="${wishCollection == null or #lists.isEmpty(wishCollection?.wishCollectionItems)}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
-                <p style="color: var(--text-gray); font-style: italic;">Denne bruger har i øjeblikket ingen kort i sin ønskeliste.</p>
-            </div>
+            <section th:unless="${wishCollection == null or #lists.isEmpty(wishCollection?.wishCollectionItems)}" class="card-grid">
 
-            <div th:unless="${wishCollection == null or #lists.isEmpty(wishCollection?.wishCollectionItems)}"
-                 style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                <article th:each="item : ${wishCollection?.wishCollectionItems}" class="tcg-card" style="min-height: auto;">
+                    <header class="tcg-card-header">
+                        <span th:text="${item.card.cardName}">Kort Navn</span>
+                    </header>
 
-                <div th:each="item : ${wishCollection?.wishCollectionItems}" class="auth-box" style="margin: 0; padding: 15px; background-color: var(--bg-darkest); border-color: var(--accent-gray); text-align: center;">
-                    <h3 th:text="${item.card.cardName}" style="color: var(--text-white); margin-top: 0; font-size: 1.1rem;">Kort Navn</h3>
-                    <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Rarity: ' + ${item.card.cardRarity}">Rarity</p>
-                    <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
+                    <div class="tcg-card-desc" style="text-align: left;">
+                        <p style="margin: 5px 0;" th:text="'Rarity: ' + ${item.card.cardRarity}">Rarity</p>
+                        <p style="margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
+                    </div>
 
-                    <a th:href="@{/propose(receiverId=${profileUser.userID})}" class="btn btn-primary btn-block" style="font-size: 0.8rem; padding: 8px;">
-                        🤝 Tilbyd Bytte
-                    </a>
-                </div>
+                    <div class="tcg-card-stats" style="border: none; padding-top: 0;">
+                        <a th:href="@{/propose(receiverId=${profileUser.userID})}" class="btn btn-primary btn-block">
+                            🤝 Tilbyd Bytte
+                        </a>
+                    </div>
+                </article>
 
-            </div>
+            </section>
 
         </div>
-    </div>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

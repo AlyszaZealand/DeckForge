@@ -8,74 +8,74 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-    <div class="auth-wrapper">
-        <div class="auth-box" style="max-width: 600px;">
+    <section class="auth-wrapper">
+        <article class="auth-box" style="max-width: 600px;">
 
-            <h1 class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">Opret Nyt Event</h1>
+            <header class="page-header" style="text-align: center; border-bottom: none; box-shadow: none;">
+                <h1 style="margin: 0;">Opret Nyt Event</h1>
+            </header>
 
-            <div th:if="${errorMessage}"
-                 style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 10px; margin-bottom: 20px; border-radius: 4px;"
-                 th:text="${errorMessage}">
-            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
             <form th:action="@{/registerEvent}" method="post" th:object="${event}">
-
-                <div class="form-group">
-                    <label>Event Navn</label>
-                    <input type="text" class="form-control" th:field="*{eventName}" required placeholder="F.eks. FNM Commander Night">
-                </div>
-
-                <div class="form-group">
-                    <label>Beskrivelse</label>
-                    <textarea class="form-control" th:field="*{eventDescription}" rows="3" required placeholder="Hvad skal der ske til eventet?"></textarea>
-                </div>
-
-                <div style="display: flex; gap: 15px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Start Dato & Tid</label>
-                        <input type="datetime-local" class="form-control" th:field="*{eventDate}" required>
+                <fieldset>
+                    <div class="form-group">
+                        <label>Event Navn</label>
+                        <input type="text" class="form-control" th:field="*{eventName}" required placeholder="F.eks. FNM Commander Night">
                     </div>
 
-                    <div class="form-group" style="flex: 1;">
-                        <label>Slut Dato & Tid</label>
-                        <input type="datetime-local" class="form-control" th:field="*{eventEndDate}" required>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 15px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Format</label>
-                        <select class="form-control" th:field="*{eventFormat}" required>
-                            <option value="">Vælg format...</option>
-                            <option th:each="format : ${formats}"
-                                    th:value="${format.formatName}"
-                                    th:text="${format.formatName}">
-                            </option>
-                        </select>
+                    <div class="form-group">
+                        <label>Beskrivelse</label>
+                        <textarea class="form-control" th:field="*{eventDescription}" rows="3" required placeholder="Hvad skal der ske til eventet?"></textarea>
                     </div>
 
-                    <div class="form-group" style="flex: 1;">
-                        <label>Max Deltagere</label>
-                        <select class="form-control" th:field="*{eventSize}" required>
-                            <option value="8">8</option>
-                            <option value="16">16</option>
-                            <option value="32">32</option>
-                        </select>
+                    <div class="filter-grid mb-20">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Start Dato & Tid</label>
+                            <input type="datetime-local" class="form-control" th:field="*{eventDate}" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Slut Dato & Tid</label>
+                            <input type="datetime-local" class="form-control" th:field="*{eventEndDate}" required>
+                        </div>
                     </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">Opret Event</button>
-                <a th:href="@{/}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller / Tilbage</a>
+                    <div class="filter-grid mb-20">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Format</label>
+                            <select class="form-control" th:field="*{eventFormat}" required>
+                                <option value="">Vælg format...</option>
+                                <option th:each="format : ${formats}"
+                                        th:value="${format.formatName}"
+                                        th:text="${format.formatName}">
+                                </option>
+                            </select>
+                        </div>
 
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Max Deltagere</label>
+                            <select class="form-control" th:field="*{eventSize}" required>
+                                <option value="8">8</option>
+                                <option value="16">16</option>
+                                <option value="32">32</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-20">Opret Event</button>
+                    <a th:href="@{/}" class="btn btn-outline btn-block" style="margin-top: 10px;">Annuller / Tilbage</a>
+                </fieldset>
             </form>
-        </div>
-    </div>
+
+        </article>
+    </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

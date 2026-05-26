@@ -579,6 +579,8 @@ legend { color: white; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px
         background-color: var(--bg-darkest);
         border-bottom: 2px solid var(--primary-red);
         z-index: 9999;
+        max-height: 80vh; /* Menuen må max fylde 80% af skærmhøjden */
+        overflow-y: auto; /* Tilføjer scroll inde i selve menuen, hvis der mangler plads */
     }
     .menu-checkbox:checked ~ .main-nav { display: block; }
     .nav-links {

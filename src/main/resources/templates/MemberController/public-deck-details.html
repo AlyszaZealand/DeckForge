@@ -8,53 +8,59 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
-  <div class="auth-wrapper" style="align-items: flex-start; padding-top: 40px;">
-    <div class="auth-box" style="max-width: 1000px; width: 100%; padding: 40px;">
+  <section class="auth-wrapper profile-wrapper">
+    <div class="auth-box profile-box" style="max-width: 1000px;">
 
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-red); padding-bottom: 20px; margin-bottom: 30px;">
+      <header class="profile-header">
         <div>
           <h1 th:text="${deck.deckName}" style="color: var(--text-white); margin: 0; text-shadow: var(--red-glow);">Deck Navn</h1>
-          <p style="color: var(--text-gray); margin: 5px 0 0 0; font-size: 1.1rem;">
+          <p class="text-gray" style="margin: 5px 0 0 0; font-size: 1.1rem;">
             Format: <strong th:text="${deck.format.formatName}" style="color: var(--primary-red);">Format</strong> |
             Kort i alt: <strong th:text="${totalCardsInDeck}" style="color: var(--text-white);">0</strong>
           </p>
         </div>
-        <a th:if="${deck.user != null}" th:href="@{/decks/{id}(id=${deck.user.userID})}" class="btn btn-outline">Tilbage til Decks</a>
-      </div>
+        <a th:if="${deck.user != null}" th:href="@{/decks/{id}(id=${deck.user.userID})}" class="btn btn-outline btn-sm">Tilbage til Decks</a>
+      </header>
 
-      <div th:if="${deck.commander != null}" style="background-color: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.5); padding: 20px; border-radius: 4px; margin-bottom: 30px; text-align: center;">
+      <aside th:if="${deck.commander != null}" style="background-color: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.5); padding: 20px; border-radius: 4px; margin-bottom: 30px; text-align: center;">
         <h3 style="color: gold; margin: 0 0 10px 0; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">♚ Commander ♚</h3>
         <h2 th:text="${deck.commander.cardName}" style="color: var(--text-white); margin: 0;">Commander Navn</h2>
-        <p style="color: var(--text-gray); font-size: 0.9rem; margin: 5px 0 0 0;" th:text="${deck.commander.cardType}">Type</p>
+        <p class="text-gray" style="font-size: 0.9rem; margin: 5px 0 0 0;" th:text="${deck.commander.cardType}">Type</p>
+      </aside>
+
+      <div th:if="${#lists.isEmpty(deck.deckItems)}" class="empty-state">
+        <p class="empty-text">Dette deck indeholder ingen kort endnu.</p>
       </div>
 
-      <div th:if="${#lists.isEmpty(deck.deckItems)}" style="text-align: center; padding: 40px; background-color: var(--bg-card); border: 1px dashed var(--border-red); border-radius: 4px;">
-        <p style="color: var(--text-gray); font-style: italic;">Dette deck indeholder ingen kort endnu.</p>
-      </div>
+      <section th:unless="${#lists.isEmpty(deck.deckItems)}" class="card-grid">
 
-      <div th:unless="${#lists.isEmpty(deck.deckItems)}" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+        <article th:each="item : ${deck.deckItems}" class="tcg-card" style="min-height: auto; position: relative;">
 
-        <div th:each="item : ${deck.deckItems}" class="auth-box" style="margin: 0; padding: 15px; background-color: var(--bg-darkest); border-color: var(--accent-gray); text-align: center; position: relative;">
-
-          <div style="position: absolute; top: -10px; right: -10px; background-color: var(--primary-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--primary-red);">
+          <div style="position: absolute; top: -10px; right: -10px; background-color: var(--primary-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid var(--primary-red); box-shadow: var(--shadow);">
             <span th:text="${item.quantity}">1</span>
           </div>
 
-          <h3 th:text="${item.card.cardName}" style="color: var(--text-white); margin-top: 10px; font-size: 1.1rem;">Kort Navn</h3>
-          <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
-          <p style="color: var(--text-gray); font-size: 0.85rem; margin: 5px 0;" th:text="'Farve: ' + ${item.card.colorIdentity}">Farve</p>
+          <header class="tcg-card-header" style="border-bottom: none; margin-top: 10px;">
+            <span th:text="${item.card.cardName}">Kort Navn</span>
+          </header>
 
-        </div>
-      </div>
+          <div class="tcg-card-desc" style="margin-bottom: 0;">
+            <p style="margin: 5px 0;" th:text="'Type: ' + ${item.card.cardType}">Type</p>
+            <p style="margin: 5px 0;" th:text="'Farve: ' + ${item.card.colorIdentity}">Farve</p>
+          </div>
+
+        </article>
+
+      </section>
 
     </div>
-  </div>
+  </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

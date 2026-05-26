@@ -8,61 +8,63 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
 
-  <div class="page-header">
+  <header class="page-header">
     <h1>Mine Decks</h1>
-    <p style="color: var(--text-gray);">Opret nye decks og forbered dine strategier til næste kamp.</p>
-  </div>
+    <p class="text-gray">Opret nye decks og forbered dine strategier til næste kamp.</p>
+  </header>
 
-  <div class="search-filter-box" style="justify-content: flex-start; align-items: center; padding: 25px; margin-bottom: 30px;">
-    <h3 style="color: var(--primary-red); margin-bottom: 0; margin-right: 20px; font-size: 1.2rem;">SMED ET NYT DECK</h3>
+  <section class="trade-form-section">
+    <form th:action="@{/createDeck}" method="post">
+      <fieldset>
+        <legend>SMED ET NYT DECK</legend>
+        <div class="search-action-group">
+          <input type="text" name="name" placeholder="Deck navn..." required class="form-control" style="flex: 2; min-width: 200px;">
 
-    <form th:action="@{/createDeck}" method="post" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin: 0; flex-grow: 1;">
-      <input type="text" name="name" placeholder="Deck navn..." required class="form-control" style="flex: 2; min-width: 200px;">
+          <select name="formatID" required class="form-control" style="flex: 1; min-width: 150px;">
+            <option value="">-- Vælg Format --</option>
+            <option th:each="format : ${formats}" th:value="${format.formatID}" th:text="${format.formatName}"></option>
+          </select>
 
-      <select name="formatID" required class="form-control" style="flex: 1; min-width: 150px;">
-        <option value="">-- Vælg Format --</option>
-        <option th:each="format : ${formats}" th:value="${format.formatID}" th:text="${format.formatName}"></option>
-      </select>
-
-      <button type="submit" class="btn btn-primary">Opret</button>
+          <button type="submit" class="btn btn-primary">Opret</button>
+        </div>
+      </fieldset>
     </form>
-  </div>
+  </section>
 
   <h2 style="color: var(--text-white); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; margin-top: 40px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
     Dine Decks
   </h2>
 
-  <div th:if="${#lists.isEmpty(deckCollection)}" style="background-color: var(--bg-card); padding: 40px; border: 1px dashed var(--border-red); color: var(--text-gray); border-radius: 4px; text-align: center;">
-    <p style="font-size: 1.1rem; margin: 0;">Smedjen er kold... Du har ikke oprettet nogen decks endnu.</p>
+  <div th:if="${#lists.isEmpty(deckCollection)}" class="empty-state">
+    <p class="empty-text" style="font-size: 1.1rem; margin: 0;">Smedjen er kold... Du har ikke oprettet nogen decks endnu.</p>
   </div>
 
-  <div class="card-grid" th:unless="${#lists.isEmpty(deckCollection)}">
+  <section class="card-grid" th:unless="${#lists.isEmpty(deckCollection)}">
 
-    <div th:each="deck : ${deckCollection}" class="tcg-card" style="justify-content: space-between; min-height: 250px;">
-
+    <article th:each="deck : ${deckCollection}" class="tcg-card" style="justify-content: space-between; min-height: 250px;">
       <div>
-        <div class="tcg-card-header" style="font-size: 1.4rem; border-bottom: none; margin-bottom: 5px;">
+        <header class="tcg-card-header" style="font-size: 1.4rem; border-bottom: none; margin-bottom: 5px;">
           <span th:text="${deck.deckName}">Deck Navn</span>
-        </div>
+        </header>
 
         <div class="tcg-card-type" style="margin-bottom: 20px; border-bottom: 1px solid var(--border-red); padding-bottom: 10px; color: var(--text-gray);">
           Format: <span style="color: var(--text-white); font-weight: bold;" th:text="${deck.format.formatName}">Standard</span>
         </div>
 
         <div style="text-align: center; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-gray); font-size: 0.8rem; text-transform: uppercase;">Kort i deck</span><br>
+          <span class="text-gray" style="font-size: 0.8rem; text-transform: uppercase;">Kort i deck</span><br>
           <strong style="color: var(--primary-red); font-size: 2.2rem; line-height: 1.2;"
                   th:text="${deck.deckItems == null or deck.deckItems.isEmpty() ? 0 : #aggregates.sum(deck.deckItems.![quantity])}">0</strong>
-          <span style="color: var(--text-gray); font-size: 1.1rem;">/ <span th:text="${deck.format.minDeckSize}">60</span></span>
+          <span class="text-gray" style="font-size: 1.1rem;">/ <span th:text="${deck.format.minDeckSize}">60</span></span>
         </div>
       </div>
 
-      <div style="margin-top: 25px; display: flex; gap: 10px;">
-        <a th:href="@{/deckBuilder/{id}(id=${deck.deckID})}" class="btn btn-outline" style="flex: 1; text-align: center; padding: 10px; font-weight: bold;">BUILDER</a>
+      <footer style="margin-top: 25px; display: flex; gap: 10px;">
+        <a th:href="@{/deckBuilder/{id}(id=${deck.deckID})}" class="btn btn-outline" style="flex: 1; padding: 10px;">BUILDER</a>
 
         <form th:action="@{/deleteDeck/{id}(id=${deck.deckID})}" method="post"
               th:data-deckname="${deck.deckName}"
@@ -70,14 +72,13 @@
               style="margin: 0;">
           <button type="submit" class="btn btn-danger" style="height: 100%; padding: 10px 15px; font-weight: bold;">SLET</button>
         </form>
-      </div>
+      </footer>
+    </article>
 
-    </div>
-
-  </div>
+  </section>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

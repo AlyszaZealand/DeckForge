@@ -8,44 +8,44 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container" style="max-width: 1500px;">
 
-  <div th:if="${errorMessage}" style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 15px; text-align: center; border: 1px solid #ff4444; border-radius: 4px; margin-bottom: 20px;">
+  <div th:if="${errorMessage}" class="alert alert-danger text-center">
     <strong th:text="${errorMessage}"></strong>
   </div>
 
-  <div th:if="${deckWarnings}" style="background-color: rgba(255, 165, 0, 0.15); color: #ffa500; padding: 15px; border: 1px solid #ffa500; border-radius: 4px; margin-bottom: 20px;">
+  <div th:if="${deckWarnings}" class="alert alert-warning">
     <h4 style="margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">⚠️ Deck Regelbrud fundet:</h4>
-    <ul style="margin: 0; padding-left: 20px; font-size: 0.95rem;">
+    <ul style="margin: 0; padding-left: 20px; font-size: 0.95rem; color: var(--text-white);">
       <li th:each="warning : ${deckWarnings}" th:text="${warning}">Advarselsbesked</li>
     </ul>
   </div>
 
-  <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+  <header class="page-header">
     <div>
-      <a th:href="@{/myDecks}" style="color: var(--text-gray); text-decoration: none; font-size: 0.9rem; text-transform: uppercase;">&larr; Tilbage til oversigt</a>
+      <a th:href="@{/myDecks}" class="text-gray" style="text-decoration: none; font-size: 0.9rem; text-transform: uppercase;">&larr; Tilbage til oversigt</a>
       <h1 th:text="${deck.deckName}" style="margin-top: 5px; margin-bottom: 5px;">Deck Navn</h1>
-      <p style="color: var(--text-gray); margin: 0;">
-        <strong>Format:</strong> <span th:text="${deck.format.formatName}">Format</span> |
+      <p class="text-gray" style="margin: 0;">
+        <strong>Format:</strong> <span th:text="${deck.format.formatName}" style="color: var(--text-white);">Format</span> |
         <strong>Kort i deck:</strong> <span style="color: var(--primary-red); font-weight: bold;" th:text="${totalCardsInDeck}">0</span> / <span th:text="${deck.format.minDeckSize}">60</span>
       </p>
     </div>
-  </div>
+  </header>
 
-  <div th:if="${deck.format.requiresCommander}" style="background-color: var(--bg-card); border: 2px solid var(--primary-red); padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: var(--red-glow);">
-    <h3 style="margin-top: 0; color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">♛ Din Commander</h3>
+  <aside th:if="${deck.format.requiresCommander}" class="dashboard-highlight" style="border: 2px solid var(--primary-red); box-shadow: var(--red-glow); text-align: left; padding: 20px;">
+    <h3 style="margin-top: 0; color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">♛ Din Commander</h3>
 
-    <div th:if="${deck.commander != null}" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;">
-      <div style="flex: 1;">
+    <div th:if="${deck.commander != null}" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 200px;">
         <strong th:text="${deck.commander.cardName}" style="font-size: 1.4rem; color: white;">Commander Navn</strong>
         <form th:action="@{/deckBuilder/{id}/removeCommander(id=${deck.deckID})}" method="post" style="display:inline-block; margin-left: 15px;">
           <button type="submit" class="btn btn-danger" style="padding: 3px 10px; font-size: 0.75rem;">Fjern / Skift</button>
         </form>
-        <span style="color: var(--text-gray); font-size: 0.9em; margin-left: 10px;" th:text="${deck.commander.manaCost}"></span>
+        <span class="text-gray" style="font-size: 0.9em; margin-left: 10px;" th:text="${deck.commander.manaCost}"></span>
         <br>
-        <span style="color: var(--text-gray); font-size: 0.95rem;">
+        <span class="text-gray" style="font-size: 0.95rem;">
             <span th:text="${deck.commander.cardType}">Type</span> - <span th:text="${deck.commander.cardRarity}">Rarity</span>
         </span>
         <p style="color: var(--text-white); margin-top: 10px; font-style: italic; font-size: 0.9rem;" th:text="${deck.commander.description}"></p>
@@ -57,78 +57,81 @@
 
     <div th:if="${deck.commander == null}">
       <strong style="color: #ff4444; font-size: 1.1rem;">Intet valgt!</strong>
-      <p style="margin: 5px 0 0 0; font-size: 0.95rem; color: var(--text-gray);">Brug søgemenuen nedenfor til at vælge din Commander.</p>
+      <p style="margin: 5px 0 0 0; font-size: 0.95rem; class='text-gray'">Brug søgemenuen nedenfor til at vælge din Commander.</p>
     </div>
-  </div>
+  </aside>
 
-  <form th:action="@{/deckBuilder/{id}(id=${deck.deckID})}" method="get" class="search-filter-box">
-    <div class="form-group">
-      <label>Kortnavn</label>
-      <input type="text" name="search" th:value="${currentSearch}" placeholder="Søg..." class="form-control">
-    </div>
+  <form th:action="@{/deckBuilder/{id}(id=${deck.deckID})}" method="get" class="trade-form-section">
+    <fieldset>
+      <legend>Søgekriterier</legend>
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>Kortnavn</label>
+          <input type="text" name="search" th:value="${currentSearch}" placeholder="Søg..." class="form-control">
+        </div>
 
-    <div class="form-group">
-      <label>Type</label>
-      <select name="cardType" class="form-control">
-        <option value="">Alle</option>
-        <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
-                th:value="${enumType}" th:text="${enumType}"
-                th:selected="${currentCardType == enumType.name()}"></option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select name="cardType" class="form-control">
+            <option value="">Alle</option>
+            <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
+                    th:value="${enumType}" th:text="${enumType}"
+                    th:selected="${currentCardType == enumType.name()}"></option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Raritet</label>
-      <select name="rarity" class="form-control">
-        <option value="">Alle</option>
-        <option value="COMMON" th:selected="${currentRarity == 'COMMON'}">Common</option>
-        <option value="UNCOMMON" th:selected="${currentRarity == 'UNCOMMON'}">Uncommon</option>
-        <option value="RARE" th:selected="${currentRarity == 'RARE'}">Rare</option>
-        <option value="MYTHICRARE" th:selected="${currentRarity == 'MYTHICRARE'}">Mythic</option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label>Raritet</label>
+          <select name="rarity" class="form-control">
+            <option value="">Alle</option>
+            <option value="COMMON" th:selected="${currentRarity == 'COMMON'}">Common</option>
+            <option value="UNCOMMON" th:selected="${currentRarity == 'UNCOMMON'}">Uncommon</option>
+            <option value="RARE" th:selected="${currentRarity == 'RARE'}">Rare</option>
+            <option value="MYTHICRARE" th:selected="${currentRarity == 'MYTHICRARE'}">Mythic</option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Farve</label>
-      <select name="color" class="form-control">
-        <option value="">Alle Farver</option>
-        <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
-        <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
-        <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
-        <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
-        <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
-        <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label>Farve</label>
+          <select name="color" class="form-control">
+            <option value="">Alle Farver</option>
+            <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+            <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+            <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+            <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+            <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+            <option value="C" th:selected="${param.color != null and param.color[0] == 'C'}">Colorless (C)</option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Søg I</label>
-      <select name="collectionType" class="form-control">
-        <option value="CATALOG" th:selected="${currentCollectionType.name() == 'CATALOG'}">Katalog</option>
-        <option value="COLLECTION" th:selected="${currentCollectionType.name() == 'COLLECTION'}">Min Samling</option>
-      </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary" style="margin-bottom: 15px;">Søg</button>
+        <div class="form-group">
+          <label>Søg I</label>
+          <select name="collectionType" class="form-control">
+            <option value="CATALOG" th:selected="${currentCollectionType.name() == 'CATALOG'}">Katalog</option>
+            <option value="COLLECTION" th:selected="${currentCollectionType.name() == 'COLLECTION'}">Min Samling</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-20" style="width: 100%;">Søg</button>
+    </fieldset>
   </form>
 
+  <div class="dashboard-grid">
 
-  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <section class="dashboard-column" style="flex: 2;">
+      <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Dit Deck</h2>
 
-    <section>
-      <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Dit Deck</h2>
-
-      <div th:if="${#lists.isEmpty(deck.deckItems)}" style="background-color: var(--bg-card); padding: 20px; border: 1px dashed var(--border-red); color: var(--text-gray); border-radius: 4px;">
-        Helt tomt... Begynd at smede dit deck til højre!
+      <div th:if="${#lists.isEmpty(deck.deckItems)}" class="empty-state">
+        <p class="empty-text">Helt tomt... Begynd at smede dit deck til højre!</p>
       </div>
 
-      <div class="scrollable-container" th:unless="${#lists.isEmpty(deck.deckItems)}">
+      <div class="scrollable-container" th:unless="${#lists.isEmpty(deck.deckItems)}" style="background: transparent; border: none; padding: 0;">
         <div class="card-grid">
-          <div class="tcg-card" th:each="item : ${deck.deckItems}">
-            <div class="tcg-card-header">
+          <article class="tcg-card" th:each="item : ${deck.deckItems}">
+            <header class="tcg-card-header">
               <span th:text="${item.card.cardName}">Kort Navn</span>
-              <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${item.card.manaCost}">Mana</span>
-            </div>
+              <span class="text-gray" style="font-size: 0.9em;" th:text="${item.card.manaCost}">Mana</span>
+            </header>
 
             <div class="tcg-card-type">
               <span th:text="${item.card.cardType}">Type</span>
@@ -148,7 +151,7 @@
               (Mangler [[${item.quantity - item.ownedQuantity}]] i samling)
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <footer style="display: flex; gap: 10px; margin-top: 15px;">
               <form th:action="@{/deckBuilder/{id}/removeOne(id=${deck.deckID})}" method="post" style="flex: 1; margin: 0;">
                 <input type="hidden" name="cardID" th:value="${item.card.cardID}">
                 <button type="submit" class="btn btn-outline btn-block" style="padding: 5px;">-</button>
@@ -157,22 +160,22 @@
                 <input type="hidden" name="cardID" th:value="${item.card.cardID}">
                 <button type="submit" class="btn btn-outline btn-block" style="padding: 5px;">+</button>
               </form>
-            </div>
-          </div>
+            </footer>
+          </article>
         </div>
       </div>
     </section>
 
-    <aside>
-      <h2 style="color: var(--text-gray); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Søgeresultater</h2>
+    <aside class="dashboard-column" style="flex: 1;">
+      <h2 style="color: var(--text-gray); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Søgeresultater</h2>
 
-      <div class="scrollable-container">
+      <div class="scrollable-container" style="background: transparent; border: none; padding: 0;">
         <div class="card-grid" style="grid-template-columns: 1fr;">
-          <div class="tcg-card" th:each="card : ${searchResults}">
-            <div class="tcg-card-header">
+          <article class="tcg-card" th:each="card : ${searchResults}">
+            <header class="tcg-card-header">
               <span th:text="${card.cardName}">Kort Navn</span>
-              <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${card.manaCost}">Mana</span>
-            </div>
+              <span class="text-gray" style="font-size: 0.9em;" th:text="${card.manaCost}">Mana</span>
+            </header>
 
             <div class="tcg-card-type">
               <span th:text="${card.cardType}">Type</span> - <span th:text="${card.cardRarity}">Rarity</span>
@@ -184,7 +187,7 @@
               <span th:text="${card.power}"></span> / <span th:text="${card.health}"></span>
             </div>
 
-            <div style="margin-top: 15px;">
+            <footer style="margin-top: 15px;">
               <form th:if="${deck.format.requiresCommander and deck.commander == null}"
                     th:action="@{/deckBuilder/{id}/setCommander(id=${deck.deckID})}" method="post" style="margin: 0;">
                 <input type="hidden" name="cardID" th:value="${card.cardID}">
@@ -197,8 +200,8 @@
                 <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 60px; padding: 5px; text-align: center;">
                 <button type="submit" class="btn btn-success" style="flex: 1;">Tilføj</button>
               </form>
-            </div>
-          </div>
+            </footer>
+          </article>
         </div>
       </div>
     </aside>
@@ -206,7 +209,7 @@
   </div>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

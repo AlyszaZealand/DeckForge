@@ -8,55 +8,55 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
 
-    <div class="page-header">
+    <header class="page-header">
         <div>
             <h1>Collection Hub</h1>
-            <p style="color: var(--text-gray);">Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
+            <p class="text-gray">Velkommen til dit samlings-hub! Vælg hvilken del af din samling, du vil se på.</p>
         </div>
-    </div>
+    </header>
 
-    <div class="card-grid">
+    <nav class="card-grid">
 
-        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+        <article class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
             <h2 style="color: var(--primary-red); margin-bottom: 10px;">Mine Kort</h2>
             <p class="tcg-card-desc" style="background: none; padding: 0;">Se og administrer hele din kortsamling.</p>
             <div style="margin-top: 20px;">
                 <a th:href="@{/myCards}" class="btn btn-primary btn-block">Gå til Mine Kort</a>
             </div>
-        </div>
+        </article>
 
-        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+        <article class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
             <h2 style="color: var(--primary-red); margin-bottom: 10px;">Min Tradelist</h2>
             <p class="tcg-card-desc" style="background: none; padding: 0;">Administrer de kort, du har til overs til bytte.</p>
             <div style="margin-top: 20px;">
                 <a th:href="@{/myTradeList}" class="btn btn-primary btn-block">Gå til Tradelist</a>
             </div>
-        </div>
+        </article>
 
-        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+        <article class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
             <h2 style="color: var(--primary-red); margin-bottom: 10px;">Min Wishlist</h2>
             <p class="tcg-card-desc" style="background: none; padding: 0;">Hold styr på de kort, du mangler og ønsker dig.</p>
             <div style="margin-top: 20px;">
                 <a th:href="@{/myWishCollection}" class="btn btn-primary btn-block">Gå til Wishlist</a>
             </div>
-        </div>
+        </article>
 
-        <div class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+        <article class="tcg-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
             <h2 style="color: var(--primary-red); margin-bottom: 10px;">Mine Decks</h2>
             <p class="tcg-card-desc" style="background: none; padding: 0;">Byg, rediger og forbered dine decks til kamp.</p>
             <div style="margin-top: 20px;">
                 <a th:href="@{/myDecks}" class="btn btn-primary btn-block">Gå til Mine Decks</a>
             </div>
-        </div>
+        </article>
 
-    </div>
+    </nav>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>

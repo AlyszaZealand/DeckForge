@@ -8,89 +8,90 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container" style="max-width: 1500px;">
 
-  <div class="page-header">
+  <header class="page-header">
     <h1>Min Tradelist</h1>
-    <p style="color: var(--text-gray);">Administrer hvilke af dine kort, du ønsker at tilbyde i bytte til andre spillere.</p>
-    <a th:href="@{/collectionPage}" class="btn btn-outline" style="font-size: 0.8rem; margin-bottom: 20px;">&larr; Tilbage til Collection Hub</a>
-  </div>
+    <p class="text-gray">Administrer hvilke af dine kort, du ønsker at tilbyde i bytte til andre spillere.</p>
+    <a th:href="@{/collectionPage}" class="btn btn-outline btn-sm" style="margin-bottom: 20px;">&larr; Tilbage til Collection Hub</a>
+  </header>
 
-  <div th:if="${errorMessage}" style="background-color: rgba(255, 68, 68, 0.1); color: #ff4444; padding: 10px; margin-bottom: 20px; border: 1px solid #ff4444; border-radius: 4px;" th:text="${errorMessage}"></div>
+  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-  <form action="/myTradeList" method="get" class="search-filter-box">
+  <form action="/myTradeList" method="get" class="trade-form-section">
+    <fieldset>
+      <legend>Kortfiltrering</legend>
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>Søg Kortnavn</label>
+          <input type="text" name="name" class="form-control" placeholder="Søg efter kort..." th:value="${param.name}">
+        </div>
 
-    <div class="form-group">
-      <label>Søg Kortnavn</label>
-      <input type="text" name="name" class="form-control" placeholder="Søg efter kort..." th:value="${param.name}">
-    </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select name="type" class="form-control">
+            <option value="">Alle Typer</option>
+            <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
+                    th:value="${enumType}"
+                    th:text="${enumType}"
+                    th:selected="${param.type != null and param.type[0] == enumType.name()}">
+            </option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Type</label>
-      <select name="type" class="form-control">
-        <option value="">Alle Typer</option>
-        <option th:each="enumType : ${T(feedback.deckforge.Model.Enum.CardType).values()}"
-                th:value="${enumType}"
-                th:text="${enumType}"
-                th:selected="${param.type != null and param.type[0] == enumType.name()}">
-        </option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label>Raritet</label>
+          <select name="rarity" class="form-control">
+            <option value="">Alle Rariteter</option>
+            <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
+            <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
+            <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
+            <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Raritet</label>
-      <select name="rarity" class="form-control">
-        <option value="">Alle Rariteter</option>
-        <option value="COMMON" th:selected="${param.rarity != null and param.rarity[0] == 'COMMON'}">Common</option>
-        <option value="UNCOMMON" th:selected="${param.rarity != null and param.rarity[0] == 'UNCOMMON'}">Uncommon</option>
-        <option value="RARE" th:selected="${param.rarity != null and param.rarity[0] == 'RARE'}">Rare</option>
-        <option value="MYTHICRARE" th:selected="${param.rarity != null and param.rarity[0] == 'MYTHICRARE'}">Mythic Rare</option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label>Farve</label>
+          <select name="color" class="form-control">
+            <option value="">Alle Farver</option>
+            <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
+            <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
+            <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
+            <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
+            <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label>Farve</label>
-      <select name="color" class="form-control">
-        <option value="">Alle Farver</option>
-        <option value="W" th:selected="${param.color != null and param.color[0] == 'W'}">Hvid (W)</option>
-        <option value="U" th:selected="${param.color != null and param.color[0] == 'U'}">Blå (U)</option>
-        <option value="B" th:selected="${param.color != null and param.color[0] == 'B'}">Sort (B)</option>
-        <option value="R" th:selected="${param.color != null and param.color[0] == 'R'}">Rød (R)</option>
-        <option value="G" th:selected="${param.color != null and param.color[0] == 'G'}">Grøn (G)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Søg I</label>
-      <select name="searchTarget" class="form-control">
-        <option value="COLLECTION" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'COLLECTION'}">Din Samling (Højre)</option>
-        <option value="TRADELIST" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'TRADELIST'}">Tradelist (Venstre)</option>
-      </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary" style="margin-bottom: 15px;">Filtrér</button>
+        <div class="form-group">
+          <label>Søg I</label>
+          <select name="searchTarget" class="form-control">
+            <option value="COLLECTION" th:selected="${param.searchTarget == null or param.searchTarget[0] == 'COLLECTION'}">Din Samling (Højre)</option>
+            <option value="TRADELIST" th:selected="${param.searchTarget != null and param.searchTarget[0] == 'TRADELIST'}">Tradelist (Venstre)</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-20" style="width: 100%;">Filtrér</button>
+    </fieldset>
   </form>
 
+  <div class="dashboard-grid">
 
-  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <section class="dashboard-column" style="flex: 2;">
+      <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Din Tradelist</h2>
 
-    <section>
-      <h2 style="color: var(--primary-red); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Din Tradelist</h2>
-
-      <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection.tradeCollectionItems)}" style="background-color: var(--bg-card); padding: 20px; border: 1px dashed var(--border-red); color: var(--text-gray); border-radius: 4px;">
-        Din bytteliste er tom. Tilføj kort fra din samling til højre for at starte.
+      <div th:if="${tradeCollection == null or #lists.isEmpty(tradeCollection.tradeCollectionItems)}" class="empty-state">
+        <p class="empty-text">Din bytteliste er tom. Tilføj kort fra din samling til højre for at starte.</p>
       </div>
 
-      <div class="scrollable-container" th:if="${tradeCollection != null and not #lists.isEmpty(tradeCollection.tradeCollectionItems)}">
+      <div class="scrollable-container" th:if="${tradeCollection != null and not #lists.isEmpty(tradeCollection.tradeCollectionItems)}" style="background: transparent; border: none; padding: 0;">
         <div class="card-grid">
-
-          <div class="tcg-card" th:each="item : ${tradeCollection.tradeCollectionItems}">
-            <div class="tcg-card-header">
+          <article class="tcg-card" th:each="item : ${tradeCollection.tradeCollectionItems}">
+            <header class="tcg-card-header">
               <span th:text="${item.card.cardName}">Kort Navn</span>
-              <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${item.card.manaCost}">Mana</span>
-            </div>
+              <span class="text-gray" style="font-size: 0.9em;" th:text="${item.card.manaCost}">Mana</span>
+            </header>
 
             <div class="tcg-card-type">
               <span th:text="${item.card.cardType}">Type</span> - <span th:text="${item.card.cardRarity}">Raritet</span>
@@ -103,7 +104,7 @@
               <span th:text="${item.card.power}"></span> / <span th:text="${item.card.health}"></span>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
+            <footer style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
               <div style="display: flex; gap: 5px;">
                 <form th:action="@{/addCardToTradeList}" method="post" style="flex: 1;">
                   <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
@@ -118,29 +119,27 @@
                 <input type="hidden" name="cardID" th:value="${item.card.cardID}" />
                 <button type="submit" class="btn btn-danger btn-block" style="padding: 6px; font-size: 0.8rem;">Fjern Helt Fra Bytte</button>
               </form>
-            </div>
-          </div>
-
+            </footer>
+          </article>
         </div>
       </div>
     </section>
 
-    <aside>
-      <h2 style="color: var(--text-gray); border-bottom: 1px solid var(--border-red); padding-bottom: 5px;">Din Samling</h2>
-      <p style="font-size: 0.85em; color: var(--text-gray); margin-bottom: 15px;">Vælg de kort du vil sætte til bytte.</p>
+    <aside class="dashboard-column" style="flex: 1;">
+      <h2 style="color: var(--text-gray); border-bottom: 1px solid var(--border-red); padding-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Din Samling</h2>
+      <p class="text-gray" style="font-size: 0.85em; margin-bottom: 15px;">Vælg de kort du vil sætte til bytte.</p>
 
-      <div th:if="${myOwnedCards == null or #lists.isEmpty(myOwnedCards)}" style="font-style: italic; color: var(--text-gray);">
+      <div th:if="${myOwnedCards == null or #lists.isEmpty(myOwnedCards)}" class="empty-text" style="font-style: italic;">
         Ingen kort fundet i din samling.
       </div>
 
-      <div class="scrollable-container" th:if="${myOwnedCards != null and not #lists.isEmpty(myOwnedCards)}">
+      <div class="scrollable-container" th:if="${myOwnedCards != null and not #lists.isEmpty(myOwnedCards)}" style="background: transparent; border: none; padding: 0;">
         <div class="card-grid" style="grid-template-columns: 1fr;">
-
-          <div class="tcg-card" th:each="card : ${myOwnedCards}">
-            <div class="tcg-card-header">
+          <article class="tcg-card" th:each="card : ${myOwnedCards}">
+            <header class="tcg-card-header">
               <span th:text="${card.cardName}">Kort Navn</span>
-              <span style="color: var(--text-gray); font-size: 0.9em;" th:text="${card.manaCost}">Mana</span>
-            </div>
+              <span class="text-gray" style="font-size: 0.9em;" th:text="${card.manaCost}">Mana</span>
+            </header>
 
             <div class="tcg-card-type">
               <span th:text="${card.cardType}">Type</span> - <span th:text="${card.cardRarity}">Raritet</span>
@@ -152,12 +151,13 @@
               <span th:text="${card.power}"></span> / <span th:text="${card.health}"></span>
             </div>
 
-            <form th:action="@{/addCardToTradeList}" method="post" style="margin-top: 15px;">
-              <input type="hidden" name="cardID" th:value="${card.cardID}" />
-              <button type="submit" class="btn btn-primary btn-block" style="padding: 8px; font-size: 0.85rem;">Sæt til Bytte</button>
-            </form>
-          </div>
-
+            <footer style="margin-top: 15px;">
+              <form th:action="@{/addCardToTradeList}" method="post" style="margin: 0;">
+                <input type="hidden" name="cardID" th:value="${card.cardID}" />
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 8px; font-size: 0.85rem;">Sæt til Bytte</button>
+              </form>
+            </footer>
+          </article>
         </div>
       </div>
     </aside>
@@ -165,6 +165,6 @@
   </div>
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 </body>
 </html>

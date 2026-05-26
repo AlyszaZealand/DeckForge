@@ -8,21 +8,20 @@
 </head>
 <body>
 
-<section th:insert="~{Parts/header :: header}"></section>
+<header th:replace="~{Parts/header :: header}"></header>
 
 <main class="container">
 
-  <div th:if="${param.error != null}"
-       style="background-color: rgba(179,0,0,0.2); border: 1px solid var(--primary-red); color: white; padding: 15px; margin-bottom: 20px; border-radius: 4px; text-align: center;">
+  <div th:if="${param.error != null}" class="alert alert-danger text-center">
     <p th:if="${param.error[0] == 'event_full'}" style="margin: 0; font-weight: bold;">Beklager, dette event er desværre fuldt booket!</p>
     <p th:if="${param.error[0] == 'only_members'}" style="margin: 0; font-weight: bold;">Kun spillere med rollen MEMBER kan tilmelde sig begivenheder.</p>
   </div>
 
-  <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+  <section class="dashboard-grid">
 
-    <div class="auth-box" style="flex: 2; max-width: none; margin: 0; padding: 30px;">
+    <article class="auth-box dashboard-column" style="flex: 2; max-width: none; padding: 30px;">
 
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 20px;">
+      <header style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--primary-red); padding-bottom: 15px; margin-bottom: 20px;">
         <h1 th:text="${event.eventName}" style="margin: 0; color: var(--text-white); text-shadow: var(--red-glow);">Event Navn</h1>
 
         <span th:text="${event.eventStatus}"
@@ -31,30 +30,33 @@
                               (${event.eventStatus.name() == 'COMPLETED'} ? 'background-color: rgba(255,255,255,0.1); color: var(--text-gray); border: 1px solid var(--text-gray);' :
                               'background-color: rgba(179,0,0,0.2); color: var(--primary-red); border: 1px solid var(--primary-red);'))">
                     Status
-                </span>
+        </span>
+      </header>
+
+      <div class="filter-grid text-gray mb-20">
+        <div>
+          <p><strong>Format:</strong> <span th:text="${event.eventFormat}" style="color: var(--text-white);">Format</span></p>
+          <p><strong>Pladser:</strong> <span style="color: var(--text-white);"><span th:text="${attendingUsers.size()}">0</span> / <span th:text="${event.eventSize}">0</span></span></p>
+        </div>
+        <div>
+          <p><strong>Start:</strong> <span th:text="${event.eventDate}" style="color: var(--text-white);">Start tid</span></p>
+          <p><strong>Slut:</strong> <span th:text="${event.eventEndDate}" style="color: var(--text-white);">Slut tid</span></p>
+        </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; color: var(--text-gray);">
-        <p><strong>Format:</strong> <span th:text="${event.eventFormat}" style="color: var(--text-white);">Format</span></p>
-        <p><strong>Pladser:</strong> <span style="color: var(--text-white);"><span th:text="${attendingUsers.size()}">0</span> / <span th:text="${event.eventSize}">0</span></span></p>
-        <p><strong>Start:</strong> <span th:text="${event.eventDate}" style="color: var(--text-white);">Start tid</span></p>
-        <p><strong>Slut:</strong> <span th:text="${event.eventEndDate}" style="color: var(--text-white);">Slut tid</span></p>
-      </div>
-
-      <div style="margin-bottom: 30px;">
-        <h3 style="color: var(--primary-red); font-size: 1.1rem; border-bottom: none;">Beskrivelse</h3>
-        <p th:text="${event.eventDescription}" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px; border-left: 2px solid var(--border-red); color: var(--text-gray); line-height: 1.8;">
+      <section class="mb-20">
+        <h3 style="color: var(--primary-red); font-size: 1.1rem; margin-bottom: 10px;">Beskrivelse</h3>
+        <p th:text="${event.eventDescription}" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 4px; border-left: 2px solid var(--border-red); color: var(--text-gray); line-height: 1.8; margin: 0;">
           Beskrivelse her...
         </p>
-      </div>
+      </section>
 
-      <div th:if="${event.winnerId != null and event.winnerId != 0}"
-           style="background-color: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.5); padding: 20px; border-radius: 4px; margin-bottom: 25px; text-align: center;">
+      <div th:if="${event.winnerId != null and event.winnerId != 0}" class="alert alert-warning text-center" style="border: 1px solid rgba(255, 215, 0, 0.5); background-color: rgba(255, 215, 0, 0.05);">
         <h3 style="color: gold; margin: 0 0 10px 0; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);">🏆 VINDER KÅRET 🏆</h3>
-        <p style="margin: 0; font-size: 1.1rem;">Bruger ID: <strong th:text="${event.winnerId}" style="color: white;">Vinder</strong> har vundet denne turnering!</p>
+        <p style="margin: 0; font-size: 1.1rem; color: var(--text-white);">Bruger ID: <strong th:text="${event.winnerId}">Vinder</strong> har vundet denne turnering!</p>
       </div>
 
-      <div style="display: flex; gap: 15px; border-top: 1px solid var(--accent-gray); padding-top: 25px; align-items: center;">
+      <footer style="display: flex; gap: 15px; flex-wrap: wrap; border-top: 1px solid var(--accent-gray); padding-top: 25px; align-items: center;">
 
         <div th:if="${session.loggedInUser != null and session.loggedInUser.userRole.name() == 'ORGANIZER' and event.organizerId == session.loggedInUser.userID}">
           <a th:href="@{/events/{id}/edit(id=${event.eventID})}" class="btn btn-outline">Rediger Event / Kår Vinder</a>
@@ -70,15 +72,15 @@
             </button>
           </form>
 
-          <form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventID})}" method="post" style="display: flex; align-items: center; gap: 15px; margin: 0;">
+          <form th:if="${isAttending}" th:action="@{/events/{id}/leave(id=${event.eventID})}" method="post" style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin: 0;">
             <button type="submit" class="btn btn-danger">Frameld Event</button>
             <span style="color: #4caf50; font-weight: bold; background: rgba(76, 175, 80, 0.1); padding: 8px 12px; border-radius: 4px;">✓ Tilmeldt</span>
           </form>
         </th:block>
-      </div>
-    </div>
+      </footer>
+    </article>
 
-    <div class="auth-box" style="flex: 1; max-width: 400px; margin: 0; min-width: 300px; height: fit-content; padding: 25px;">
+    <aside class="auth-box dashboard-column" style="flex: 1; min-width: 300px; height: fit-content; padding: 25px;">
       <h3 style="border-bottom: 1px solid var(--primary-red); padding-bottom: 10px; margin-top: 0;">Tilmeldte Spillere</h3>
 
       <ul th:if="${!attendingUsers.isEmpty()}" style="list-style: none; padding: 0; margin-top: 15px;" class="scrollable-container">
@@ -88,15 +90,16 @@
         </li>
       </ul>
 
-      <p th:if="${attendingUsers.isEmpty()}" style="color: var(--text-gray); text-align: center; margin-top: 30px; font-style: italic;">
+      <p th:if="${attendingUsers.isEmpty()}" class="empty-text text-center mt-20">
         Ingen spillere har tilmeldt sig endnu.
       </p>
-    </div>
-  </div>
+    </aside>
+
+  </section>
 
 </main>
 
-<section th:insert="~{Parts/footer :: footer}"></section>
+<footer th:replace="~{Parts/footer :: footer}"></footer>
 
 </body>
 </html>
