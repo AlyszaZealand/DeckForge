@@ -6,9 +6,8 @@
 INSERT INTO users (username, email, password_hash, user_role) VALUES
                                                                   ('Holger','holger@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ADMIN'), -- kode123
                                                                   ('Eventus', 'event@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER'), -- kode123
-                                                                  ('organ', 'organ@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER')
+                                                                  ('organ', 'organ@deckforge.dk', '$2a$12$tkydHfxKrbQKZ65.JTsXzO7T.o5oPWhng7UlUv3GOESM34Khah542', 'ORGANIZER');
 
-    );
 
 
 -- 2. Opret Kort (Kataloget)
