@@ -58,7 +58,6 @@ public class AdminController {
             formatService.deleteExistingFormat(formatID);
             redirectAttributes.addFlashAttribute("successMessage", "Formatet blev slettet succesfuldt.");
         } catch (DataIntegrityViolationException e) {
-            // Fanger hvis databasen nægter at slette (f.eks. hvis man ikke har sat ON DELETE CASCADE på decks endnu)
             redirectAttributes.addFlashAttribute("errorMessage", "Formatet kan ikke slettes, fordi der findes decks eller events, som bruger det.");
         }
 
@@ -185,7 +184,6 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        // Takket være ON DELETE CASCADE bliver kortet slettet fra databasen, decks og samlinger
         cardService.deleteCard(cardID);
         return "redirect:/admin/cards";
     }
