@@ -106,13 +106,12 @@ public class UserService {
     }
 
     public User loginValidation(String email, String rawPassword) {
-        // Hvis brugeren ikke findes, kastes vores nye InvalidCredentialsException direkte
         User loggedUser = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new InvalidCredentialsException("Hov! E-mailen eller kodeordet er forkert."));
 
         try {
             if(BCrypt.checkpw(rawPassword, loggedUser.getPassword())){
-                return loggedUser; // Succes! Returner brugeren direkte
+                return loggedUser;
             } else {
                 throw new InvalidCredentialsException("Hov! E-mailen eller kodeordet er forkert.");
             }

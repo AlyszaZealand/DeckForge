@@ -36,8 +36,6 @@ public class DeckController {
             return "redirect:/login";
         }
 
-        // Service.findAllDecksByUserId sørger nu for at hente items,
-        // så tælleren (45/60) virker på oversigten.
         List<Deck> deckCollection = deckService.findAllDecksByUserId(loggedInUser.getUserID());
         model.addAttribute("deckCollection", deckCollection);
         model.addAttribute("formats", deckService.getAllFormats());
@@ -81,7 +79,6 @@ public class DeckController {
         }
 
         // 2. Beregn total mængde kort til tælleren (X / 100)
-        // Dette sikrer at din HTML altid har et korrekt tal uanset Thymeleaf-version
         int totalCardsInDeck = deck.getDeckItems().stream()
                 .mapToInt(item -> item.getQuantity())
                 .sum();
@@ -95,7 +92,6 @@ public class DeckController {
         List<Card> searchResults = cardService.searchCards(search, rarity, color, cardType, collectionType, searchUserId);
         model.addAttribute("searchResults", searchResults);
 
-        // 5. Gem værdier til "Persistent UI" (Formularen husker hvad du valgte)
         model.addAttribute("currentSearch", search);
         model.addAttribute("currentRarity", rarity);
         model.addAttribute("currentColor", color);

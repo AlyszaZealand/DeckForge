@@ -173,7 +173,6 @@ public class TradeService {
             trade.setTradeStatus(TradeStatus.WAITING_FOR_PARTNER);
         }
 
-        // 3. GEM DET HELE I DATABASEN (Status + Bekræftelser)
         tradeRepository.updateTradeStatusAndConfirmations(
                 tradeID,
                 trade.getTradeStatus(),
@@ -324,7 +323,6 @@ public class TradeService {
 
 
     public List<TradeViewDTO> getTradeHistoryForUser(int userId, String sort) {
-        // 1. Fetch and map the list just like before
         List<TradeViewDTO> history = findAllTradesByUserId(userId).stream()
                 .filter(t -> t.getTradeStatus() == TradeStatus.COMPLETED ||
                         t.getTradeStatus() == TradeStatus.CANCELLED ||
@@ -332,12 +330,9 @@ public class TradeService {
                 .map(t -> mapToViewDTO(t, userId))
                 .collect(Collectors.toList());
 
-        // 2. Sort the list based on the user's choice
         if ("asc".equalsIgnoreCase(sort)) {
-            // Oldest first
             history.sort(Comparator.comparing(TradeViewDTO::getTradeDate));
         } else {
-            // Default to Newest first (descending)
             history.sort(Comparator.comparing(TradeViewDTO::getTradeDate).reversed());
         }
 
@@ -350,32 +345,26 @@ public class TradeService {
             return new ArrayList<>();
         }
 
-        // 1. Sort the cards by their ID so duplicates are next to each other
         List<Card> sortedCards = new ArrayList<>(cards);
         sortedCards.sort(Comparator.comparingInt(Card::getCardID));
 
         List<TradeCardDTO> groupedResult = new ArrayList<>();
 
-        // 2. Start counting the first card
         Card currentCard = sortedCards.get(0);
         int count = 1;
 
-        // 3. Loop through the rest of the list
         for (int i = 1; i < sortedCards.size(); i++) {
             Card nextCard = sortedCards.get(i);
 
             if (nextCard.getCardID() == currentCard.getCardID()) {
-                // It's the same card, increase the count
                 count++;
             } else {
-                // It's a new card! Save the previous one and reset the counter
                 groupedResult.add(new TradeCardDTO(currentCard, count, 0));
                 currentCard = nextCard;
                 count = 1;
             }
         }
 
-        // 4. Don't forget to add the very last group after the loop finishes!
         groupedResult.add(new TradeCardDTO(currentCard, count, 0));
 
         return groupedResult;

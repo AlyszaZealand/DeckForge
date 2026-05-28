@@ -40,15 +40,12 @@ public class TradeController {
     public String showTradeDashboard(HttpSession session, Model model){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
-        // Fetch ALL trades for this user once
         List<Trade> userTrades = tradeService.findAllTradesByUserId(loggedInUser.getUserID());
 
-        // Count Incoming Proposals (Pending & User is the Receiver)
         long incomingTradeCount = userTrades.stream()
                 .filter(t -> t.getTradeStatus() == TradeStatus.PENDING && t.getReceiver().getUserID() == loggedInUser.getUserID())
                 .count();
 
-        // Count Ongoing Trades (Accepted OR waiting for the second confirmation)
         long ongoingTradeCount = userTrades.stream()
                 .filter(t -> t.getTradeStatus() == TradeStatus.ACCEPTED ||
                         t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)
@@ -67,7 +64,6 @@ public class TradeController {
     public String showIncomingTrades(HttpSession session, Model model){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
-        // Let the service handle the logic and mapping
         List<TradeViewDTO> incomingTrades = tradeService.getIncomingTradesForUser(loggedInUser.getUserID());
 
         model.addAttribute("incomingTrades", incomingTrades);
@@ -101,7 +97,6 @@ public class TradeController {
 
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
-        // Pass the sort parameter into your service method
         List<TradeViewDTO> tradeHistory = tradeService.getTradeHistoryForUser(loggedInUser.getUserID(), sort);
 
         model.addAttribute("tradeHistory", tradeHistory);
@@ -212,10 +207,8 @@ public class TradeController {
             trade.setReceiver(userService.getUserByID(receiverId));
         }
 
-        // DELEGATION: Lad servicelaget pakke kort-mængderne ud
         tradeService.populateTradeCards(trade, offeredCardIds, offeredQuantities, requestedCardIds, requestedQuantities, cardService);
 
-        // Validering og lagring
         ValidationResult result = tradeService.proposeTrade(trade);
 
         if (result.hasErrors()) {

@@ -97,11 +97,11 @@ public class EventController {
 
         Event event = eventOptional.get();
 
-        //Get User and Attendees
+        //hent user og deltagere
         User loggedInUser = (User) httpSession.getAttribute("loggedInUser");
         List<User> attendingUsers = eventService.getSignedUpUsersByEventID(id);
 
-        //Check if the logged-in user is already signed up
+        // tjek om bruger allerede er oprettet
         boolean isAttending = false;
         for (User user : attendingUsers) {
             if (user.getUserID() == loggedInUser.getUserID()) {
@@ -123,12 +123,11 @@ public class EventController {
             return "redirect:/login";
         }
 
-        // NYT: Sikr at kun MEMBERs kan tilmelde sig som spillere
+        // Sikrer at kun MEMBERs kan tilmelde sig som spillere
         if (!loggedInUser.getUserRole().equals(UserRole.MEMBER)) {
             return "redirect:/events/" + eventID + "?error=only_members";
         }
 
-        // NYT: Brug try-catch til at fange fejlen, hvis eventet er fuldt
         try {
             eventService.signUpForEvent(eventID, loggedInUser.getUserID());
         } catch (EventFullException e) {
@@ -146,10 +145,8 @@ public class EventController {
             return "redirect:/login";
         }
 
-        // Securely use the ID from the session
         eventService.removeSignUpForEvent(eventId, loggedInUser.getUserID());
 
-        // Redirect back to the event details page
         return "redirect:/events/" + eventId;
     }
 

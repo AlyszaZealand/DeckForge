@@ -31,22 +31,21 @@ public class CollectionService {
 
 
     public ValidationResult addCards(int userID, int cardID, int quantityToAdd) {
-        // 1. Find collection ID ud fra User ID
+        // Find collection ID ud fra User ID
         int collectionId = collectionRepository.findCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
                 .getCollectionId();
 
-        // 2. Kør validering (Har de plads? Findes kortet?)
         ValidationResult result = collectionValidation.validateAddCard(cardID, quantityToAdd);
 
         if (result.hasErrors()) {
             return result; // Afbryd hvis der er fejl
         }
 
-        // 3. Tjek hvor mange de allerede har i forvejen
+        // Tjek hvor mange de allerede har i forvejen
         int currentQty = collectionRepository.getCardQuantity(collectionId, cardID);
 
-        // 4. Hvis de allerede har kortet, opdaterer vi antallet. Ellers tilføjer vi en ny række.
+        // Hvis de allerede har kortet, opdaterer vi antallet. Ellers tilføjer vi en ny række.
         if (currentQty > 0) {
             collectionRepository.updateCardQuantity(collectionId, cardID, currentQty + quantityToAdd);
         } else {
@@ -58,22 +57,22 @@ public class CollectionService {
 
 
     public void removeCards(int userID, int cardID, int quantityToRemove) {
-        // 1. Find collection ID ud fra User ID
+        //  Find collection ID ud fra User ID
         int collectionId = collectionRepository.findCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Kunne ikke finde samlingen for bruger ID: " + userID))
                 .getCollectionId();
 
-        // 2. Find ud af hvor mange kopier de har i forvejen
+        // Find ud af hvor mange kopier de har i forvejen
         int currentQty = collectionRepository.getCardQuantity(collectionId, cardID);
 
         if (currentQty <= 0) {
             throw new CardNotOwnedException("Du kan ikke fjerne et kort, du ikke har i din samling.");
         }
 
-        // 3. Udregn det nye antal
+        // Udregn det nye antal
         int newQty = currentQty - quantityToRemove;
 
-        // 4. Hvis det nye antal er 0 eller derunder, sletter vi kortet helt fra samlingen
+        // Hvis det nye antal er 0 eller derunder, sletter vi kortet helt fra samlingen
         if (newQty <= 0) {
             collectionRepository.removeCardFromCollection(collectionId, cardID);
         } else {

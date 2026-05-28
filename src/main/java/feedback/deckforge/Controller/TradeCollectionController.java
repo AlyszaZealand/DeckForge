@@ -55,15 +55,15 @@ public class TradeCollectionController {
                 model.addAttribute("tradeCollection", tc);
             });
 
-            // Vis hele den private samling til højre uden filter ("" sendt ind for type)
+            // Vis hele den private samling til højre
             List<Card> allOwnedCards = cardService.searchCards("", "", "", "", CollectionType.COLLECTION, loggedInUser.getUserID());
             model.addAttribute("myOwnedCards", allOwnedCards);
 
         } else {
-            // --- SØG I EGEN SAMLING (Højre Side - Standard) ---
+            // --- SØG I EGEN SAMLING
             tradeCollectionOptional.ifPresent(tc -> model.addAttribute("tradeCollection", tc));
 
-            // Filtrer den private samling og send den til HTML (type sendes med ind)
+            // Filtrer den private samling og send den til HTML
             List<Card> myOwnedCards = cardService.searchCards(name, rarity, color, type, CollectionType.COLLECTION, loggedInUser.getUserID());
             model.addAttribute("myOwnedCards", myOwnedCards);
         }
@@ -79,7 +79,6 @@ public class TradeCollectionController {
         Optional<TradeCollection> tradeCollectionOptional = tradeCollectionService.getTradeCollectionByUserID(loggedInUser.getUserID());
         int tradeCollectionID = tradeCollectionOptional.get().getTradeCollectionId();
 
-        // Vi kalder bare servicen. Hvis den fejler, tager GlobalExceptionHandler over!
         tradeCollectionService.addCardsToTradeCollection(loggedInUser.getUserID(), cardID,1);
         return "redirect:/myTradeList";
     }
@@ -102,7 +101,6 @@ public class TradeCollectionController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) return "redirect:/login";
 
-        // Bruger din eksisterende removeOne logik fra TradeCollectionService
         tradeCollectionService.removeCardsFromTradeCollection(loggedInUser.getUserID(),cardID,1);
 
         return "redirect:/myTradeList";

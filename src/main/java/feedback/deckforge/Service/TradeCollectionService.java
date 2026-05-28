@@ -33,23 +33,20 @@ public class TradeCollectionService {
     }
 
     public void addCardsToTradeCollection(int userID, int cardID, int quantityToAdd) {
-        // 1. Find samlingen ud fra UserID (Controlleren slipper for dette arbejde nu!)
+
         int tradeColId = tradeCollectionRepository.findTradeCollectionByUserId(userID)
                 .orElseThrow(() -> new CollectionNotFoundException("Bytteliste ikke fundet")).getTradeCollectionId();
 
         Collection privateCol = collectionRepository.findCollectionByUserId(userID).orElse(null);
 
-        // 2. Find nuværende antal
         int currentTradeQty = tradeCollectionRepository.getCardQuantity(tradeColId, cardID);
         int newTotalQuantity = currentTradeQty + quantityToAdd;
 
-        // 3. Validering (Har de faktisk nok kort i deres private samling til at sætte dem til bytte?)
         ValidationResult result = tradeCollectionValidation.validateAddCardToTradeCollection(cardID, newTotalQuantity, privateCol);
         if (result.hasErrors()) {
             throw new InsufficientCardsException(result.getErrors().get(0));
         }
 
-        // 4. Gem i databasen
         if (currentTradeQty > 0) {
             tradeCollectionRepository.setCardQuantity(tradeColId, cardID, newTotalQuantity);
         } else {

@@ -48,9 +48,7 @@ public class WishCollectionController {
         List<Card> catalogCards;
 
         if("COLLECTION".equals(searchTarget)){
-            // --- LOGIK FOR SØGNING I EGEN ØNSKELISTE ---
 
-            // RETTET: Den søger nu i CollectionType.WISH i stedet for COLLECTION
             List<Card> filteredWishCards = cardService.searchCards(name, rarity, color, type, CollectionType.WISH, loggedInUser.getUserID());
 
             // Vi filtrerer 'wishCollection' objektet, så det kun indeholder de matchende kort
@@ -61,7 +59,6 @@ public class WishCollectionController {
                 model.addAttribute("wishCollection", coll);
             });
 
-            // Katalog-baren (højre side) skal bare vise alle kort uden filter
             catalogCards = cardService.searchCards("", "", "", "", CollectionType.CATALOG, null);
 
         } else {

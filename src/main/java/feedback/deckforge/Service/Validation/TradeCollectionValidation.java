@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TradeCollectionValidation {
 
-    // BEMÆRK: Parameteren hedder nu newTotalQuantity
     public ValidationResult validateAddCardToTradeCollection(int cardID, int newTotalQuantity, Collection userPrivateCollection) {
         ValidationResult result = new ValidationResult();
 

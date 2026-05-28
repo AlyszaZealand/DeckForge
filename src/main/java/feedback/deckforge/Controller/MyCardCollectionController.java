@@ -79,9 +79,6 @@ public class MyCardCollectionController {
     public String handleRemoveCardFromCollection(@RequestParam int cardID, HttpSession session){
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if(loggedInUser == null) return "redirect:/login";
-
-        Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
-        int collectionID = collectionOpt.get().getCollectionId();
         collectionService.removeCards(loggedInUser.getUserID(),cardID,1);
         return "redirect:/myCards";
     }
@@ -91,8 +88,6 @@ public class MyCardCollectionController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) return "redirect:/login";
 
-        Optional<Collection> collectionOpt = collectionService.findCollectionByUserId(loggedInUser.getUserID());
-        int collectionID = collectionOpt.get().getCollectionId();
         collectionService.addCards(loggedInUser.getUserID(),cardID,1);
         return "redirect:/myCards";
     }
