@@ -155,7 +155,6 @@ public class UserController {
     public String deleteUser(@PathVariable int id, HttpSession session) {
         User admin = (User) session.getAttribute("loggedInUser");
         if (admin != null && admin.getUserRole() == feedback.deckforge.Model.Enum.UserRole.ADMIN) {
-            // Henter og sletter brugeren
             User userToDelete = userService.getUserByID(id);
             userService.deleteUser(userToDelete);
         }

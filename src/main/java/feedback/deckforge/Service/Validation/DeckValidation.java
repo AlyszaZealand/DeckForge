@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeckValidation {
 
-    /**
-     * Validerer om et kort må bruges som Commander (skal være Creature eller Planeswalker).
-     */
+
     public ValidationResult validateCommander(Card commanderCard) {
         ValidationResult result = new ValidationResult();
 

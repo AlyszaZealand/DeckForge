@@ -68,7 +68,7 @@ public class DeckController {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) return "redirect:/login";
 
-        // 1. Hent decket (Service sørger for Commander, Items og Ejerskabstjek)
+        // Hent decket (Service sørger for Commander, Items og Ejerskabstjek)
         Deck deck = deckService.getDeckForBuilder(deckID, loggedInUser.getUserID());
         model.addAttribute("deck", deck);
 
@@ -78,16 +78,16 @@ public class DeckController {
             model.addAttribute("deckWarnings", entireDeckResult.getErrors());
         }
 
-        // 2. Beregn total mængde kort til tælleren (X / 100)
+        // Beregn total mængde kort til tælleren (X / 100)
         int totalCardsInDeck = deck.getDeckItems().stream()
                 .mapToInt(item -> item.getQuantity())
                 .sum();
         model.addAttribute("totalCardsInDeck", totalCardsInDeck);
 
-        // 3. Bestem søgemål (Katalog eller egen samling)
+        // Bestem søgemål (Katalog eller egen samling)
         Integer searchUserId = (collectionType == CollectionType.COLLECTION) ? loggedInUser.getUserID() : null;
 
-        // 4. Udfør søgningen med alle parametre
+        // Udfør søgningen med alle parametre
         // CardType sendes som String - Service/Repo håndterer Enum-konverteringen
         List<Card> searchResults = cardService.searchCards(search, rarity, color, cardType, collectionType, searchUserId);
         model.addAttribute("searchResults", searchResults);

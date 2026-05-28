@@ -126,13 +126,11 @@ public class TradeValidation {
             long totalOwned = 0;
             Optional<TradeCollection> tcOpt = tradeCollectionRepository.findTradeCollectionByUserId(trade.getReceiver().getUserID());
 
-            // 2. Hvis modtageren HAR en tradelist, slår vi mængden af kortet op
+            //  Hvis modtageren HAR en tradelist, slår vi mængden af kortet op
             if (tcOpt.isPresent()) {
                 totalOwned = tradeCollectionRepository.getCardQuantity(tcOpt.get().getTradeCollectionId(), card.getCardID());
             }
 
-
-            // FIX: Vi beder metoden om at ignorere den handel vi p.t. validerer!
             long lockedAmount = getLockedQuantity(trade.getReceiver().getUserID(), card.getCardID(), currentTradeId);
 
             long available = totalOwned - lockedAmount;
@@ -147,7 +145,6 @@ public class TradeValidation {
     }
 
 
-    // NY METODE der tillader os at ekskludere et TradeID
     public long getLockedQuantity(int userId, int cardId, int excludeTradeId) {
         List<Trade> activeTrades = tradeRepository.findAllTradesByUserId(userId).stream()
                 .filter(t -> t.getTradeStatus() == TradeStatus.ACCEPTED || t.getTradeStatus() == TradeStatus.WAITING_FOR_PARTNER)

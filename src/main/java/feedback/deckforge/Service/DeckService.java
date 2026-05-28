@@ -106,7 +106,7 @@ public class DeckService {
         }
     }
 
-    // VIGTIG FOR TÆLLEREN: findAllDecksByUserID i Repo henter nu items, så vi kan tælle 45/60
+
     public List<Deck> findAllDecksByUserId(int userID) {
         return deckRepository.findAllDecksByUserID(userID);
     }

@@ -155,7 +155,7 @@ public class TradeController {
 
         User loggedInUser = (User) session.getAttribute("loggedInUser");
 
-        // 1. Hent færdigbehandlede DTO'er for INITIATOR direkte fra TradeService
+        // Hent færdigbehandlede DTO'er for INITIATOR direkte fra TradeService
         List<TradeCardDTO> myAvailableItems = tradeService.getAvailableInitiatorCards(
                 loggedInUser.getUserID(), searchOffered, rarityOffered, typeOffered, collectionService);
 
@@ -164,7 +164,7 @@ public class TradeController {
         model.addAttribute("rarityOffered", rarityOffered);
         model.addAttribute("typeOffered", typeOffered);
 
-        // 2. Hent færdigbehandlede DTO'er for RECEIVER direkte fra TradeService
+        // Hent færdigbehandlede DTO'er for RECEIVER direkte fra TradeService
         List<TradeCardDTO> partnerAvailableItems = List.of();
         if (receiverId != null) {
             partnerAvailableItems = tradeService.getAvailableReceiverCards(
@@ -177,7 +177,7 @@ public class TradeController {
         model.addAttribute("rarityRequested", rarityRequested);
         model.addAttribute("typeRequested", typeRequested);
 
-        // 3. Dropdown-liste over andre brugere
+        // Dropdown-liste over andre brugere
         List<User> allOtherUsers = userService.getAllUsers().stream()
                 .filter(u -> u.getUserID() != loggedInUser.getUserID())
                 .filter(u -> searchUser == null || searchUser.isEmpty() || u.getUsername().toLowerCase().contains(searchUser.toLowerCase()))

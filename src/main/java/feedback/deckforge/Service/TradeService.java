@@ -133,10 +133,7 @@ public class TradeService {
             // Sæt status til COMPLETED for at fjerne den fra "låste" handler, mens vi tjekker
             trade.setTradeStatus(TradeStatus.COMPLETED);
 
-            // =========================================================
-            // LAST LINE OF DEFENSE: Er kortene stadig ledige?
-            // (Forhindrer 'Race Condition' hvis to accepterer samtidig)
-            // =========================================================
+
             ValidationResult finalCheck = tradeValidation.validateInventory(trade);
 
             if (finalCheck.hasErrors()) {
@@ -238,10 +235,10 @@ public class TradeService {
     public List<TradeCardDTO> getAvailableInitiatorCards(
             int userId, String search, String rarity, String type, CollectionService collectionService) {
 
-        // 1. Hent de rå data fra samlingen via CollectionService
+        // Hent de rå data fra samlingen via CollectionService
         List<CollectionItem> rawMyItems = collectionService.getFilteredCollectionItems(userId, search, rarity, type);
 
-        // 2. Map til DTO og filtrer de låste kort fra (Forretningslogik)
+        // Map til DTO og filtrer de låste kort fra (Forretningslogik)
         return rawMyItems.stream().map(item -> {
                     int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID(), -1);
                     return new TradeCardDTO(item.getCard(), item.getQuantity(), item.getQuantity() - locked);
@@ -253,10 +250,10 @@ public class TradeService {
     public List<TradeCardDTO> getAvailableReceiverCards(
             int userId, String search, String rarity, String type, TradeCollectionService tradeCollectionService) {
 
-        // 1. Hent de rå data fra tradelisten via TradeCollectionService
+        //  Hent de rå data fra tradelisten via TradeCollectionService
         List<TradeCollectionItem> rawPartnerItems = tradeCollectionService.getFilteredTradeCollectionItems(userId, search, rarity, type);
 
-        // 2. Map til DTO og filtrer de låste kort fra (Forretningslogik)
+        //  Map til DTO og filtrer de låste kort fra (Forretningslogik)
         return rawPartnerItems.stream().map(item -> {
                     int locked = (int) tradeValidation.getLockedQuantity(userId, item.getCard().getCardID(), -1);
                     return new TradeCardDTO(item.getCard(), item.getQuantity(), item.getQuantity() - locked);
@@ -273,22 +270,18 @@ public class TradeService {
 
         boolean isInitiator = trade.getInitiator().getUserID() == currentUserId;
 
-        // **THE FIX: Ensure we have the full User object to get the username**
-        // We fetch the partner's user ID, then ask the UserService for the full User object.
         int partnerId = isInitiator ? trade.getReceiver().getUserID() : trade.getInitiator().getUserID();
         User partnerUser = userService.getUserByID(partnerId);
 
         dto.setPartnerUsername(partnerUser.getUsername());
 
-        // 1. Get the raw lists of cards based on your perspective in the trade
         List<Card> rawGive = isInitiator ? trade.getOfferedCards() : trade.getRequestedCards();
         List<Card> rawGet = isInitiator ? trade.getRequestedCards() : trade.getOfferedCards();
 
-        // 2. Pass the raw lists into your groupCards method
         dto.setCardsYouGive(groupCards(rawGive));
         dto.setCardsYouGet(groupCards(rawGet));
 
-        // Resolve confirmation states for Ongoing IRL trades
+
         if (isInitiator) {
             dto.setRequiresYourConfirmation(!trade.isInitiatorConfirmed());
             dto.setWaitingForPartnerConfirmation(trade.isInitiatorConfirmed() && !trade.isReceiverConfirmed());

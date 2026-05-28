@@ -64,10 +64,8 @@ public class WishCollectionController {
         } else {
             // --- LOGIK FOR SØGNING I KATALOG (Standard) ---
 
-            // Filtrér kataloget (højre side) med den nye type parameter
             catalogCards = cardService.searchCards(name, rarity, color, type, CollectionType.CATALOG, null);
 
-            // Vis den fulde ønskeliste (venstre side) uden filtrering
             wishCollectionOptional.ifPresent(coll -> model.addAttribute("wishCollection", coll));
         }
 
