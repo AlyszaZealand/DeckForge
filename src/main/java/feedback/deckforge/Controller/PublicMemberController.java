@@ -30,7 +30,7 @@ public class PublicMemberController {
         this.deckService = deckService;
     }
 
-    // 1. Vis en andens offentlige profil (Allerede oprettet tidligere)
+    // Vis en andens offentlige profil (Allerede oprettet tidligere)
     @GetMapping("/profile/{id}")
     public String showPublicProfile(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("loggedInUser") == null) {
@@ -45,7 +45,7 @@ public class PublicMemberController {
         }
     }
 
-    // 2. Vis en andens Tradelist (Read-Only)
+    // Vis en andens Tradelist (Read-Only)
     @GetMapping("/tradelist/{id}")
     public String showPublicTradelist(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("loggedInUser") == null) {
@@ -62,7 +62,7 @@ public class PublicMemberController {
         }
     }
 
-    // 3. Vis en andens Wishlist (Read-Only)
+    // Vis en andens Wishlist (Read-Only)
     @GetMapping("/wishlist/{id}")
     public String showPublicWishlist(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("loggedInUser") == null) {
@@ -79,7 +79,7 @@ public class PublicMemberController {
         }
     }
 
-    // 4. Vis en andens Decks (Read-Only)
+    // Vis en andens Decks (Read-Only)
     @GetMapping("/decks/{id}")
     public String showPublicDecks(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("loggedInUser") == null) {
